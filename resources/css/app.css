@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.topbar-active{
+    @apply text-upbg-dark font-bold;
+}
+
+.error{
+    @apply text-red-600 text-sm mt-2 font-medium;
+}
