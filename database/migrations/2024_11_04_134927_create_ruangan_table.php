@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('ruangan', function (Blueprint $table) {
             $table->id();
             $table->string('kode');
-            $table->integer('kapasitas');
+            $table->integer('kapasitas')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

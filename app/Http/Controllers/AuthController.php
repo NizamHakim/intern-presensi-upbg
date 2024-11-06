@@ -6,17 +6,17 @@ use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
-    public function loginPage()
+    public function getLoginPage()
     {
-        
+        return view('public.login');
     }
 
-    public function login()
+    public function postLoginRequest()
     {
 
     }
 
-    public function logout()
+    public function postLogoutRequest()
     {
 
     }

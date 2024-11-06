@@ -68,7 +68,11 @@ export default {
             },
             borderRadius: {
                 "sm-md": "0.25rem",
-            }
+            },
+            outlineWidth: {
+                "0.5": "0.5px",
+                "1.5": "1.5px",
+            },
         },
     },
     plugins: [],
