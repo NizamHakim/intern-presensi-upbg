@@ -1,62 +1,6 @@
 <x-layouts.user-layout>
     <x-slot:title>Daftar Kelas</x-slot>
     <h1 class="font-semibold text-upbg text-3xl">Daftar Kelas</h1>
-
-    {{-- filter mobile --}}
-    {{-- <div x-data="{showFilter: false}" class="mt-4 lg:hidden">
-        <form x-data="{ searchCode: '' }" action="{{ route('admin.kelas') }}" method="GET" class="flex flex-col gap-4">
-            <div class="flex flex-row gap-2">
-                <input x-model="searchCode" type="search" name="searchCode" placeholder="Cari Kode Kelas" class="flex-1 px-3 py-2 rounded-md border border-gray-200 text-gray-600 font-medium placeholder:text-gray-400 outline-none">
-                <button type="submit" class="bg-upbg transition duration-300 hover:bg-upbg-dark text-white px-3 py-2 rounded-md">
-                    <span><i class="fa-solid fa-magnifying-glass mr-2"></i>Search</span>
-                </button>
-            </div>
-            <button type="button" x-on:click="showFilter = true" class="w-24 flex flex-row justify-center items-center bg-gray-200 gap-2 py-2 rounded-md transition duration-300 hover:bg-gray-300">
-                <span class="font-medium">Filter</span>
-                <i :class="showFilter ? 'rotate-180' : ''" class="fa-solid fa-chevron-right text-xs align-middle transition duration-700"></i>
-            </button>
-    
-            <div x-show="showFilter" 
-                x-transition:enter="transition-transform ease-out"
-                x-transition:enter-start="-translate-x-full"
-                x-transition:enter-end="translate-x-0"
-                x-transition:leave="transition-transform ease-in"
-                x-transition:leave-start="translate-x-0"
-                x-transition:leave-end="-translate-x-full"
-                class="fixed flex flex-col bg-white inset-0 transition-transform px-4 py-2 overflow-y-auto z-50">
-    
-                <div class="h-14 w-full flex flex-row justify-between items-center">
-                    <h1 class="font-medium text-2xl text-gray-600">Filter</h1>
-                    <button x-on:click="showFilter = false" type="button" class="flex flex-row justify-center items-center text-2xl text-gray-600 rounded-full size-10 transition hover:bg-gray-100"><i class="fa-solid fa-xmark"></i></i></button>
-                </div>
-    
-                <div class="flex flex-col my-8 gap-4">
-                    <x-dropdown :options="$programList" :defaultOption="['text' => 'Semua', 'value' => '']"  inputName="programFilter" label="Program"/>
-                    <x-dropdown :options="$tipeList" :defaultOption="['text' => 'Semua', 'value' => '']" inputName="tipeFilter" label="Tipe"/>
-                    <x-input-number name="numberFilter" label="Nomor Kelas" placeholder="Semua"/>    
-                    <x-dropdown :options="$levelList" :defaultOption="['text' => 'Semua', 'value' => '']" inputName="levelFilter" label="Level"/>
-                    <x-input-number name="meetingsTotalFilter" label="Banyak Pertemuan" placeholder="Semua"/>    
-                    <x-input-date name="startingDateFilter" label="Tanggal Mulai" placeholder="Semua"/>
-                    <x-dropdown :options="$ruanganList" :defaultOption="['text' => 'Semua', 'value' => '']" inputName="ruanganFilter" label="Ruangan"/>
-                    <x-dropdown :options="$statusList" :defaultOption="['text' => 'Semua', 'value' => '']" inputName="statusFilter" label="Status"/>
-                    <x-dropdown :options="$sortByList" :defaultOption="$sortByList[0]" inputName="sortByFilter" label="Sort By"/>
-                    <hr class="border-gray-200">
-                    <div class="flex flex-col w-full">
-                        <label class="block font-medium text-sm mb-1.5 text-gray-600">Cari Kode Kelas</label>
-                        <input x-model="searchCode" type="search" class="w-full px-3 py-2 rounded-md bg-gray-200 text-gray-600 font-medium placeholder:text-gray-400 outline-none" name="searchCode" placeholder="Cari Kode Kelas">
-                    </div>
-                    <hr class="border-gray-200">
-                    <button type="submit" class="bg-upbg transition duration-300 hover:bg-upbg-dark text-white font-medium px-3 py-2 rounded-md">
-                        <i class="fa-solid fa-search"></i>
-                        <span>Search</span>
-                    </button>
-                    <button type="button" class="border bg-white border-red-400 text-red-400 transition duration-300 hover:bg-red-400 hover:text-white font-medium px-3 py-2 rounded-md">
-                        <span>Reset filter</span>
-                    </button>
-                </div>
-            </div>
-        </form>
-    </div> --}}
     
     {{-- filter desktop --}}
     <div x-data="{showFilter: false}" class="mt-4 hidden lg:block">
@@ -85,11 +29,11 @@
                 <x-inputs.dropdown :options="$tipeOptions" :selected="$tipeSelected" label="Tipe" inputName="tipe" class="filter-field"/>
                 <x-inputs.number :value="$nomor" placeholder="Semua" label="Nomor" inputName="nomor" class="filter-field"/>
                 <x-inputs.dropdown :options="$levelOptions" :selected="$levelSelected" label="Level" inputName="level" class="filter-field"/>
-                <x-inputs.number :value="$banyakPertemuan" placeholder="Semua" label="Banyak Pertemuan" inputName="banyakPertemuan" class="filter-field"/>
-                <x-inputs.date :value="$tanggalMulai" placeholder="Semua" label="Tanggal Mulai" inputName="tanggalMulai" class="filter-field"/>
+                <x-inputs.number :value="$banyakPertemuan" placeholder="Semua" label="Banyak Pertemuan" inputName="banyak-pertemuan" class="filter-field"/>
+                <x-inputs.date :value="$tanggalMulai" placeholder="Semua" label="Tanggal Mulai" inputName="tanggal-mulai" class="filter-field"/>
                 <x-inputs.dropdown :options="$ruanganOptions" :selected="$ruanganSelected" label="Ruangan" inputName="ruangan" class="filter-field"/>
                 <x-inputs.dropdown :options="$statusOptions" :selected="$statusSelected" label="Status" inputName="status" class="filter-field"/>
-                <x-inputs.dropdown :options="$sortByOptions" :selected="$sortBySelected" label="Sort By" inputName="sortBy" class="filter-field"/>
+                <x-inputs.dropdown :options="$sortByOptions" :selected="$sortBySelected" label="Sort By" inputName="sort-by" class="filter-field"/>
 
                 <button type="button" class="reset-filter w-full h-fit self-end border bg-white border-red-400 text-red-400 transition duration-300 hover:bg-red-400 hover:text-white font-medium px-3 py-2 rounded-md lg:col-start-3 lg:col-end-4 xl:col-start-4 xl:col-end-5">
                     <span>Reset filter</span>
@@ -97,6 +41,57 @@
             </div>
         </form>
     </div>
+
+    {{-- kelaslist desktop --}}
+    <table class="w-full table-fixed hidden lg:table mt-8 shadow-strong">
+        <thead class="bg-gray-50 border-b">
+            <tr>
+                <th class="px-3 py-4 xl:w-108 font-semibold tracking-wide text-left">Kode Kelas</th>
+                <th class="px-3 py-4 xl:w-72 font-semibold tracking-wide text-left">Jadwal</th>
+                <th class="px-3 py-4 xl:w-48 font-semibold tracking-wide text-left">Ruangan</th>
+                <th class="hidden xl:table-cell px-3 py-4 font-semibold tracking-wide text-left">Progress</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y">
+            @if ($kelasList->isEmpty())
+                <tr>
+                    <td class="px-3 py-4 text-center font-medium text-gray-400" colspan="4">Tidak ada kelas yang cocok</td>
+                </tr>
+            @else
+                @foreach ($kelasList as $kelas)
+                    <tr class="bg-white transition hover:bg-gray-100">
+                        <td class="px-3 py-4 xl:w-108">
+                            <a href="#" class="text-upbg underline decoration-transparent transition hover:decoration-upbg font-semibold">{{ $kelas->kode }}</a>
+                        </td>
+                        <td class="px-3 py-4 xl:w-72">
+                            <div class="flex flex-col gap-2">
+                                @foreach ($kelas->jadwal as $jadwal)
+                                    <div class="flex flex-row gap-1">
+                                        <span class="text-base w-24"><i class="fa-solid fa-calendar-days mr-2"></i>{{ $jadwal->namaHari }}</span>
+                                        <span class="text-base"><i class="fa-regular fa-clock mr-2"></i>{{ $jadwal->waktu_mulai->format('H:i') }} - {{ $jadwal->waktu_selesai->format('H:i') }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </td>
+                        <td class="px-3 py-4 xl:w-48">
+                            <span class="text-base"><i class="fa-regular fa-building mr-2"></i>{{ $kelas->ruangan->kode }}</span>
+                        </td>
+                        <td class="px-3 py-4 hidden xl:table-cell">
+                            <div x-data="{ percent: (@js($kelas->progress) / @js($kelas->banyak_pertemuan)) * 100 }" class="flex flex-col gap-1 items-end justify-center">
+                                <span class="text-sm font-medium">{{ $kelas->progress . "/" . $kelas->banyak_pertemuan }} Pertemuan</span>
+                                <div class="w-full h-2 border border-gray-400 rounded-xl">
+                                    <div :style="'width: ' + percent + '%'" class="h-full @if($kelas->progress == $kelas->banyak_pertemuan) bg-green-600 @else bg-upbg @endif"></div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                @endforeach
+            @endif
+        </tbody>
+    </table>
+
+    {{ $kelasList->links() }}
+
     @push('script')
         <script src="{{ asset('js/views/kelas/daftar-kelas.js') }}"></script>
     @endpush

@@ -26,4 +26,9 @@ class Ruangan extends Model
             get: fn(mixed $value, array $attributes) => strtolower($attributes['kode'])
         );
     }
+
+    public function kelas()
+    {
+        return $this->hasMany(Kelas::class);
+    }
 }

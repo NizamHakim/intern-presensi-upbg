@@ -15,18 +15,19 @@ class GetKelasQuery
      */
     public function handle(Request $request, Closure $next): Response
     {   
-        $fields = ['program', 'tipe', 'level', 'nomor', 'banyakPertemuan', 'tanggalMulai', 'ruangan', 'status', 'sortBy'];
+        $fields = ['program', 'tipe', 'level', 'nomor', 'banyak-pertemuan', 'tanggal-mulai', 'ruangan', 'status', 'sort-by', 'page'];
         if(!empty(array_diff($request->query->keys(), $fields))){
             $query = [
                 'program' => $request->query('program') ?? null,
                 'tipe' => $request->query('tipe') ?? null,
                 'level' => $request->query('level') ?? null,
                 'nomor' => $request->query('nomor') ?? null,
-                'banyakPertemuan' => $request->query('banyakPertemuan') ?? null,
-                'tanggalMulai' => $request->query('tanggalMulai') ?? null,
+                'banyak-pertemuan' => $request->query('banyak-pertemuan') ?? null,
+                'tanggal-mulai' => $request->query('tanggal-mulai') ?? null,
                 'ruangan' => $request->query('ruangan') ?? null,
                 'status' => $request->query('status') ?? null,
-                'sortBy' => $request->query('sortBy') ?? null,
+                'sort-by' => $request->query('sort-by') ?? null,
+                'page' => $request->query('page') ?? null,
             ];
             return redirect()->route('kelas.index', $query);
         }

@@ -1,5 +1,5 @@
 <nav class="sticky top-0 w-full h-14 flex flex-row justify-center border-b z-10">
-    <div class="flex flex-row justify-between bg-white w-full max-w-8xl h-full py-1 px-3">
+    <div class="flex flex-row justify-between bg-white w-full max-w-8xl h-full py-1 px-6">
         @auth
             <div :class="showSideNav ? 'hidden' : 'flex'" class="flex-row items-center gap-4 h-full">
                 <button x-on:click="showSideNav = true" id="sidenav-open" class="flex flex-col items-center justify-center  rounded-full size-10 transition hover:bg-gray-200">

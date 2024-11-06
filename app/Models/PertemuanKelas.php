@@ -18,4 +18,9 @@ class PertemuanKelas extends Model
         'topik',
         'catatan',
     ];
+
+    public function kelas()
+    {
+        return $this->belongsTo(Kelas::class);
+    }
 }

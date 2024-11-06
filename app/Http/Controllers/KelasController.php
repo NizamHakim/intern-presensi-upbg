@@ -2,42 +2,32 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\LevelKelas;
-use App\Models\ProgramKelas;
+use App\Models\Kelas;
 use App\Models\Ruangan;
 use App\Models\TipeKelas;
+use App\Models\LevelKelas;
+use App\Models\ProgramKelas;
 use Illuminate\Http\Request;
+use App\Models\PertemuanKelas;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\ItemNotFoundException;
 
 class KelasController extends Controller
 {
     public function index(Request $request)
     {
-        $programOptions = ProgramKelas::all()
-            ->map->only(['text', 'value'])
-            ->prepend(['text' => 'Semua', 'value' => null]);
-        $programSelected = ($request->query('program') != null) 
-            ? ProgramKelas::where('kode', $request->query('program'))->firstOrFail()->only(['text', 'value'])
-            : $programOptions->first();
+        $programOptions = ProgramKelas::all()->map->only(['text', 'value'])->prepend(['text' => 'Semua', 'value' => null]);
+        $programSelected = ($request->query('program') != null) ? ProgramKelas::where('kode', $request->query('program'))->firstOrFail() : null;
 
-        $tipeOptions = TipeKelas::all()
-            ->map->only(['text', 'value'])
-            ->prepend(['text' => 'Semua', 'value' => null]);
-        $tipeSelected = ($request->query('tipe') != null) 
-            ? TipeKelas::where('kode', $request->query('tipe'))->firstOrFail()->only(['text', 'value'])
-            : $tipeOptions->first();
+        $tipeOptions = TipeKelas::all()->map->only(['text', 'value'])->prepend(['text' => 'Semua', 'value' => null]);
+        $tipeSelected = ($request->query('tipe') != null) ? TipeKelas::where('kode', $request->query('tipe'))->firstOrFail() : null;
 
-        $levelOptions = LevelKelas::all()
-            ->map->only(['text', 'value']);
-        $levelSelected = ($request->query('level') != null) 
-            ? LevelKelas::where('kode', $request->query('level'))->firstOrFail()->only(['text', 'value'])
-            : $levelOptions->first();
+        $levelOptions = LevelKelas::all()->map->only(['text', 'value']);
+        $levelSelected = ($request->query('level') != null) ? LevelKelas::where('kode', $request->query('level'))->firstOrFail() : null;
 
-        $ruanganOptions = Ruangan::all()
-            ->map->only(['text', 'value'])
-            ->prepend(['text' => 'Semua', 'value' => null]);
-        $ruanganSelected = ($request->query('ruangan') != null)
-            ? Ruangan::where('kode', $request->query('ruangan'))->firstOrFail()->only(['text', 'value'])
-            : $ruanganOptions->first();
+        $ruanganOptions = Ruangan::all()->map->only(['text', 'value'])->prepend(['text' => 'Semua', 'value' => null]);
+        $ruanganSelected = ($request->query('ruangan') != null) ? Ruangan::where('kode', $request->query('ruangan'))->firstOrFail() : null;
         
         $statusOptions = collect([
             ['text' => 'Semua', 'value' => ''],
@@ -45,40 +35,88 @@ class KelasController extends Controller
             ['text' => 'Completed', 'value' => 'completed'],
             ['text' => 'Upcoming', 'value' => 'upcoming'],
         ]);
-        $statusSelected = ($request->query('status') != null) 
-        ? $statusOptions->where('value', $request->query('status'))->first() 
-        : $statusOptions->first();
+        if($request->query('status') != null){
+            try{
+                $statusSelected = $statusOptions->where('value', $request->query('status'))->firstOrFail();
+            }catch(ItemNotFoundException $e){
+                abort(404);
+            }
+        }else{
+            $statusSelected = null;
+        }
 
         $sortByOptions = collect([
             ['text' => 'Tanggal mulai (terbaru)', 'value' => 'latest'],
             ['text' => 'Tanggal mulai (terlama)', 'value' => 'oldest'],
         ]);
-        $sortBySelected = ($request->query('sortBy') != null) 
-            ? $sortByOptions->where('value', $request->query('sortBy'))->first() 
-            : $sortByOptions->first();
-        
+        if($request->query('sort-by') != null){
+            try{
+                $sortBySelected = $sortByOptions->where('value', $request->query('sort-by'))->firstOrFail();
+            }catch(ItemNotFoundException $e){
+                abort(404);
+            }
+        }else{
+            $sortBySelected = null;
+        }
 
         $nomor = $request->query('nomor');
-        $banyakPertemuan = $request->query('$banyakPertemuan');
-        $tanggalMulai = $request->query('tanggalMulai');
+        $banyakPertemuan = $request->query('banyak-pertemuan');
+        $tanggalMulai = $request->query('tanggal-mulai');
 
+        
+        $progress = PertemuanKelas::select('kelas_id', DB::raw('COUNT(id) AS progress'))
+        ->where('terlaksana', true)
+        ->groupBy('kelas_id');
+
+        $kelasList = Kelas::with(['jadwal', 'ruangan'])
+        ->joinSub($progress, 'progress', function ($join) {
+            $join->on('kelas.id', '=', 'progress.kelas_id');
+        })->when($programSelected != null, function($query) use ($programSelected){
+            return $query->where('program_id', $programSelected->id);
+        })->when($tipeSelected != null, function($query) use ($tipeSelected){
+            return $query->where('tipe_id', $tipeSelected->id);
+        })->when($levelSelected != null, function($query) use ($levelSelected){
+            return $query->where('level_id', $levelSelected->id);
+        })->when($ruanganSelected != null, function($query) use ($ruanganSelected){
+            return $query->where('ruangan_id', $ruanganSelected->id);
+        })->when($nomor != null, function($query) use ($nomor){
+            return $query->where('nomor_kelas', $nomor);
+        })->when($banyakPertemuan != null, function($query) use ($banyakPertemuan){
+            return $query->where('banyak_pertemuan', $banyakPertemuan);
+        })->when($tanggalMulai != null, function($query) use ($tanggalMulai){
+            return $query->whereBetween('tanggal_mulai', [
+                Carbon::parse($tanggalMulai)->startOfMonth(),
+                Carbon::parse($tanggalMulai)->endOfMonth(),
+            ]);
+        })->when($sortBySelected != null, function($query) use ($sortBySelected){
+            if($sortBySelected['value'] == 'latest'){
+                return $query->orderBy('tanggal_mulai', 'desc');
+            }elseif($sortBySelected['value'] == 'oldest'){
+                return $query->orderBy('tanggal_mulai', 'asc');
+            }
+        }, function($query){
+            return $query->orderBy('tanggal_mulai', 'desc');
+        })->when($statusSelected != null, function($query) use ($statusSelected){
+            return $query->status($statusSelected['value']);
+        })->paginate(5)->appends($request->query());
 
         return view('kelas.daftar-kelas', [
             'programOptions' => $programOptions,
-            'programSelected' => $programSelected,
+            'programSelected' => $programSelected ? $programSelected->only(['text', 'value']) : $programOptions[0],
             'tipeOptions' => $tipeOptions,
-            'tipeSelected' => $tipeSelected,
+            'tipeSelected' => $tipeSelected ? $tipeSelected->only(['text', 'value']) : $tipeOptions[0],
             'levelOptions' => $levelOptions,
-            'levelSelected' => $levelSelected,
+            'levelSelected' => $levelSelected ? $levelSelected->only(['text', 'value']) : $levelOptions[0],
             'ruanganOptions' => $ruanganOptions,
-            'ruanganSelected' => $ruanganSelected,
+            'ruanganSelected' => $ruanganSelected ? $ruanganSelected->only(['text', 'value']) : $ruanganOptions[0],
             'statusOptions' => $statusOptions,
-            'statusSelected' => $statusSelected,
+            'statusSelected' => $statusSelected ?? $statusOptions[0],
             'sortByOptions' => $sortByOptions,
-            'sortBySelected' => $sortBySelected,
+            'sortBySelected' => $sortBySelected ?? $sortByOptions[0],
             'nomor' => $nomor,
             'banyakPertemuan' => $banyakPertemuan,
             'tanggalMulai' => $tanggalMulai,
+            'kelasList' => $kelasList,
         ]);
     }
 }
