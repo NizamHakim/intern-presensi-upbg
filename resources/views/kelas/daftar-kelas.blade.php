@@ -90,7 +90,7 @@
         </tbody>
     </table>
 
-    {{ $kelasList->links() }}
+    {{ $kelasList->onEachSide(2)->links() }}
 
     @push('script')
         <script src="{{ asset('js/views/kelas/daftar-kelas.js') }}"></script>
