@@ -34,6 +34,9 @@
                 <x-inputs.dropdown :options="$ruanganOptions" :selected="$ruanganSelected" label="Ruangan" inputName="ruangan" class="filter-field"/>
                 <x-inputs.dropdown :options="$statusOptions" :selected="$statusSelected" label="Status" inputName="status" class="filter-field"/>
                 <x-inputs.dropdown :options="$sortByOptions" :selected="$sortBySelected" label="Sort By" inputName="sort-by" class="filter-field"/>
+                <div class="lg:col-span-2">
+                    <x-inputs.dropdown :options="$pengajarOptions" :selected="$pengajarSelected" label="Pengajar" inputName="pengajar" class="filter-field"/>
+                </div>
 
                 <button type="button" class="reset-filter w-full h-fit self-end border bg-white border-red-400 text-red-400 transition duration-300 hover:bg-red-400 hover:text-white font-medium px-3 py-2 rounded-md lg:col-start-3 lg:col-end-4 xl:col-start-4 xl:col-end-5">
                     <span>Reset filter</span>
@@ -77,10 +80,10 @@
                             <span class="text-base"><i class="fa-regular fa-building mr-2"></i>{{ $kelas->ruangan->kode }}</span>
                         </td>
                         <td class="px-3 py-4 hidden xl:table-cell">
-                            <div x-data="{ percent: (@js($kelas->progress) / @js($kelas->banyak_pertemuan)) * 100 }" class="flex flex-col gap-1 items-end justify-center">
+                            <div class="flex flex-col gap-1 items-end justify-center">
                                 <span class="text-sm font-medium">{{ $kelas->progress . "/" . $kelas->banyak_pertemuan }} Pertemuan</span>
                                 <div class="w-full h-2 border border-gray-400 rounded-xl">
-                                    <div :style="'width: ' + percent + '%'" class="h-full @if($kelas->progress == $kelas->banyak_pertemuan) bg-green-600 @else bg-upbg @endif"></div>
+                                    <div data-progress="{{ $kelas->progress }}" data-banyak-pertemuan="{{ $kelas->banyak_pertemuan }}" class="progress-bar h-full @if($kelas->progress == $kelas->banyak_pertemuan) bg-green-600 @else bg-upbg @endif"></div>
                                 </div>
                             </div>
                         </td>
@@ -89,8 +92,9 @@
             @endif
         </tbody>
     </table>
-
-    {{ $kelasList->onEachSide(2)->links() }}
+    <div class="mb-10">
+        {{ $kelasList->onEachSide(2)->links() }}
+    </div>
 
     @push('script')
         <script src="{{ asset('js/views/kelas/daftar-kelas.js') }}"></script>

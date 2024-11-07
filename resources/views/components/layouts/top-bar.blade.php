@@ -1,8 +1,8 @@
 <nav class="sticky top-0 w-full h-14 flex flex-row justify-center border-b z-10">
     <div class="flex flex-row justify-between bg-white w-full max-w-8xl h-full py-1 px-6">
         @auth
-            <div :class="showSideNav ? 'hidden' : 'flex'" class="flex-row items-center gap-4 h-full">
-                <button x-on:click="showSideNav = true" id="sidenav-open" class="flex flex-col items-center justify-center  rounded-full size-10 transition hover:bg-gray-200">
+            <div class="flex flex-row items-center gap-4 h-full">
+                <button class="sidenav-open flex flex-col items-center justify-center  rounded-full size-10 transition hover:bg-gray-200">
                     <div class="flex flex-col justify-center items-start gap-1">
                         <div class="w-6 h-0.75 bg-upbg rounded-sm"></div>
                         <div class="w-4 h-0.75 bg-upbg rounded-sm"></div>
@@ -29,9 +29,9 @@
                     <li class="w-full text-sm">
                         <form action="#" method="POST">
                             @csrf
-                            <button type="button" x-on:click="showRoles = !showRoles" class="hover:bg-gray-100 flex flex-row p-3 items-center gap-3 w-full font-medium">
+                            <button type="button" x-on:click="showRoles = !showRoles" class="hover:bg-gray-100 flex flex-row p-3 items-center gap-3 w-full">
                                 <i class="fa-solid fa-repeat"></i>
-                                <span>Ganti role</span>
+                                <span>Role : {{ auth()->user()->currentRole->nama }}</span>
                                 <i :class="showRoles ? 'rotate-180' : ''" class="fa-solid fa-angle-down ml-auto transition duration-300"></i>
                             </button>
                             <ul 
@@ -45,14 +45,14 @@
                                 class="overflow-hidden transition-all duration-300 shadow-inner-2">
                                 @foreach (auth()->user()->roles as $role)
                                     <li class="w-full hover:bg-gray-100 text-sm">
-                                        <button type="button" class="w-full p-3 text-left" value="{{ $role->id }}">{{ $role->name }}</button>
+                                        <button type="button" class="w-full p-3 text-left border-l-4 @if($role->id == auth()->user()->current_role_id) border-upbg @else border-transparent @endif" value="{{ $role->id }}">{{ $role->nama }}</button>
                                     </li>                                
                                 @endforeach
                             </ul>
                         </form>
                     </li>
                     <li class="w-full hover:bg-gray-100">
-                        <form action="{{ route('auth.logout') }}" method="POST">
+                        <form action="{{ route('auth.handleLogoutRequest') }}" method="POST">
                             @csrf
                             <button type="submit" class="flex flex-row p-3 items-center gap-3 font-medium text-sm w-full text-red-600">
                                 <i class="fa-solid fa-arrow-right-from-bracket"></i>
@@ -64,11 +64,15 @@
             </div>
         @else
             <img src="{{ asset('images/logoGLC.png') }}" alt="Logo UPBG" class="h-full">
-            {{-- <ul class="nav-menu-container flex flex-row items-center gap-3 text-upbg text-base font-medium">
+            <ul class="nav-menu-container flex flex-row items-center gap-3 text-upbg text-base font-medium">
                 <li class=""><a href="#">Jadwal</a></li>
                 <li class="text-lg select-none">|</li>
                 <li class="{{ request()->routeIs('auth.index') ? 'topbar-active' : '' }}"><a href="{{ route('auth.index') }}">Login</a></li>
-            </ul> --}}
+            </ul>
         @endauth
     </div>
 </nav>
+
+@push('script')
+    <script src="{{ asset('js/views/components/layouts/top-bar.js') }}"></script>
+@endpush

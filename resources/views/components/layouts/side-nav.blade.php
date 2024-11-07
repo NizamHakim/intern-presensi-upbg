@@ -40,7 +40,9 @@
 </nav>
 
 {{-- desktop sidenav --}}
-<nav x-cloak :class="showSideNav ? 'w-64' : 'w-0'" class="hidden sticky inset-y-0 left-0 h-screen lg:flex flex-col text-nowrap overflow-hidden transition-all shadow-inner-2 bg-gray-100">
+{{-- <nav x-cloak 
+    :class="showSideNav ? 'w-64' : 'w-0'" 
+    class="hidden sticky inset-y-0 left-0 h-screen lg:flex flex-col text-nowrap overflow-hidden transition-all shadow-inner-2 bg-gray-100">
     <div class="h-14 border-b flex flex-row justify-between items-center px-3 py-1">
         <img src="{{ asset('images/logoGLC.png') }}" alt="LogoUPBG" class="h-full">
         <button x-on:click="showSideNav = false" type="button" class="flex flex-row justify-center items-center text-2xl text-upbg rounded-full size-10 transition hover:bg-gray-200"><i class="fa-solid fa-xmark"></i></i></button>
@@ -69,4 +71,39 @@
             </ul>
         </section>
     </div>
+</nav> --}}
+
+<nav class="sidenav hidden sticky inset-y-0 left-0 h-screen lg:flex flex-col text-nowrap overflow-hidden transition-all shadow-inner-2 bg-gray-100">
+    <div class="h-14 border-b flex flex-row justify-between items-center px-3 py-1">
+        <img src="{{ asset('images/logoGLC.png') }}" alt="LogoUPBG" class="h-full">
+        <button type="button" class="sidenav-close flex flex-row justify-center items-center text-2xl text-upbg rounded-full size-10 transition hover:bg-gray-200"><i class="fa-solid fa-xmark"></i></i></button>
+    </div>
+    <div class="flex-1 w-full flex flex-col gap-3 px-3 py-4">
+        <section class="flex flex-col">
+            <h1 class="font-semibold text-base">Kelas</h1>
+            <ul class="my-1 flex flex-col gap-1">
+                <li class="text-sm rounded-sm-md bg-upbg text-white font-medium"><a href="#" class="block w-full px-3 py-1">Daftar Kelas</a></li>
+            </ul>
+        </section>
+        <section class="flex flex-col">
+            <h1 class="font-semibold text-base">User</h1>
+            <ul class="my-1 flex flex-col gap-1">
+                <li class="text-sm rounded-sm-md hover:bg-gray-200"><a href="#" class="block w-full px-3 py-1">Daftar User</a></li>
+                <li class="text-sm rounded-sm-md hover:bg-gray-200"><a href="#" class="block w-full px-3 py-1">Cari Peserta</a></li>
+            </ul>
+        </section>
+        <section class="flex flex-col">
+            <h1 class="font-semibold text-base">Kelola Kelas</h1>
+            <ul class="my-1 flex flex-col gap-1">
+                <li class="text-sm rounded-sm-md hover:bg-gray-200"><a href="#" class="block w-full px-3 py-1">Program</a></li>
+                <li class="text-sm rounded-sm-md hover:bg-gray-200"><a href="#" class="block w-full px-3 py-1">Tipe</a></li>
+                <li class="text-sm rounded-sm-md hover:bg-gray-200"><a href="#" class="block w-full px-3 py-1">Level</a></li>
+                <li class="text-sm rounded-sm-md hover:bg-gray-200"><a href="#" class="block w-full px-3 py-1">Ruangan</a></li>
+            </ul>
+        </section>
+    </div>
 </nav>
+
+@push('script')
+    <script src="{{ asset('js/views/components/layouts/side-nav.js') }}"></script>
+@endpush

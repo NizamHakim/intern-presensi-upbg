@@ -25,7 +25,7 @@
         type="button" 
         class="w-full px-3 py-2 flex flex-row justify-between items-center rounded-md bg-gray-200 outline outline-1.5 outline-offset-0 transition-all hover:bg-gray-300"
         :class="(showDropdown) ? 'outline-upbg-light' : 'outline-transparent'">
-        <span x-text="selected.text" :class="selected.value ? 'text-gray-600' : 'text-gray-400'" class="font-medium"></span>
+        <span x-text="selected.text" :class="selected.value ? 'text-gray-600' : 'text-gray-400'" class="font-medium truncate"></span>
         <i :class="showDropdown ? 'rotate-180' : ''" class="fa-solid fa-chevron-down text-xs transition"></i>
     </button>
 
@@ -44,7 +44,7 @@
         <template x-for="(option, index) in filteredOptions" :key="index">
             <li x-on:click="selected = option; closeDropdown()" 
                 :class="[(selected.value == option.value) ? 'border-upbg' : 'border-transparent', index == filteredOptions.length - 1 ? 'rounded-b-md' : '']" 
-                class="px-2 py-2 cursor-pointer hover:bg-gray-200 border-l-4" x-text="option.text"></li>
+                class="px-2 py-2 cursor-pointer hover:bg-gray-200 border-l-4 truncate" x-text="option.text"></li>
         </template>
     </ul>
 </div>

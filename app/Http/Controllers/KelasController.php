@@ -9,6 +9,7 @@ use App\Models\LevelKelas;
 use App\Models\ProgramKelas;
 use Illuminate\Http\Request;
 use App\Models\PertemuanKelas;
+use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ItemNotFoundException;
@@ -29,6 +30,13 @@ class KelasController extends Controller
         $ruanganOptions = Ruangan::all()->map->only(['text', 'value'])->prepend(['text' => 'Semua', 'value' => null]);
         $ruanganSelected = ($request->query('ruangan') != null) ? Ruangan::where('kode', $request->query('ruangan'))->firstOrFail() : null;
         
+        $pengajarOptions = User::whereHas('roles', function($query){
+            $query->where('role_id', 3);
+        })->get()->map->only(['text', 'value'])->prepend(['text' => 'Semua', 'value' => null]);;
+        $pengajarSelected = ($request->query('pengajar') != null) ? User::whereHas('mengajarKelas', function($query) use ($request){
+            $query->where('user_id', $request->query('pengajar'));
+        })->firstOrFail() : null;
+
         $statusOptions = collect([
             ['text' => 'Semua', 'value' => ''],
             ['text' => 'In Progress', 'value' => 'inprogress'],
@@ -88,6 +96,12 @@ class KelasController extends Controller
                 Carbon::parse($tanggalMulai)->startOfMonth(),
                 Carbon::parse($tanggalMulai)->endOfMonth(),
             ]);
+        })->when($pengajarSelected != null, function($query) use ($pengajarSelected){
+            return $query->whereHas('pengajar', function($query) use ($pengajarSelected){
+                return $query->where('user_id', $pengajarSelected->id);
+            });
+        })->when($statusSelected != null, function($query) use ($statusSelected){
+            return $query->status($statusSelected['value']);
         })->when($sortBySelected != null, function($query) use ($sortBySelected){
             if($sortBySelected['value'] == 'latest'){
                 return $query->orderBy('tanggal_mulai', 'desc');
@@ -96,9 +110,7 @@ class KelasController extends Controller
             }
         }, function($query){
             return $query->orderBy('tanggal_mulai', 'desc');
-        })->when($statusSelected != null, function($query) use ($statusSelected){
-            return $query->status($statusSelected['value']);
-        })->paginate(5)->appends($request->query());
+        })->paginate(10)->appends($request->query());
 
         return view('kelas.daftar-kelas', [
             'programOptions' => $programOptions,
@@ -109,6 +121,8 @@ class KelasController extends Controller
             'levelSelected' => $levelSelected ? $levelSelected->only(['text', 'value']) : $levelOptions[0],
             'ruanganOptions' => $ruanganOptions,
             'ruanganSelected' => $ruanganSelected ? $ruanganSelected->only(['text', 'value']) : $ruanganOptions[0],
+            'pengajarOptions' => $pengajarOptions,
+            'pengajarSelected' => $pengajarSelected ? $pengajarSelected->only(['text', 'value']) : $pengajarOptions[0],
             'statusOptions' => $statusOptions,
             'statusSelected' => $statusSelected ?? $statusOptions[0],
             'sortByOptions' => $sortByOptions,

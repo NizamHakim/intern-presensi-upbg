@@ -4,7 +4,7 @@
         <div class="w-full max-w-md px-6 flex flex-col justify-center items-center gap-10">
             <h1 class="w-fit font-bold text-4xl text-upbg relative after:w-full after:h-1 after:bg-gradient-to-r after:from-upbg-light after:to-upbg-dark after:absolute after:-bottom-3 after:left-0">Login</h1>
             <p class="text-gray-400 text-center">Selamat datang! Silahkan login menggunakan kredensial yang diberikan admin.</p>
-            <form action="{{ route('auth.postLoginRequest') }}" method="POST" class="flex flex-col w-full gap-8">
+            <form action="{{ route('auth.handleLoginRequest') }}" method="POST" class="flex flex-col w-full gap-8">
                 @csrf
                 <div class="flex flex-col">
                     <input type="email" name="email" value="{{ old('email') }}" class="p-2 border-b outline-none" placeholder="Email">

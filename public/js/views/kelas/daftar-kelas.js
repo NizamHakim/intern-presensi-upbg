@@ -28,3 +28,10 @@ function resetInputNumber(inputNumber){
 function resetInputDate(inputDate){
     inputDate.value = '';
 }
+
+const progressBars = document.querySelectorAll('.progress-bar');
+progressBars.forEach(progressBar => {
+    const progress = progressBar.dataset.progress;
+    const banyakPertemuan = progressBar.dataset.banyakPertemuan;
+    progressBar.style.width = `${progress / banyakPertemuan * 100}%`;
+});
