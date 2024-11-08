@@ -5,8 +5,8 @@ if (sessionStorage.getItem('sidenavState') == 'open') {
 }else if (sessionStorage.getItem('sidenavState') == 'closed') {
     sidenav.classList.add('w-0');
 }else{
-    sidenav.classList.add('w-0');
-    sessionStorage.setItem('sidenavState', 'closed');
+    sidenav.classList.add('w-64');
+    sessionStorage.setItem('sidenavState', 'open');
 }
 
 document.addEventListener('DOMContentLoaded', () => {

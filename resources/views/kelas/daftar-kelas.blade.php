@@ -1,9 +1,9 @@
 <x-layouts.user-layout>
     <x-slot:title>Daftar Kelas</x-slot>
-    <h1 class="font-semibold text-upbg text-3xl">Daftar Kelas</h1>
+    <h1 class="font-semibold text-upbg text-3xl mb-4">Daftar Kelas</h1>
     
     {{-- filter desktop --}}
-    <div x-data="{showFilter: false}" class="mt-4 hidden lg:block">
+    <div x-data="{showFilter: false}" class="hidden lg:block">
         <form x-data="{ search: '' }" action="{{ route('kelas.index') }}" method="GET" class="flex flex-col gap-4">
             <div class="flex flex-row gap-2">
                 <button type="button" x-on:click="showFilter = !showFilter" class="w-24 flex flex-row justify-center items-center bg-gray-200 gap-2 py-2 rounded-md transition duration-300 hover:bg-gray-300">
@@ -23,7 +23,7 @@
                 x-transition:leave="transition-all ease-in overflow-hidden"
                 x-transition:leave-start="max-h-80"
                 x-transition:leave-end="max-h-0"
-                class="grid lg:grid-cols-3 xl:grid-cols-4 gap-4 transition-all">
+                class="grid lg:grid-cols-3 xl:grid-cols-4 gap-4 transition-all duration-300">
     
                 <x-inputs.dropdown :options="$programOptions" :selected="$programSelected" label="Program" inputName="program" class="filter-field"/>
                 <x-inputs.dropdown :options="$tipeOptions" :selected="$tipeSelected" label="Tipe" inputName="tipe" class="filter-field"/>

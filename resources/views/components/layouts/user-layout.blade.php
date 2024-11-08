@@ -4,7 +4,7 @@
     <x-layouts.head/>
     <title>{{ $title }}</title>
 </head>
-<body class="flex flex-row min-h-screen font-poppins">
+<body class="flex flex-row min-h-screen font-poppins overflow-y-scroll scrollbar scrollbar">
     <x-layouts.side-nav/>
     <div class="flex-1 flex flex-col">
         <x-layouts.top-bar/>

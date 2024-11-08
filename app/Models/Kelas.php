@@ -22,6 +22,7 @@ class Kelas extends Model
         'nomor_kelas',
         'banyak_pertemuan',
         'tanggal_mulai',
+        'group_link'
     ];
 
     public function scopeStatus(Builder $query, string $status): void

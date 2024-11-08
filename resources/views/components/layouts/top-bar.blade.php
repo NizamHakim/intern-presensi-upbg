@@ -67,7 +67,7 @@
             <ul class="nav-menu-container flex flex-row items-center gap-3 text-upbg text-base font-medium">
                 <li class=""><a href="#">Jadwal</a></li>
                 <li class="text-lg select-none">|</li>
-                <li class="{{ request()->routeIs('auth.index') ? 'topbar-active' : '' }}"><a href="{{ route('auth.index') }}">Login</a></li>
+                <li class="{{ request()->routeIs('auth.loginPage') ? 'topbar-active' : '' }}"><a href="{{ route('auth.loginPage') }}">Login</a></li>
             </ul>
         @endauth
     </div>

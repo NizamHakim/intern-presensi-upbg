@@ -42,6 +42,8 @@ class KelasFactory extends Factory
 
         $slug = KodeKelasGenerator::slug($kode);
 
+        $groupLink = 'https://chat.whatsapp.com/###########';
+
         return [
             'kode' => $kode,
             'slug' => $slug,
@@ -52,6 +54,7 @@ class KelasFactory extends Factory
             'nomor_kelas' => $nomorKelas,
             'banyak_pertemuan' => $banyakPertemuan,
             'tanggal_mulai' => $tanggalMulai,
+            'group_link' => $groupLink,
         ];
     }
 }

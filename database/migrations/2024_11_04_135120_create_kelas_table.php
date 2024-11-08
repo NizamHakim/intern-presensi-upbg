@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('nomor_kelas');
             $table->integer('banyak_pertemuan');
             $table->date('tanggal_mulai');
+            $table->string('group_link')->nullable();
             $table->timestamps();
         });
     }
