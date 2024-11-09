@@ -1,8 +1,8 @@
 <nav class="sticky top-0 w-full h-14 flex flex-row justify-center border-b z-10">
     <div class="flex flex-row justify-between bg-white w-full max-w-8xl h-full py-1 px-6">
         @auth
-            <div class="flex flex-row items-center gap-4 h-full">
-                <button class="sidenav-open flex flex-col items-center justify-center  rounded-full size-10 transition hover:bg-gray-200">
+            <div class="hidden flex-row items-center gap-4 h-full">
+                <button class="flex flex-col items-center justify-center  rounded-full size-10 transition hover:bg-gray-200">
                     <div class="flex flex-col justify-center items-start gap-1">
                         <div class="w-6 h-0.75 bg-upbg rounded-sm"></div>
                         <div class="w-4 h-0.75 bg-upbg rounded-sm"></div>

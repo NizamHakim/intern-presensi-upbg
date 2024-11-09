@@ -20,10 +20,10 @@ class UserSeeder extends Seeder
             'email' => 'nizamhakim282@gmail.com',
             'email_verified_at' => now(),
             'password' => bcrypt('password'),
-            'profile_picture' => asset('images/defaultProfilePicture.png'),
+            'profile_picture' => 'images/defaultProfilePicture.png',
             'remember_token' => Str::random(10),
         ]);
 
-        User::factory()->count(10)->create();
+        User::factory()->count(20)->create();
     }
 }

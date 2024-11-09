@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\KelasController;
+use App\Http\Controllers\PesertaController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\Authenticated;
 use App\Http\Middleware\GetKelasQuery;
@@ -25,4 +26,6 @@ Route::middleware(Authenticated::class)->group(function(){
     Route::get('/kelas', [KelasController::class, 'index'])->middleware(HandleGetQuery::class)->name('kelas.index');
 
     Route::get('/user', [UserController::class, 'index'])->middleware(HandleGetQuery::class)->name('user.index');
+
+    Route::get('/peserta', [PesertaController::class, 'index'])->middleware(HandleGetQuery::class)->name('peserta.index');
 });

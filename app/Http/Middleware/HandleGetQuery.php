@@ -17,32 +17,36 @@ class HandleGetQuery
     {
         switch ($request->route()->getName()) {
             case 'kelas.index':
-                $fields = ['program', 'tipe', 'level', 'nomor', 'banyak-pertemuan', 'tanggal-mulai', 'ruangan', 'status', 'sort-by', 'pengajar', 'page'];
-                if(!empty(array_diff($request->query->keys(), $fields))){
-                    $query = [
-                        'program' => $request->query('program') ?? null,
-                        'tipe' => $request->query('tipe') ?? null,
-                        'level' => $request->query('level') ?? null,
-                        'nomor' => $request->query('nomor') ?? null,
-                        'banyak-pertemuan' => $request->query('banyak-pertemuan') ?? null,
-                        'tanggal-mulai' => $request->query('tanggal-mulai') ?? null,
-                        'ruangan' => $request->query('ruangan') ?? null,
-                        'status' => $request->query('status') ?? null,
-                        'sort-by' => $request->query('sort-by') ?? null,
-                        'pengajar' => $request->query('pengajar') ?? null,
-                        'page' => $request->query('page') ?? null,
-                    ];
-                    return redirect()->route('kelas.index', $query);
-                }
+                $fields = ['program', 'tipe', 'level', 'nomor', 'banyak-pertemuan', 'tanggal-mulai', 'ruangan', 'status', 'sort-by', 'pengajar', 'page', 'search'];
+                $checkQuery = $this->checkQuery($request, $fields);
+                if($checkQuery['shouldRedirect']) return redirect()->route('kelas.index', $checkQuery['query']);
+                break;
             case 'user.index':
-                $fields = ['role'];
-                if(!empty(array_diff($request->query->keys(), $fields))){
-                    $query = [
-                        'role' => $request->query('role') ?? null,
-                    ];
-                    return redirect()->route('user.index', $query);
-                }
+                $fields = ['role', 'nama', 'nik-nip', 'page'];
+                $checkQuery = $this->checkQuery($request, $fields);
+                if($checkQuery['shouldRedirect']) return redirect()->route('user.index', $checkQuery['query']);
+                break;
+            case 'peserta.index':
+                $fields = ['nama', 'nik-nrp', 'occupation', 'page'];
+                $checkQuery = $this->checkQuery($request, $fields);
+                if($checkQuery['shouldRedirect']) return redirect()->route('peserta.index', $checkQuery['query']);
+                break;
         }
         return $next($request);
+    }
+
+    private function checkQuery($request, $fields)
+    {
+        $shouldRedirect = false;
+        $query = [];
+        foreach ($request->query() as $key => $value) {
+            if (!in_array($key, $fields) || $value === null) {
+                $shouldRedirect = true;
+                continue;
+            }else{
+                $query[$key] = $value;
+            }
+        }
+        return ['shouldRedirect' => $shouldRedirect, 'query' => $query];
     }
 }

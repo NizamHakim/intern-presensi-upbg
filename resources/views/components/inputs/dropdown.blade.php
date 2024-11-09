@@ -1,6 +1,6 @@
 <div x-data="{ 
         showDropdown: false, 
-        selected: @js($selected), 
+        selected: @js($selected),
         searchQuery: '',
         options: @js($options), 
         get filteredOptions() {
@@ -20,13 +20,16 @@
     x-on:click.outside="closeDropdown()"
     {{ $attributes->merge(['class' => 'relative w-full input-dropdown']) }}>
     
-    <label class="block font-medium text-sm mb-1.5 text-gray-600">{{ $label }}</label>
+    @if ($label)
+        <label class="block font-medium text-sm mb-1.5 text-gray-600">{{ $label }}</label>
+    @endif
+    
     <button x-on:click="(!showDropdown) ? openDropdown() : closeDropdown()" 
         type="button" 
-        class="w-full px-3 py-2 flex flex-row justify-between items-center rounded-md bg-gray-200 outline-1.5 outline-offset-0 transition-all hover:bg-gray-300"
+        class="w-full px-3 h-10 flex flex-row justify-between items-center rounded-md bg-gray-200 outline-1.5 outline-offset-0 transition-all hover:bg-gray-300 @if($style) {{ $style }} @endif"
         :class="(showDropdown) ? 'outline outline-upbg-light' : 'outline-transparent'">
         <span x-text="selected.text" :class="selected.value ? 'text-gray-600' : 'text-gray-400'" class="font-medium truncate"></span>
-        <i :class="showDropdown ? 'rotate-180' : ''" class="fa-solid fa-chevron-down text-xs transition"></i>
+        <i :class="showDropdown ? 'rotate-180' : ''" class="fa-solid fa-chevron-down text-gray-600 text-xs transition"></i>
     </button>
 
     <input type="hidden" name="{{ $inputName }}" :value="selected.value">

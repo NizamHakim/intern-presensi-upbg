@@ -29,7 +29,7 @@ class UserFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => bcrypt('password'),
-            'profile_picture' => asset('images/defaultProfilePicture.png'),
+            'profile_picture' => 'images/defaultProfilePicture.png',
             'remember_token' => Str::random(10),
         ];
     }

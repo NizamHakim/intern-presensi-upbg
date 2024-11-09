@@ -12,13 +12,15 @@ class Dropdown extends Component
     public $options;
     public $label;
     public $inputName;
+    public $style;
 
-    public function __construct($selected, $options, $label, $inputName)
+    public function __construct($selected, $options, $inputName, $label = null, $style = null)
     {
         $this->selected = $selected;
         $this->options = $options;
         $this->label = $label;
         $this->inputName = $inputName;
+        $this->style = $style;
     }
 
     public function render(): View|Closure|string

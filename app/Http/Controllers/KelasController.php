@@ -110,7 +110,9 @@ class KelasController extends Controller
             }
         }, function($query){
             return $query->orderBy('tanggal_mulai', 'desc');
-        })->paginate(10)->appends($request->query());
+        })->paginate(10)->appends(array_filter($request->query(), function($value){
+            return $value !== null;
+        }));
 
         return view('kelas.daftar-kelas', [
             'programOptions' => $programOptions,

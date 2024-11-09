@@ -10,7 +10,7 @@
                     <span class="font-medium">Filter</span>
                     <i :class="showFilter ? 'rotate-180' : ''" class="fa-solid fa-chevron-down text-xs align-middle transition duration-300"></i>
                 </button>
-                <input x-model="search" type="search" name="search" placeholder="Cari Kode Kelas" class="flex-1 px-3 py-2 rounded-md border border-gray-200 text-gray-600 font-medium placeholder:text-gray-400 outline-none">
+                <input x-model="search" type="search" name="search" placeholder="Cari Kode Kelas" class="flex-1 px-3 h-10 rounded-md border border-gray-200 text-gray-600 font-medium placeholder:text-gray-400 outline outline-transparent outline-1.5 outline-offset-0 transition-all focus:outline-upbg-light">
                 <button type="submit" class="bg-upbg transition duration-300 hover:bg-upbg-dark text-white px-3 py-2 rounded-md">
                     <span><i class="fa-solid fa-magnifying-glass mr-2"></i>Search</span>
                 </button>
@@ -49,10 +49,10 @@
     <table class="w-full table-fixed hidden lg:table mt-8 shadow-strong">
         <thead class="bg-gray-50 border-b">
             <tr>
-                <th class="px-3 py-4 xl:w-108 font-semibold tracking-wide text-left">Kode Kelas</th>
-                <th class="px-3 py-4 xl:w-72 font-semibold tracking-wide text-left">Jadwal</th>
-                <th class="px-3 py-4 xl:w-48 font-semibold tracking-wide text-left">Ruangan</th>
-                <th class="hidden xl:table-cell px-3 py-4 font-semibold tracking-wide text-left">Progress</th>
+                <th class="px-3 py-4 xl:w-108 text-gray-600 font-semibold tracking-wide text-left">Kode Kelas</th>
+                <th class="px-3 py-4 xl:w-72 text-gray-600 font-semibold tracking-wide text-left">Jadwal</th>
+                <th class="px-3 py-4 xl:w-48 text-gray-600 font-semibold tracking-wide text-left">Ruangan</th>
+                <th class="hidden xl:table-cell px-3 py-4 text-gray-600 font-semibold tracking-wide text-left">Progress</th>
             </tr>
         </thead>
         <tbody class="divide-y">
