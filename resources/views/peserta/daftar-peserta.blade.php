@@ -26,7 +26,7 @@
                 @foreach ($pesertaList as $peserta)
                     <tr class="bg-white transition hover:bg-gray-100">
                         <td class="px-3 py-4 xl:w-28 text-center">
-                            <span href="#" class="text-gray-600 font-semibold">{{ $loop->iteration + ($pesertaList->currentPage() - 1) * $pesertaList->perPage() }}.</span>
+                            <span class="text-gray-600 font-semibold">{{ $loop->iteration + ($pesertaList->currentPage() - 1) * $pesertaList->perPage() }}.</span>
                         </td>
                         <td class="px-3 py-4">
                             <div class="flex flex-col justify-center">

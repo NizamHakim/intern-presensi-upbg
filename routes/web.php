@@ -3,9 +3,9 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\KelasController;
 use App\Http\Controllers\PesertaController;
+use App\Http\Controllers\ProgramKelasController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\Authenticated;
-use App\Http\Middleware\GetKelasQuery;
 use App\Http\Middleware\Guest;
 use App\Http\Middleware\HandleGetQuery;
 use Illuminate\Support\Facades\Route;
@@ -28,4 +28,8 @@ Route::middleware(Authenticated::class)->group(function(){
     Route::get('/user', [UserController::class, 'index'])->middleware(HandleGetQuery::class)->name('user.index');
 
     Route::get('/peserta', [PesertaController::class, 'index'])->middleware(HandleGetQuery::class)->name('peserta.index');
+
+    Route::get('/program-kelas', [ProgramKelasController::class, 'index'])->name('program-kelas.index');
+    Route::put('/program-kelas/{programKelas:id}', [ProgramKelasController::class, 'update'])->name('program-kelas.update');
+    Route::delete('/program-kelas', [ProgramKelasController::class, 'destroy'])->name('program-kelas.destroy');
 });

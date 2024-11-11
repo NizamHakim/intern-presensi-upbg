@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <x-layouts.head/>
+    @stack('head')
     <title>{{ $title }}</title>
 </head>
 <body class="flex flex-row min-h-screen font-poppins overflow-y-scroll scrollbar scrollbar">

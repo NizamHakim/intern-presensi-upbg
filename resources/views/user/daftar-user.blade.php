@@ -29,7 +29,7 @@
                 @foreach ($usersList as $user)
                     <tr class="bg-white transition hover:bg-gray-100">
                         <td class="px-3 py-4 xl:w-28 text-center">
-                            <span href="#" class="text-gray-600 font-semibold">{{ $loop->iteration + ($usersList->currentPage() - 1) * $usersList->perPage() }}.</span>
+                            <span class="text-gray-600 font-semibold">{{ $loop->iteration + ($usersList->currentPage() - 1) * $usersList->perPage() }}.</span>
                         </td>
                         <td class="px-3 py-4 xl:w-72">
                             <div class="flex flex-row gap-8">
