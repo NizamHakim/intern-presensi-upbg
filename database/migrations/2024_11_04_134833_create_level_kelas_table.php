@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('level_kelas', function (Blueprint $table) {
             $table->id();
             $table->string('nama');
-            $table->string('kode')->unique();
+            $table->string('kode')->unique()->nullable();
             $table->boolean('aktif')->default(true);
             $table->timestamps();
             $table->softDeletes();

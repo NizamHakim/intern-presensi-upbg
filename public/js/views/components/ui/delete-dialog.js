@@ -1,6 +1,7 @@
 function openDialog(){
     const deleteDialog = document.getElementById('delete-dialog');
     const deleteDialogContent = document.getElementById('delete-dialog-content');
+    const body = document.querySelector('body');
 
     const forceDelete = deleteDialogContent.querySelector('[name="force-delete"]');
     if(forceDelete){
@@ -11,6 +12,8 @@ function openDialog(){
     setTimeout(() => {
         deleteDialog.classList.replace('opacity-0', 'opacity-100');
         deleteDialogContent.classList.replace('scale-0', 'scale-100');
+        body.classList.remove('overflow-y-scroll');
+        body.classList.add('overflow-y-hidden', 'pr-[10px]');
     }, 100);
 
     const cancelButton = deleteDialogContent.querySelector('.cancel-button');
@@ -36,13 +39,16 @@ function openDialog(){
 
 function closeDialog(callback){
     const deleteDialogContent = document.getElementById('delete-dialog-content');
-    deleteDialogContent.classList.replace('scale-100', 'scale-0');
-
     const deleteDialog = document.getElementById('delete-dialog');
+    const body = document.querySelector('body');
+
+    deleteDialogContent.classList.replace('scale-100', 'scale-0');
     deleteDialog.classList.replace('opacity-100', 'opacity-0');
 
     deleteDialogContent.addEventListener('transitionend', () => {
         deleteDialog.classList.replace('flex', 'hidden');
+        body.classList.remove('overflow-y-hidden', 'pr-[10px]');
+        body.classList.add('overflow-y-scroll');
     }, {once: true});
     
     callback();

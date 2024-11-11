@@ -1,6 +1,12 @@
 <x-layouts.user-layout>
     <x-slot:title>Daftar Kelas</x-slot>
-    <h1 class="font-semibold text-upbg text-3xl mb-4">Daftar Kelas</h1>
+    <div class="flex flex-row justify-between items-center gap-4 mt-6 mb-6">
+        <h1 class="font-bold text-upbg text-[2rem]">Daftar Kelas</h1>
+        <a href="#" class="relative text-white font-semibold px-3 py-2 bg-green-600 rounded-md shadow-[0px_3px] shadow-green-700 transition ease-linear transform translate-y-0 cursor-pointer active:shadow-none active:translate-y-1">
+            <i class="fa-solid fa-plus mr-2"></i>
+            Tambah Kelas
+        </a>
+    </div>
     
     {{-- filter desktop --}}
     <div x-data="{showFilter: false}" class="hidden lg:block">
@@ -46,7 +52,7 @@
     </div>
 
     {{-- kelaslist desktop --}}
-    <table class="w-full table-fixed hidden lg:table mt-8 shadow-strong">
+    <table class="w-full table-fixed hidden lg:table mt-10 shadow-strong">
         <thead class="bg-gray-50 border-b">
             <tr>
                 <th class="px-3 py-4 xl:w-108 text-gray-600 font-semibold tracking-wide text-left">Kode Kelas</th>

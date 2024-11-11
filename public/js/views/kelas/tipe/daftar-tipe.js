@@ -1,11 +1,11 @@
 document.addEventListener('click', (e) => {
-    if(e.target.matches('.edit-program')){
+    if(e.target.matches('.edit-tipe')){
         e.stopPropagation();
         const row = e.target.closest('tr');
         const clone = startEditing(row);
         row.replaceWith(clone);
-        clone.querySelector('[name="nama-program"]').focus();
-    }else if(e.target.matches('.delete-program')){
+        clone.querySelector('[name="nama-tipe"]').focus();
+    }else if(e.target.matches('.delete-tipe')){
         e.stopPropagation();
         const row = e.target.closest('tr');
         showDeleteDialog(row);
@@ -14,30 +14,30 @@ document.addEventListener('click', (e) => {
 
 function startEditing(row){
     const clone = row.cloneNode(true);
-    const namaProgram = clone.querySelector('.nama-program');
-    const kodeProgram = clone.querySelector('.kode-program');
-    const statusProgram = clone.querySelector('.status-program');
-    const editButton = clone.querySelector('.edit-program');
-    const deleteButton = clone.querySelector('.delete-program');
+    const namaTipe = clone.querySelector('.nama-tipe');
+    const kodeTipe = clone.querySelector('.kode-tipe');
+    const statusTipe = clone.querySelector('.status-tipe');
+    const editButton = clone.querySelector('.edit-tipe');
+    const deleteButton = clone.querySelector('.delete-tipe');
 
-    const namaProgramInput = document.createElement('input');
-    namaProgramInput.setAttribute('type', 'text');
-    namaProgramInput.setAttribute('value', namaProgram.textContent);
-    namaProgramInput.setAttribute('class', 'px-3 h-10 rounded-md border border-gray-200 text-gray-600 font-medium placeholder:text-gray-400 outline outline-transparent outline-1.5 outline-offset-0 transition-all focus:outline-upbg-light');
-    namaProgramInput.setAttribute('placeholder', 'Nama Program');
-    namaProgramInput.setAttribute('name', 'nama-program');
-    namaProgram.replaceWith(namaProgramInput);
+    const namaTipeInput = document.createElement('input');
+    namaTipeInput.setAttribute('type', 'text');
+    namaTipeInput.setAttribute('value', namaTipe.textContent);
+    namaTipeInput.setAttribute('class', 'px-3 h-10 rounded-md border border-gray-200 text-gray-600 font-medium placeholder:text-gray-400 outline outline-transparent outline-1.5 outline-offset-0 transition-all focus:outline-upbg-light');
+    namaTipeInput.setAttribute('placeholder', 'Nama Tipe');
+    namaTipeInput.setAttribute('name', 'nama-tipe');
+    namaTipe.replaceWith(namaTipeInput);
 
-    const kodeProgramInput = document.createElement('input');
-    kodeProgramInput.setAttribute('type', 'text');
-    kodeProgramInput.setAttribute('value', (kodeProgram.textContent != '-') ? kodeProgram.textContent : '');
-    kodeProgramInput.setAttribute('class', 'px-3 h-10 rounded-md border border-gray-200 text-gray-600 font-medium placeholder:text-gray-400 outline outline-transparent outline-1.5 outline-offset-0 transition-all focus:outline-upbg-light');
-    kodeProgramInput.setAttribute('placeholder', 'Kode Program');
-    kodeProgramInput.setAttribute('name', 'kode-program');
-    kodeProgram.replaceWith(kodeProgramInput);
+    const kodeTipeInput = document.createElement('input');
+    kodeTipeInput.setAttribute('type', 'text');
+    kodeTipeInput.setAttribute('value', (kodeTipe.textContent != '-') ? kodeTipe.textContent : '');
+    kodeTipeInput.setAttribute('class', 'px-3 h-10 rounded-md border border-gray-200 text-gray-600 font-medium placeholder:text-gray-400 outline outline-transparent outline-1.5 outline-offset-0 transition-all focus:outline-upbg-light');
+    kodeTipeInput.setAttribute('placeholder', 'Kode Tipe');
+    kodeTipeInput.setAttribute('name', 'kode-tipe');
+    kodeTipe.replaceWith(kodeTipeInput);
     
-    const statusProgramCheckbox = createCheckboxWithIcon('status-program', true, statusProgram.textContent === 'Aktif');
-    statusProgram.replaceWith(statusProgramCheckbox);
+    const statusTipeCheckbox = createCheckboxWithIcon('status-tipe', true, statusTipe.textContent === 'Aktif');
+    statusTipe.replaceWith(statusTipeCheckbox);
 
     const cancelButton = document.createElement('button');
     cancelButton.setAttribute('type', 'button');
@@ -68,7 +68,7 @@ function startEditing(row){
     saveButton.setAttribute('type', 'button');
     saveButton.setAttribute('class', 'px-3 py-2 text-green-600 font-semibold');
     saveButton.textContent = 'Save';
-    saveButton.value = row.getAttribute('data-program-id');
+    saveButton.value = row.getAttribute('data-tipe-id');
     editButton.replaceWith(saveButton);
 
     function handleSave(e){
@@ -109,11 +109,11 @@ async function saveInput(id, clone, row, handleClickOutside){
 }
 
 function fetchSubmit(id, clone){
-    const inputNamaProgram = clone.querySelector('[name="nama-program"]');
-    const inputKodeProgram = clone.querySelector('[name="kode-program"]');
-    const inputStatusProgram = clone.querySelector('[name="status-program"]');
+    const inputNamaTipe = clone.querySelector('[name="nama-tipe"]');
+    const inputKodeTipe = clone.querySelector('[name="kode-tipe"]');
+    const inputStatusTipe = clone.querySelector('[name="status-tipe"]');
 
-    return fetch(`/program-kelas/${id}`, {
+    return fetch(`/tipe-kelas/${id}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -121,28 +121,28 @@ function fetchSubmit(id, clone){
             'X-Requested-With': 'XMLHttpRequest',
         },
         body: JSON.stringify({
-            "nama-program": inputNamaProgram.value,
-            "kode-program": inputKodeProgram.value,
-            "status-program": inputStatusProgram.checked,
+            "nama-tipe": inputNamaTipe.value,
+            "kode-tipe": inputKodeTipe.value,
+            "status-tipe": inputStatusTipe.checked,
         }),
     });
 }
 
 function updateRow(row, json){
-    const namaProgram = row.querySelector('.nama-program');
-    const kodeProgram = row.querySelector('.kode-program');
-    const statusProgram = row.querySelector('.status-program');
+    const namaTipe = row.querySelector('.nama-tipe');
+    const kodeTipe = row.querySelector('.kode-tipe');
+    const statusTipe = row.querySelector('.status-tipe');
 
-    row.setAttribute('data-program-id', json.id);
-    namaProgram.textContent = json.nama;
-    kodeProgram.textContent = json.kode;
-    statusProgram.textContent = json.aktif ? 'Aktif' : 'Tidak aktif';
+    row.setAttribute('data-tipe-id', json.id);
+    namaTipe.textContent = json.nama;
+    kodeTipe.textContent = json.kode;
+    statusTipe.textContent = json.aktif ? 'Aktif' : 'Tidak aktif';
     if(json.aktif){
-        statusProgram.classList.add('bg-green-300', 'text-green-800');
-        statusProgram.classList.remove('bg-red-300', 'text-red-800');
+        statusTipe.classList.add('bg-green-300', 'text-green-800');
+        statusTipe.classList.remove('bg-red-300', 'text-red-800');
     }else{
-        statusProgram.classList.add('bg-red-300', 'text-red-800');
-        statusProgram.classList.remove('bg-green-300', 'text-green-800');
+        statusTipe.classList.add('bg-red-300', 'text-red-800');
+        statusTipe.classList.remove('bg-green-300', 'text-green-800');
     }
 
     return row;
@@ -163,16 +163,16 @@ function stopFetchingAnimation(clone){
 }
 
 function showDeleteDialog(row){
-    const id = row.getAttribute('data-program-id');
-    const namaProgram = row.querySelector('.nama-program').textContent;
-    const kodeProgram = row.querySelector('.kode-program').textContent;
+    const id = row.getAttribute('data-tipe-id');
+    const namaTipe = row.querySelector('.nama-tipe').textContent;
+    const kodeTipe = row.querySelector('.kode-tipe').textContent;
 
     const deleteDialogContent = document.getElementById('delete-dialog-content');
-    const namaKodeProgram = deleteDialogContent.querySelector('.nama-kode-program')
-    namaKodeProgram.textContent = `${namaProgram} - ${kodeProgram}`;
+    const namaKodeTipe = deleteDialogContent.querySelector('.nama-kode-tipe')
+    namaKodeTipe.textContent = `${namaTipe} - ${kodeTipe}`;
 
-    const programId = deleteDialogContent.querySelector('[name="program-id"]');
-    programId.value = id;
+    const tipeId = deleteDialogContent.querySelector('[name="tipe-id"]');
+    tipeId.value = id;
 
     openDialog();
 }

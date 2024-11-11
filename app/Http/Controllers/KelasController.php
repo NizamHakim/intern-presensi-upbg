@@ -25,6 +25,9 @@ class KelasController extends Controller
         $tipeSelected = ($request->query('tipe') != null) ? TipeKelas::where('kode', $request->query('tipe'))->firstOrFail() : null;
 
         $levelOptions = LevelKelas::all()->map->only(['text', 'value']);
+        if($levelOptions->where('value', null)->isEmpty()){
+            $levelOptions->prepend(['text' => 'Semua', 'value' => null]);
+        }
         $levelSelected = ($request->query('level') != null) ? LevelKelas::where('kode', $request->query('level'))->firstOrFail() : null;
 
         $ruanganOptions = Ruangan::all()->map->only(['text', 'value'])->prepend(['text' => 'Semua', 'value' => null]);

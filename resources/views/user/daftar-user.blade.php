@@ -1,19 +1,24 @@
 <x-layouts.user-layout>
     <x-slot:title>Daftar User</x-slot>
-    <h1 class="font-semibold text-upbg text-3xl mb-4">Daftar User</h1>
-    <form action="{{ route('user.index') }}" method="GET" class="flex flex-col gap-4">
-        <div class="flex flex-row gap-2">
-            <div class="w-80">
-                <x-inputs.dropdown :options="$roleOptions" :selected="$roleSelected" label="Role" inputName="role"/>
-            </div>
-            <x-inputs.categorical-search :options="$searchOptions" :selected="$searchSelected" placeholder="Cari User" value="{{ $searchValue }}" class="self-end"/>
-            <button type="submit" class="h-10 self-end bg-upbg transition duration-300 hover:bg-upbg-dark text-white px-3 py-2 rounded-md">
-                <span><i class="fa-solid fa-magnifying-glass mr-2"></i>Search</span>
-            </button>
+    <div class="flex flex-row justify-between items-center gap-4 mt-6 mb-6">
+        <h1 class="font-bold text-upbg text-[2rem]">Daftar User</h1>
+        <a href="#" class="relative text-white font-semibold px-3 py-2 bg-green-600 rounded-md shadow-[0px_3px] shadow-green-700 transition ease-linear transform translate-y-0 cursor-pointer active:shadow-none active:translate-y-1">
+            <i class="fa-solid fa-plus mr-2"></i>
+            Tambah User
+        </a>
+    </div>
+
+    <form action="{{ route('user.index') }}" method="GET" class="flex flex-row gap-4">
+        <div class="w-60">
+            <x-inputs.dropdown :options="$roleOptions" :selected="$roleSelected" label="Role" inputName="role"/>
         </div>
+        <x-inputs.categorical-search :options="$searchOptions" :selected="$searchSelected" placeholder="Cari User" value="{{ $searchValue }}" class="self-end"/>
+        <button type="submit" class="h-10 self-end bg-upbg transition duration-300 hover:bg-upbg-dark text-white px-3 py-2 rounded-md">
+            <span><i class="fa-solid fa-magnifying-glass mr-2"></i>Search</span>
+        </button>
     </form>
 
-    <table class="w-full table-fixed hidden lg:table mt-8 shadow-strong">
+    <table class="w-full table-fixed hidden lg:table mt-10 shadow-strong">
         <thead class="bg-gray-50 border-b">
             <tr>
                 <th class="px-3 py-4 lg:w-28 text-gray-600 font-semibold tracking-wide text-center">No</th>

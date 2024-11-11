@@ -63,9 +63,9 @@
             <h1 class="font-semibold text-base">Kelola Kelas</h1>
             <ul class="my-1 flex flex-col gap-1">
                 <li class="text-sm rounded-sm-md @if(request()->routeIs('program-kelas.index')) bg-upbg text-white font-medium @else hover:bg-gray-200 @endif"><a href="{{ route('program-kelas.index') }}" class="block w-full px-3 py-1">Program</a></li>
-                <li class="text-sm rounded-sm-md hover:bg-gray-200"><a href="#" class="block w-full px-3 py-1">Tipe</a></li>
-                <li class="text-sm rounded-sm-md hover:bg-gray-200"><a href="#" class="block w-full px-3 py-1">Level</a></li>
-                <li class="text-sm rounded-sm-md hover:bg-gray-200"><a href="#" class="block w-full px-3 py-1">Ruangan</a></li>
+                <li class="text-sm rounded-sm-md @if(request()->routeIs('tipe-kelas.index')) bg-upbg text-white font-medium @else hover:bg-gray-200 @endif"><a href="{{ route('tipe-kelas.index') }}" class="block w-full px-3 py-1">Tipe</a></li>
+                <li class="text-sm rounded-sm-md @if(request()->routeIs('level-kelas.index')) bg-upbg text-white font-medium @else hover:bg-gray-200 @endif"><a href="{{ route('level-kelas.index') }}" class="block w-full px-3 py-1">Level</a></li>
+                <li class="text-sm rounded-sm-md @if(request()->routeIs('ruangan.index')) bg-upbg text-white font-medium @else hover:bg-gray-200 @endif"><a href="{{ route('ruangan.index') }}" class="block w-full px-3 py-1">Ruangan</a></li>
             </ul>
         </section>
     </div>

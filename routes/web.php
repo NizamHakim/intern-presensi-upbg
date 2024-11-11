@@ -2,8 +2,11 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\KelasController;
+use App\Http\Controllers\LevelKelasController;
 use App\Http\Controllers\PesertaController;
 use App\Http\Controllers\ProgramKelasController;
+use App\Http\Controllers\RuanganController;
+use App\Http\Controllers\TipeKelasController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\Authenticated;
 use App\Http\Middleware\Guest;
@@ -24,12 +27,26 @@ Route::middleware(Authenticated::class)->group(function(){
     Route::post('/logout', [AuthController::class, 'handleLogoutRequest'])->name('auth.handleLogoutRequest');
 
     Route::get('/kelas', [KelasController::class, 'index'])->middleware(HandleGetQuery::class)->name('kelas.index');
+    Route::get('/kelas/create', [KelasController::class, 'create'])->name('kelas.create');
 
     Route::get('/user', [UserController::class, 'index'])->middleware(HandleGetQuery::class)->name('user.index');
 
     Route::get('/peserta', [PesertaController::class, 'index'])->middleware(HandleGetQuery::class)->name('peserta.index');
 
     Route::get('/program-kelas', [ProgramKelasController::class, 'index'])->name('program-kelas.index');
-    Route::put('/program-kelas/{programKelas:id}', [ProgramKelasController::class, 'update'])->name('program-kelas.update');
+    Route::get('/program-kelas/create', [ProgramKelasController::class, 'create'])->name('program-kelas.create');
+    Route::put('/program-kelas/{id}', [ProgramKelasController::class, 'update'])->name('program-kelas.update');
     Route::delete('/program-kelas', [ProgramKelasController::class, 'destroy'])->name('program-kelas.destroy');
+
+    Route::get('/tipe-kelas', [TipeKelasController::class, 'index'])->name('tipe-kelas.index');
+    Route::get('/tipe-kelas/create', [TipeKelasController::class, 'create'])->name('tipe-kelas.create');
+    Route::put('/tipe-kelas/{id}', [TipeKelasController::class, 'update'])->name('tipe-kelas.update');
+    Route::delete('/tipe-kelas', [TipeKelasController::class, 'destroy'])->name('tipe-kelas.destroy');
+
+    Route::get('/level-kelas', [LevelKelasController::class, 'index'])->name('level-kelas.index');
+    Route::get('/level-kelas/create', [LevelKelasController::class, 'create'])->name('level-kelas.create');
+    Route::put('/level-kelas/{id}', [LevelKelasController::class, 'update'])->name('level-kelas.update');
+    Route::delete('/level-kelas', [LevelKelasController::class, 'destroy'])->name('level-kelas.destroy');
+
+    Route::get('/ruangan', [RuanganController::class, 'index'])->name('ruangan.index');
 });

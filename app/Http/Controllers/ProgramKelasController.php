@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ProgramKelas;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -16,11 +17,16 @@ class ProgramKelasController extends Controller
         ]);
     }
 
-    public function update(Request $request, ProgramKelas $programKelas)
+    public function create()
+    {
+        return view('kelas.program.tambah-program');
+    }
+
+    public function update(Request $request, string $id)
     {
         $validator = Validator::make($request->all(), [
             'nama-program' => 'required|string',
-            'kode-program' => 'required|string|unique:program_kelas,kode,' . $programKelas->id,
+            'kode-program' => 'required|string|unique:program_kelas,kode,' . $id,
             'status-program' => 'required|boolean',
         ], [
             'nama-program.required' => 'Nama program tidak boleh kosong',
@@ -35,11 +41,16 @@ class ProgramKelasController extends Controller
         if ($validator->fails()) {
             return response($validator->errors(), 422);
         }else{
-            $programKelas->update([
-                'nama' => $request['nama-program'],
-                'kode' => $request['kode-program'],
-                'aktif' => $request['status-program'],
-            ]);
+            try{
+                $programKelas = ProgramKelas::findOrFail($id);
+                $programKelas->update([
+                    'nama' => $request['nama-program'],
+                    'kode' => $request['kode-program'],
+                    'aktif' => $request['status-program'],
+                ]);
+            }catch(ModelNotFoundException $e){
+                return response('Program kelas tidak ditemukan', 404);
+            }
         }
 
         return response($programKelas->only(['id', 'nama', 'kode', 'aktif']), 200);

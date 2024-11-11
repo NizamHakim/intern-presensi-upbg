@@ -1,11 +1,11 @@
 document.addEventListener('click', (e) => {
-    if(e.target.matches('.edit-program')){
+    if(e.target.matches('.edit-level')){
         e.stopPropagation();
         const row = e.target.closest('tr');
         const clone = startEditing(row);
         row.replaceWith(clone);
-        clone.querySelector('[name="nama-program"]').focus();
-    }else if(e.target.matches('.delete-program')){
+        clone.querySelector('[name="nama-level"]').focus();
+    }else if(e.target.matches('.delete-level')){
         e.stopPropagation();
         const row = e.target.closest('tr');
         showDeleteDialog(row);
@@ -14,30 +14,30 @@ document.addEventListener('click', (e) => {
 
 function startEditing(row){
     const clone = row.cloneNode(true);
-    const namaProgram = clone.querySelector('.nama-program');
-    const kodeProgram = clone.querySelector('.kode-program');
-    const statusProgram = clone.querySelector('.status-program');
-    const editButton = clone.querySelector('.edit-program');
-    const deleteButton = clone.querySelector('.delete-program');
+    const namaLevel = clone.querySelector('.nama-level');
+    const kodeLevel = clone.querySelector('.kode-level');
+    const statusLevel = clone.querySelector('.status-level');
+    const editButton = clone.querySelector('.edit-level');
+    const deleteButton = clone.querySelector('.delete-level');
 
-    const namaProgramInput = document.createElement('input');
-    namaProgramInput.setAttribute('type', 'text');
-    namaProgramInput.setAttribute('value', namaProgram.textContent);
-    namaProgramInput.setAttribute('class', 'px-3 h-10 rounded-md border border-gray-200 text-gray-600 font-medium placeholder:text-gray-400 outline outline-transparent outline-1.5 outline-offset-0 transition-all focus:outline-upbg-light');
-    namaProgramInput.setAttribute('placeholder', 'Nama Program');
-    namaProgramInput.setAttribute('name', 'nama-program');
-    namaProgram.replaceWith(namaProgramInput);
+    const namaLevelInput = document.createElement('input');
+    namaLevelInput.setAttribute('type', 'text');
+    namaLevelInput.setAttribute('value', namaLevel.textContent);
+    namaLevelInput.setAttribute('class', 'px-3 h-10 rounded-md border border-gray-200 text-gray-600 font-medium placeholder:text-gray-400 outline outline-transparent outline-1.5 outline-offset-0 transition-all focus:outline-upbg-light');
+    namaLevelInput.setAttribute('placeholder', 'Nama Level');
+    namaLevelInput.setAttribute('name', 'nama-level');
+    namaLevel.replaceWith(namaLevelInput);
 
-    const kodeProgramInput = document.createElement('input');
-    kodeProgramInput.setAttribute('type', 'text');
-    kodeProgramInput.setAttribute('value', (kodeProgram.textContent != '-') ? kodeProgram.textContent : '');
-    kodeProgramInput.setAttribute('class', 'px-3 h-10 rounded-md border border-gray-200 text-gray-600 font-medium placeholder:text-gray-400 outline outline-transparent outline-1.5 outline-offset-0 transition-all focus:outline-upbg-light');
-    kodeProgramInput.setAttribute('placeholder', 'Kode Program');
-    kodeProgramInput.setAttribute('name', 'kode-program');
-    kodeProgram.replaceWith(kodeProgramInput);
+    const kodeLevelInput = document.createElement('input');
+    kodeLevelInput.setAttribute('type', 'text');
+    kodeLevelInput.setAttribute('value', (kodeLevel.textContent != '-') ? kodeLevel.textContent : '');
+    kodeLevelInput.setAttribute('class', 'px-3 h-10 rounded-md border border-gray-200 text-gray-600 font-medium placeholder:text-gray-400 outline outline-transparent outline-1.5 outline-offset-0 transition-all focus:outline-upbg-light');
+    kodeLevelInput.setAttribute('placeholder', 'Kode Level');
+    kodeLevelInput.setAttribute('name', 'kode-level');
+    kodeLevel.replaceWith(kodeLevelInput);
     
-    const statusProgramCheckbox = createCheckboxWithIcon('status-program', true, statusProgram.textContent === 'Aktif');
-    statusProgram.replaceWith(statusProgramCheckbox);
+    const statusLevelCheckbox = createCheckboxWithIcon('status-level', true, statusLevel.textContent === 'Aktif');
+    statusLevel.replaceWith(statusLevelCheckbox);
 
     const cancelButton = document.createElement('button');
     cancelButton.setAttribute('type', 'button');
@@ -68,7 +68,7 @@ function startEditing(row){
     saveButton.setAttribute('type', 'button');
     saveButton.setAttribute('class', 'px-3 py-2 text-green-600 font-semibold');
     saveButton.textContent = 'Save';
-    saveButton.value = row.getAttribute('data-program-id');
+    saveButton.value = row.getAttribute('data-level-id');
     editButton.replaceWith(saveButton);
 
     function handleSave(e){
@@ -109,11 +109,11 @@ async function saveInput(id, clone, row, handleClickOutside){
 }
 
 function fetchSubmit(id, clone){
-    const inputNamaProgram = clone.querySelector('[name="nama-program"]');
-    const inputKodeProgram = clone.querySelector('[name="kode-program"]');
-    const inputStatusProgram = clone.querySelector('[name="status-program"]');
+    const inputNamaLevel = clone.querySelector('[name="nama-level"]');
+    const inputKodeLevel = clone.querySelector('[name="kode-level"]');
+    const inputStatusLevel = clone.querySelector('[name="status-level"]');
 
-    return fetch(`/program-kelas/${id}`, {
+    return fetch(`/level-kelas/${id}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -121,28 +121,28 @@ function fetchSubmit(id, clone){
             'X-Requested-With': 'XMLHttpRequest',
         },
         body: JSON.stringify({
-            "nama-program": inputNamaProgram.value,
-            "kode-program": inputKodeProgram.value,
-            "status-program": inputStatusProgram.checked,
+            "nama-level": inputNamaLevel.value,
+            "kode-level": inputKodeLevel.value,
+            "status-level": inputStatusLevel.checked,
         }),
     });
 }
 
 function updateRow(row, json){
-    const namaProgram = row.querySelector('.nama-program');
-    const kodeProgram = row.querySelector('.kode-program');
-    const statusProgram = row.querySelector('.status-program');
+    const namaLevel = row.querySelector('.nama-level');
+    const kodeLevel = row.querySelector('.kode-level');
+    const statusLevel = row.querySelector('.status-level');
 
-    row.setAttribute('data-program-id', json.id);
-    namaProgram.textContent = json.nama;
-    kodeProgram.textContent = json.kode;
-    statusProgram.textContent = json.aktif ? 'Aktif' : 'Tidak aktif';
+    row.setAttribute('data-level-id', json.id);
+    namaLevel.textContent = json.nama;
+    kodeLevel.textContent = json.kode;
+    statusLevel.textContent = json.aktif ? 'Aktif' : 'Tidak aktif';
     if(json.aktif){
-        statusProgram.classList.add('bg-green-300', 'text-green-800');
-        statusProgram.classList.remove('bg-red-300', 'text-red-800');
+        statusLevel.classList.add('bg-green-300', 'text-green-800');
+        statusLevel.classList.remove('bg-red-300', 'text-red-800');
     }else{
-        statusProgram.classList.add('bg-red-300', 'text-red-800');
-        statusProgram.classList.remove('bg-green-300', 'text-green-800');
+        statusLevel.classList.add('bg-red-300', 'text-red-800');
+        statusLevel.classList.remove('bg-green-300', 'text-green-800');
     }
 
     return row;
@@ -163,16 +163,16 @@ function stopFetchingAnimation(clone){
 }
 
 function showDeleteDialog(row){
-    const id = row.getAttribute('data-program-id');
-    const namaProgram = row.querySelector('.nama-program').textContent;
-    const kodeProgram = row.querySelector('.kode-program').textContent;
+    const id = row.getAttribute('data-level-id');
+    const namaLevel = row.querySelector('.nama-level').textContent;
+    const kodeLevel = row.querySelector('.kode-level').textContent;
 
     const deleteDialogContent = document.getElementById('delete-dialog-content');
-    const namaKodeProgram = deleteDialogContent.querySelector('.nama-kode-program')
-    namaKodeProgram.textContent = `${namaProgram} - ${kodeProgram}`;
+    const namaKodeLevel = deleteDialogContent.querySelector('.nama-kode-level')
+    namaKodeLevel.textContent = `${namaLevel} - ${kodeLevel}`;
 
-    const programId = deleteDialogContent.querySelector('[name="program-id"]');
-    programId.value = id;
+    const levelId = deleteDialogContent.querySelector('[name="level-id"]');
+    levelId.value = id;
 
     openDialog();
 }

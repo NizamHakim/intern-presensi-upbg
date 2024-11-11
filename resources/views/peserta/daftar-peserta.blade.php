@@ -1,6 +1,8 @@
 <x-layouts.user-layout>
     <x-slot:title>Daftar Peserta</x-slot>
-    <h1 class="font-semibold text-upbg text-3xl mb-4">Daftar Peserta</h1>
+    <div class="flex flex-row justify-between items-center gap-4 mt-6 mb-6">
+        <h1 class="font-bold text-upbg text-[2rem]">Daftar Peserta</h1>
+    </div>
 
     <form action="{{ route('peserta.index') }}" method="GET" class="flex flex-row gap-2">
         <x-inputs.categorical-search :options="$searchOptions" :selected="$searchSelected" placeholder="Cari Peserta" value="{{ $searchValue }}"/>
@@ -9,7 +11,7 @@
         </button>
     </form>
 
-    <table class="w-full table-fixed hidden lg:table mt-8 shadow-strong">
+    <table class="w-full table-fixed hidden lg:table mt-10 shadow-strong">
         <thead class="bg-gray-50 border-b">
             <tr>
                 <th class="px-3 py-4 lg:w-28 text-gray-600 font-semibold tracking-wide text-center">No</th>
