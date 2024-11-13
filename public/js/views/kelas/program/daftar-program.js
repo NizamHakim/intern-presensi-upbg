@@ -98,7 +98,6 @@ async function saveInput(id, clone, row, handleClickOutside){
     }else{
         const errors = await response.json();
         for(const key in errors){
-            console.log(key, errors[key]);
             const input = clone.querySelector(`[name="${key}"]`);
             const errorSpan = createErrorSpan(errors[key][0]);
             input.parentNode.appendChild(errorSpan);
@@ -135,7 +134,7 @@ function updateRow(row, json){
 
     row.setAttribute('data-program-id', json.id);
     namaProgram.textContent = json.nama;
-    kodeProgram.textContent = json.kode;
+    kodeProgram.textContent = json.kode ? json.kode : '-';
     statusProgram.textContent = json.aktif ? 'Aktif' : 'Tidak aktif';
     if(json.aktif){
         statusProgram.classList.add('bg-green-300', 'text-green-800');
@@ -150,7 +149,9 @@ function updateRow(row, json){
 
 function playFetchingAnimation(clone){
     const buttonContainer = clone.querySelector('.button-container');
-    const loading = createLoadingAnimation('Updating...');
+    const loading = document.createElement('div');
+    loading.setAttribute('class', 'loading flex flex-row items-center justify-center font-semibold');
+    loading.innerHTML = createLoadingAnimation('Updating...');
     buttonContainer.parentNode.appendChild(loading);
     buttonContainer.classList.add('hidden');
 }
@@ -165,11 +166,12 @@ function stopFetchingAnimation(clone){
 function showDeleteDialog(row){
     const id = row.getAttribute('data-program-id');
     const namaProgram = row.querySelector('.nama-program').textContent;
-    const kodeProgram = row.querySelector('.kode-program').textContent;
+    const kodeProgram = (row.querySelector('.kode-program').textContent != '-') ? row.querySelector('.kode-program').textContent : '';
 
     const deleteDialogContent = document.getElementById('delete-dialog-content');
     const namaKodeProgram = deleteDialogContent.querySelector('.nama-kode-program')
-    namaKodeProgram.textContent = `${namaProgram} - ${kodeProgram}`;
+    namaKodeProgram.textContent = `${namaProgram}`;
+    namaKodeProgram.textContent += (kodeProgram) ? ` - ${kodeProgram}` : '';
 
     const programId = deleteDialogContent.querySelector('[name="program-id"]');
     programId.value = id;

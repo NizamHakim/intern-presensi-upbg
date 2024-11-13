@@ -40,10 +40,10 @@
 </nav> --}}
 
 {{-- desktop sidenav --}}
-<nav class="flex sticky inset-y-0 left-0 h-screen flex-col text-nowrap overflow-hidden transition-all shadow-inner-2 bg-gray-100">
+<nav class="sidenav flex sticky inset-y-0 left-0 h-screen flex-col text-nowrap overflow-hidden transition-all shadow-inner-2 bg-gray-100">
     <div class="w-64 h-14 border-b flex flex-row justify-center items-center px-3 py-1">
         <img src="{{ asset('images/logoGLC.png') }}" alt="LogoUPBG" class="h-full">
-        {{-- <button type="button" class="flex flex-row justify-center items-center text-2xl text-upbg rounded-full size-10 transition hover:bg-gray-200"><i class="fa-solid fa-xmark"></i></i></button> --}}
+        {{-- <button type="button" class="sidenav-close-button flex flex-row justify-center items-center text-2xl text-upbg rounded-full size-10 transition hover:bg-gray-200"><i class="fa-solid fa-xmark"></i></i></button> --}}
     </div>
     <div class="flex-1 w-64 flex flex-col gap-3 px-3 py-4">
         <section class="flex flex-col">

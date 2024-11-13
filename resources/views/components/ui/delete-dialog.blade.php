@@ -1,4 +1,4 @@
-<div id="delete-dialog" class="fixed bg-black bg-opacity-25 z-10 inset-0 hidden opacity-0 duration-300 justify-center items-center">
+<div id="delete-dialog" class="fixed bg-black bg-opacity-25 z-10 inset-0 hidden opacity-0 duration-300 justify-center items-center select-none">
     <div id="delete-dialog-content" class="bg-white scale-0 transition max-w-2xl rounded-md flex flex-col p-8 gap-6">
         <p class="text-2xl font-bold text-gray-800 text-center">{{ $title }}</p>
         <p class="text-center text-gray-800">{{ $message }}</p>

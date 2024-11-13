@@ -8,7 +8,6 @@
                 this.showDropdown = false;
             }
         }" 
-        x-init="console.log(options);"
         x-on:click.outside="closeDropdown()"
         class="relative w-32">
         

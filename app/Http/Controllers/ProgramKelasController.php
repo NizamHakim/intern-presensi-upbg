@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\RouteGraph;
 use App\Models\ProgramKelas;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Models\Scopes\Aktif;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ProgramKelasController extends Controller
 {
@@ -19,7 +21,35 @@ class ProgramKelasController extends Controller
 
     public function create()
     {
-        return view('kelas.program.tambah-program');
+        $breadcrumbs = RouteGraph::generate('program-kelas.create');
+        return view('kelas.program.tambah-program', [
+            'breadcrumbs' => $breadcrumbs
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'nama-program' => 'required|string',
+            'kode-program' => 'required|string|unique:program_kelas,kode',
+        ], [
+            'nama-program.required' => 'Nama program tidak boleh kosong',
+            'nama-program.string' => 'Nama program harus berupa string',
+            'kode-program.required' => 'Kode program tidak boleh kosong',
+            'kode-program.string' => 'Kode program harus berupa string',
+            'kode-program.unique' => 'Kode program sudah digunakan',
+        ]);
+
+        if ($validator->fails()) {
+            return response($validator->errors(), 422);
+        }
+
+        ProgramKelas::create([
+            'nama' => $request['nama-program'],
+            'kode' => $request['kode-program'],
+        ]);
+
+        return response(['redirect' => route('program-kelas.index')], 200);
     }
 
     public function update(Request $request, string $id)

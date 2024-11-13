@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\Aktif;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Builder;
 
 class TipeKelas extends Model
 {
@@ -14,6 +16,11 @@ class TipeKelas extends Model
         'kode',
         'aktif',
     ];
+
+    public function scopeAktif(Builder $query): void
+    {
+        $query->where('aktif', 1);
+    }
 
     protected function text(): Attribute
     {

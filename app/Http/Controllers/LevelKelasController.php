@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\LevelKelas;
+use App\Helpers\RouteGraph;
+use App\Models\Scopes\Aktif;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -19,7 +21,34 @@ class LevelKelasController extends Controller
 
     public function create()
     {
-        return view('kelas.level.tambah-level');
+        $breadcrumbs = RouteGraph::generate('level-kelas.create');
+        return view('kelas.level.tambah-level', [
+            'breadcrumbs' => $breadcrumbs
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'nama-level' => 'required|string',
+            'kode-level' => 'nullable|string|unique:level_kelas,kode',
+        ], [
+            'nama-level.required' => 'Nama level tidak boleh kosong',
+            'nama-level.string' => 'Nama level harus berupa string',
+            'kode-level.string' => 'Kode level harus berupa string',
+            'kode-level.unique' => 'Kode level sudah digunakan',
+        ]);
+
+        if ($validator->fails()) {
+            return response($validator->errors(), 422);
+        }
+
+        LevelKelas::create([
+            'nama' => $request['nama-level'],
+            'kode' => $request['kode-level'],
+        ]);
+
+        return response(['redirect' => route('level-kelas.index')], 200);
     }
 
     public function update(Request $request, string $id)

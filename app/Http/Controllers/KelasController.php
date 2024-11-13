@@ -18,13 +18,13 @@ class KelasController extends Controller
 {
     public function index(Request $request)
     {
-        $programOptions = ProgramKelas::all()->map->only(['text', 'value'])->prepend(['text' => 'Semua', 'value' => null]);
+        $programOptions = ProgramKelas::aktif()->get()->map->only(['text', 'value'])->prepend(['text' => 'Semua', 'value' => null]);
         $programSelected = ($request->query('program') != null) ? ProgramKelas::where('kode', $request->query('program'))->firstOrFail() : null;
 
-        $tipeOptions = TipeKelas::all()->map->only(['text', 'value'])->prepend(['text' => 'Semua', 'value' => null]);
+        $tipeOptions = TipeKelas::aktif()->get()->map->only(['text', 'value'])->prepend(['text' => 'Semua', 'value' => null]);
         $tipeSelected = ($request->query('tipe') != null) ? TipeKelas::where('kode', $request->query('tipe'))->firstOrFail() : null;
 
-        $levelOptions = LevelKelas::all()->map->only(['text', 'value']);
+        $levelOptions = LevelKelas::aktif()->get()->map->only(['text', 'value']);
         if($levelOptions->where('value', null)->isEmpty()){
             $levelOptions->prepend(['text' => 'Semua', 'value' => null]);
         }

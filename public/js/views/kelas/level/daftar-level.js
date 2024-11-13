@@ -98,7 +98,6 @@ async function saveInput(id, clone, row, handleClickOutside){
     }else{
         const errors = await response.json();
         for(const key in errors){
-            console.log(key, errors[key]);
             const input = clone.querySelector(`[name="${key}"]`);
             const errorSpan = createErrorSpan(errors[key][0]);
             input.parentNode.appendChild(errorSpan);
@@ -135,7 +134,7 @@ function updateRow(row, json){
 
     row.setAttribute('data-level-id', json.id);
     namaLevel.textContent = json.nama;
-    kodeLevel.textContent = json.kode;
+    kodeLevel.textContent = json.kode ? json.kode : '-';
     statusLevel.textContent = json.aktif ? 'Aktif' : 'Tidak aktif';
     if(json.aktif){
         statusLevel.classList.add('bg-green-300', 'text-green-800');
@@ -150,7 +149,9 @@ function updateRow(row, json){
 
 function playFetchingAnimation(clone){
     const buttonContainer = clone.querySelector('.button-container');
-    const loading = createLoadingAnimation('Updating...');
+    const loading = document.createElement('div');
+    loading.setAttribute('class', 'loading flex flex-row items-center justify-center font-semibold');
+    loading.innerHTML = createLoadingAnimation('Updating...');
     buttonContainer.parentNode.appendChild(loading);
     buttonContainer.classList.add('hidden');
 }
@@ -165,11 +166,12 @@ function stopFetchingAnimation(clone){
 function showDeleteDialog(row){
     const id = row.getAttribute('data-level-id');
     const namaLevel = row.querySelector('.nama-level').textContent;
-    const kodeLevel = row.querySelector('.kode-level').textContent;
+    const kodeLevel = (row.querySelector('.kode-level').textContent != '-') ? row.querySelector('.kode-level').textContent : '';
 
     const deleteDialogContent = document.getElementById('delete-dialog-content');
     const namaKodeLevel = deleteDialogContent.querySelector('.nama-kode-level')
-    namaKodeLevel.textContent = `${namaLevel} - ${kodeLevel}`;
+    namaKodeLevel.textContent = `${namaLevel}`
+    namaKodeLevel.textContent += (kodeLevel) ? ` - ${kodeLevel}` : '';
 
     const levelId = deleteDialogContent.querySelector('[name="level-id"]');
     levelId.value = id;

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\TipeKelas;
+use App\Helpers\RouteGraph;
+use App\Models\Scopes\Aktif;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -19,7 +21,35 @@ class TipeKelasController extends Controller
 
     public function create()
     {
-        return view('kelas.tipe.tambah-tipe');
+        $breadcrumbs = RouteGraph::generate('tipe-kelas.create');
+        return view('kelas.tipe.tambah-tipe', [
+            'breadcrumbs' => $breadcrumbs
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'nama-tipe' => 'required|string',
+            'kode-tipe' => 'required|string|unique:tipe_kelas,kode',
+        ], [
+            'nama-tipe.required' => 'Nama tipe tidak boleh kosong',
+            'nama-tipe.string' => 'Nama tipe harus berupa string',
+            'kode-tipe.required' => 'Kode tipe tidak boleh kosong',
+            'kode-tipe.string' => 'Kode tipe harus berupa string',
+            'kode-tipe.unique' => 'Kode tipe sudah digunakan',
+        ]);
+
+        if ($validator->fails()) {
+            return response($validator->errors(), 422);
+        }
+
+        TipeKelas::create([
+            'nama' => $request['nama-tipe'],
+            'kode' => $request['kode-tipe'],
+        ]);
+
+        return response(['redirect' => route('tipe-kelas.index')], 200);
     }
 
     public function update(Request $request, string $id)

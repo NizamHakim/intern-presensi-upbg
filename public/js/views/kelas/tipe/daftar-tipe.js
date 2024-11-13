@@ -98,7 +98,6 @@ async function saveInput(id, clone, row, handleClickOutside){
     }else{
         const errors = await response.json();
         for(const key in errors){
-            console.log(key, errors[key]);
             const input = clone.querySelector(`[name="${key}"]`);
             const errorSpan = createErrorSpan(errors[key][0]);
             input.parentNode.appendChild(errorSpan);
@@ -135,7 +134,7 @@ function updateRow(row, json){
 
     row.setAttribute('data-tipe-id', json.id);
     namaTipe.textContent = json.nama;
-    kodeTipe.textContent = json.kode;
+    kodeTipe.textContent = json.kode ? json.kode : '-';
     statusTipe.textContent = json.aktif ? 'Aktif' : 'Tidak aktif';
     if(json.aktif){
         statusTipe.classList.add('bg-green-300', 'text-green-800');
@@ -150,7 +149,9 @@ function updateRow(row, json){
 
 function playFetchingAnimation(clone){
     const buttonContainer = clone.querySelector('.button-container');
-    const loading = createLoadingAnimation('Updating...');
+    const loading = document.createElement('div');
+    loading.setAttribute('class', 'loading flex flex-row items-center justify-center font-semibold');
+    loading.innerHTML = createLoadingAnimation('Updating...');
     buttonContainer.parentNode.appendChild(loading);
     buttonContainer.classList.add('hidden');
 }
@@ -165,11 +166,12 @@ function stopFetchingAnimation(clone){
 function showDeleteDialog(row){
     const id = row.getAttribute('data-tipe-id');
     const namaTipe = row.querySelector('.nama-tipe').textContent;
-    const kodeTipe = row.querySelector('.kode-tipe').textContent;
+    const kodeTipe = (row.querySelector('.kode-tipe').textContent != '-') ? row.querySelector('.kode-tipe').textContent : '';
 
     const deleteDialogContent = document.getElementById('delete-dialog-content');
     const namaKodeTipe = deleteDialogContent.querySelector('.nama-kode-tipe')
-    namaKodeTipe.textContent = `${namaTipe} - ${kodeTipe}`;
+    namaKodeTipe.textContent = `${namaTipe}`;
+    namaKodeTipe.textContent += (kodeTipe) ? ` - ${kodeTipe}` : '';
 
     const tipeId = deleteDialogContent.querySelector('[name="tipe-id"]');
     tipeId.value = id;
