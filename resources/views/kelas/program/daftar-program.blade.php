@@ -12,6 +12,12 @@
         </a>
     </div>
 
+    @session('toast')
+        <x-ui.toast status="{{ $value['status'] }}">
+            {{ $value['message'] }}
+        </x-ui.toast>
+    @endsession
+
     <table class="w-full table-fixed hidden lg:table shadow-strong">
         <thead class="bg-gray-50 border-b">
             <tr>

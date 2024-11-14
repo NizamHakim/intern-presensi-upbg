@@ -74,6 +74,12 @@ export default {
                 "0.5": "0.5px",
                 "1.5": "1.5px",
             },
+            keyframes:{
+                "toast-progress": {
+                    "0%": { width: "100%" },
+                    "100%": { width: "0%" },
+                }
+            }
         },
     },
     plugins: [],

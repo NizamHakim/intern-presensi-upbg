@@ -49,6 +49,11 @@ class ProgramKelasController extends Controller
             'kode' => $request['kode-program'],
         ]);
 
+        session()->flash('toast', [
+            'status' => 'success',
+            'message' => 'Program ' . $request['nama-program'] . ' - ' . $request['kode-program'] . ' berhasil ditambahkan'
+        ]);
+
         return response(['redirect' => route('program-kelas.index')], 200);
     }
 
@@ -94,6 +99,7 @@ class ProgramKelasController extends Controller
         }else{
             $programKelas->delete();
         }
+
         return redirect()->route('program-kelas.index');
     }
 }

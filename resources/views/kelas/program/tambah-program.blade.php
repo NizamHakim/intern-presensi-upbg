@@ -24,6 +24,7 @@
 
     @push('script')
         <script src="{{ asset('js/utils/form-control.js') }}"></script>
+        <script src="{{ asset('js/views/components/ui/toast.js') }}"></script>
         <script src="{{ asset('js/views/kelas/program/tambah-program.js') }}"></script>
     @endpush
 </x-layouts.user-layout>

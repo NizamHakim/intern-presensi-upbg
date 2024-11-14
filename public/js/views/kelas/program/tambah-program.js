@@ -9,6 +9,7 @@ form.addEventListener('submit', async function(e){
     const data = Object.fromEntries(formData.entries());
     const url = form.getAttribute('action');
 
+    
     const response = await fetchValidate(url, data);
     stopFetchingAnimation(form);
 
@@ -16,11 +17,15 @@ form.addEventListener('submit', async function(e){
         const json = await response.json();
         window.location.replace(json.redirect);
     }else{
-        const errors = await response.json();
-        for(const key in errors){
-            const input = form.querySelector(`[name="${key}"]`);
-            const errorSpan = createErrorSpan(errors[key][0]);
-            input.parentNode.appendChild(errorSpan);
+        if(response.status === 422){
+            const errors = await response.json();
+            for(const key in errors){
+                const input = form.querySelector(`[name="${key}"]`);
+                const errorSpan = createErrorSpan(errors[key][0]);
+                input.parentNode.appendChild(errorSpan);
+            }
+        }else{
+            exceptionToast();
         }
     }
 });
@@ -28,6 +33,7 @@ form.addEventListener('submit', async function(e){
 function fetchValidate(url, data){
     return fetch(url, {
         method: 'POST',
+        redirect: 'follow',
         headers: {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': data._token,
