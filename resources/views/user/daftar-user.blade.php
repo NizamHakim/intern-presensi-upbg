@@ -2,7 +2,7 @@
     <x-slot:title>Daftar User</x-slot>
     <div class="flex flex-row justify-between items-center gap-4 mt-6 mb-6">
         <h1 class="font-bold text-upbg text-[2rem]">Daftar User</h1>
-        <a href="#" class="relative text-white font-semibold px-3 py-2 bg-green-600 rounded-md shadow-[0px_3px] shadow-green-700 transition ease-linear transform translate-y-0 cursor-pointer active:shadow-none active:translate-y-1">
+        <a href="{{ route('user.create') }}" class="relative text-white font-semibold px-3 py-2 bg-green-600 rounded-md shadow-[0px_3px] shadow-green-700 transition ease-linear transform translate-y-0 cursor-pointer active:shadow-none active:translate-y-1">
             <i class="fa-solid fa-plus mr-2"></i>
             Tambah User
         </a>
@@ -38,9 +38,9 @@
                         </td>
                         <td class="px-3 py-4 xl:w-72">
                             <div class="flex flex-row gap-8">
-                                <img src="{{ asset($user->profile_picture) }}" alt="profile-picture" class="size-16">
+                                <img src="{{ ($user->profile_picture) ? asset('storage/' . $user->profile_picture) : asset('images/defaultProfilePicture.png') }}" alt="profile-picture" class="size-16 rounded-full">
                                 <div class="flex flex-col justify-center">
-                                    <a href="#" class="text-upbg underline decoration-transparent transition hover:decoration-upbg font-semibold">{{ $user->nama }}</a>
+                                    <a href="{{ route('user.detail', ['id' => $user->id]) }}" class="text-upbg underline decoration-transparent transition hover:decoration-upbg font-semibold">{{ $user->nama }}</a>
                                     <p class="text-gray-400 text-sm font-medium">{{ $user->nik }}</p>
                                 </div>
                             </div>

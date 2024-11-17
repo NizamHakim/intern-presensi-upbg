@@ -19,7 +19,7 @@
             @endif
             <input type="hidden" name="{{ $inputName }}">
             <div class="flex flex-row justify-center gap-4 mt-6">
-                <button type="button" class="cancel-button px-8 py-2 text-gray-800 border border-gray-300 bg-white hover:bg-gray-100 font-semibold rounded-sm-md">Cancel</button>
+                <button type="button" class="cancel-button px-8 py-2 text-gray-600 bg-white hover:bg-gray-100 font-semibold rounded-sm-md">Cancel</button>
                 <button type="submit" class="px-8 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-sm-md">Delete</button>
             </div>
         </form>

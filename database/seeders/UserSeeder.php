@@ -18,9 +18,9 @@ class UserSeeder extends Seeder
             'nik' => '5025211209',
             'nama' => 'Nizam Hakim Santoso',
             'email' => 'nizamhakim282@gmail.com',
+            'no_hp' => '082131958278',
             'email_verified_at' => now(),
             'password' => bcrypt('password'),
-            'profile_picture' => 'images/defaultProfilePicture.png',
             'remember_token' => Str::random(10),
         ]);
 

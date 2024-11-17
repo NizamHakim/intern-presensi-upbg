@@ -50,11 +50,11 @@ class ProgramKelasController extends Controller
         ]);
 
         session()->flash('toast', [
-            'status' => 'success',
+            'type' => 'success',
             'message' => 'Program ' . $request['nama-program'] . ' - ' . $request['kode-program'] . ' berhasil ditambahkan'
         ]);
 
-        return response(['redirect' => route('program-kelas.index')], 200);
+        return response(['redirect' => route('program-kelas.index')], 201);
     }
 
     public function update(Request $request, string $id)
@@ -100,6 +100,11 @@ class ProgramKelasController extends Controller
             $programKelas->delete();
         }
 
+        session()->flash('toast', [
+            'type' => 'success',
+            'message' => 'Program ' . $programKelas->nama . ' - ' . $programKelas->kode . ' berhasil dihapus'
+        ]);
+        
         return redirect()->route('program-kelas.index');
     }
 }

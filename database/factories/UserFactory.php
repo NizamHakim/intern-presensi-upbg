@@ -28,8 +28,8 @@ class UserFactory extends Factory
             'nama' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
+            'no_hp' => fake()->numerify('08##########'),
             'password' => bcrypt('password'),
-            'profile_picture' => 'images/defaultProfilePicture.png',
             'remember_token' => Str::random(10),
         ];
     }

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\LevelKelas;
 use App\Helpers\RouteGraph;
-use App\Models\Scopes\Aktif;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -46,6 +45,11 @@ class LevelKelasController extends Controller
         LevelKelas::create([
             'nama' => $request['nama-level'],
             'kode' => $request['kode-level'],
+        ]);
+
+        session()->flash('toast', [
+            'type' => 'success',
+            'message' => 'Level ' . $request['nama-level'] . ' - ' . $request['kode-level'] . ' berhasil ditambahkan'
         ]);
 
         return response(['redirect' => route('level-kelas.index')], 200);
@@ -93,6 +97,12 @@ class LevelKelasController extends Controller
         }else{
             $levelKelas->delete();
         }
+
+        session()->flash('toast', [
+            'type' => 'success',
+            'message' => 'Level ' . $levelKelas->nama . ' - ' . $levelKelas->kode . ' berhasil dihapus'
+        ]);
+        
         return redirect()->route('level-kelas.index');
     }
 }

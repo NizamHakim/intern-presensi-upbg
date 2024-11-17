@@ -23,6 +23,8 @@ class User extends Authenticatable
         'nik',
         'nama',
         'email',
+        'no_hp',
+        'password',
         'profile_picture',
         'current_role_id',
     ];

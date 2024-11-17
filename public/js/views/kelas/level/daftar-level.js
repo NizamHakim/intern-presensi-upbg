@@ -91,18 +91,24 @@ async function saveInput(id, clone, row, handleClickOutside){
     document.removeEventListener('click', handleClickOutside); // temporarily remove click outside
 
     const response = await fetchSubmit(id, clone);
+    stopFetchingAnimation(clone);
+
     if(response.ok){
         const json = await response.json();
         const newRow = updateRow(row, json);
         clone.replaceWith(newRow);
+        createToast('success', 'Level berhasil diubah');
     }else{
-        const errors = await response.json();
-        for(const key in errors){
-            const input = clone.querySelector(`[name="${key}"]`);
-            const errorSpan = createErrorSpan(errors[key][0]);
-            input.parentNode.appendChild(errorSpan);
+        if(response.status === 422){
+            const errors = await response.json();
+            for(const key in errors){
+                const input = clone.querySelector(`[name="${key}"]`);
+                const errorSpan = createErrorSpan(errors[key][0]);
+                input.parentNode.appendChild(errorSpan);
+            }
+        }else{
+            createToast('error', 'Terjadi kesalahan. Silahkan coba lagi.');
         }
-        stopFetchingAnimation(clone);
         document.addEventListener('click', handleClickOutside); // if error, add back click outside
     }
 }

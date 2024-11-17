@@ -16,11 +16,15 @@ form.addEventListener('submit', async function(e){
         const json = await response.json();
         window.location.replace(json.redirect);
     }else{
-        const errors = await response.json();
-        for(const key in errors){
-            const input = form.querySelector(`[name="${key}"]`);
-            const errorSpan = createErrorSpan(errors[key][0]);
-            input.parentNode.appendChild(errorSpan);
+        if(response.status === 422){
+            const errors = await response.json();
+            for(const key in errors){
+                const input = form.querySelector(`[name="${key}"]`);
+                const errorSpan = createErrorSpan(errors[key][0]);
+                input.parentNode.appendChild(errorSpan);
+            }
+        }else{
+            createToast('error', 'Terjadi kesalahan. Silahkan coba lagi.');
         }
     }
 });

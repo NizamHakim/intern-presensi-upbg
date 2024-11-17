@@ -30,6 +30,10 @@ Route::middleware(Authenticated::class)->group(function(){
     Route::get('/kelas/create', [KelasController::class, 'create'])->name('kelas.create');
 
     Route::get('/user', [UserController::class, 'index'])->middleware(HandleGetQuery::class)->name('user.index');
+    Route::get('/user/create', [UserController::class, 'create'])->name('user.create');
+    Route::post('/user', [UserController::class, 'store'])->name('user.store');
+    Route::get('/user/{id}', [UserController::class, 'detail'])->name('user.detail');
+    Route::patch('/user/{id}', [UserController::class, 'updateRole'])->name('user.updateRole');
 
     Route::get('/peserta', [PesertaController::class, 'index'])->middleware(HandleGetQuery::class)->name('peserta.index');
 

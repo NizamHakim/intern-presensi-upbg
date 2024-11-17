@@ -12,12 +12,6 @@
         </a>
     </div>
 
-    @session('toast')
-        <x-ui.toast status="{{ $value['status'] }}">
-            {{ $value['message'] }}
-        </x-ui.toast>
-    @endsession
-
     <table class="w-full table-fixed hidden lg:table shadow-strong">
         <thead class="bg-gray-50 border-b">
             <tr>
@@ -58,9 +52,8 @@
                         </td>
                         <td class="px-8 text-right">
                             <div class="button-container flex flex-row justify-end items-center gap-2">
-                                <button class="edit-program px-3 py-2 text-gray-800 font-semibold">Edit</button>
-                                <span class="text-xl text-gray-400 font-light select-none">|</span>
-                                <button class="delete-program px-3 py-2 text-red-600 font-semibold">Delete</button>
+                                <button class="edit-program px-4 py-2 text-gray-800 font-semibold">Edit</button>
+                                <button class="delete-program px-4 py-2 text-red-600 font-semibold">Delete</button>
                             </div>
                         </td>
                     </tr>

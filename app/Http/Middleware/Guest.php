@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,8 +19,16 @@ class Guest
     {
         if (Auth::check()) {
             $role = Auth::user()->current_role_id;
-            if($role == 2 || $role == 3){
-                return redirect()->route('kelas.index');
+            
+            if(!$role){
+                $role = Auth::user()->roles->first();
+                User::findOrFail(Auth::id())->update(['current_role_id' => $role->id]);
+            }
+
+            switch ($role) {
+                case 2:
+                case 3:
+                    return redirect()->route('kelas.index');
             }
         }
         return $next($request);

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('nik')->unique();
             $table->string('nama');
             $table->string('email')->unique();
+            $table->string('no_hp')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('profile_picture')->nullable();

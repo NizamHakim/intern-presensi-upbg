@@ -5,7 +5,7 @@
     @stack('head')
     <title>{{ $title }}</title>
 </head>
-<body class="flex flex-row min-h-screen font-poppins overflow-y-scroll scrollbar">
+<body class="flex flex-row min-h-screen font-poppins overflow-y-scroll scrollbar" @session('toast') data-toast-type="{{ $value['type'] }}" data-toast-message="{{ $value['message'] }}" @endsession>
     <x-layouts.side-nav/>
     <div class="flex-1 flex flex-col">
         <x-layouts.top-bar/>

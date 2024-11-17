@@ -1,18 +1,19 @@
 <?php
 
-namespace App\View\Components\UI;
+namespace App\View\Components\Inputs;
 
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class Toast extends Component
+class CropperImage extends Component
 {
-    public $status;
-    
-    public function __construct($status)
+    /**
+     * Create a new component instance.
+     */
+    public function __construct()
     {
-        $this->status = $status;
+        //
     }
 
     /**
@@ -20,6 +21,6 @@ class Toast extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.ui.toast');
+        return view('components.inputs.cropper-image');
     }
 }

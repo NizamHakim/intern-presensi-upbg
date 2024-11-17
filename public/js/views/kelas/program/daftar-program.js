@@ -41,7 +41,7 @@ function startEditing(row){
 
     const cancelButton = document.createElement('button');
     cancelButton.setAttribute('type', 'button');
-    cancelButton.setAttribute('class', 'cancel-button px-3 py-2 text-gray-400 font-semibold');
+    cancelButton.setAttribute('class', 'cancel-button px-4 py-2 text-gray-400 font-semibold');
     cancelButton.textContent = 'Cancel';
     deleteButton.replaceWith(cancelButton);
 
@@ -66,7 +66,7 @@ function startEditing(row){
 
     const saveButton = document.createElement('button');
     saveButton.setAttribute('type', 'button');
-    saveButton.setAttribute('class', 'px-3 py-2 text-green-600 font-semibold');
+    saveButton.setAttribute('class', 'px-4 py-2 text-green-600 font-semibold');
     saveButton.textContent = 'Save';
     saveButton.value = row.getAttribute('data-program-id');
     editButton.replaceWith(saveButton);
@@ -91,18 +91,24 @@ async function saveInput(id, clone, row, handleClickOutside){
     document.removeEventListener('click', handleClickOutside); // temporarily remove click outside
 
     const response = await fetchSubmit(id, clone);
+    stopFetchingAnimation(clone);
+
     if(response.ok){
         const json = await response.json();
         const newRow = updateRow(row, json);
         clone.replaceWith(newRow);
+        createToast('success', 'Program berhasil diubah');
     }else{
-        const errors = await response.json();
-        for(const key in errors){
-            const input = clone.querySelector(`[name="${key}"]`);
-            const errorSpan = createErrorSpan(errors[key][0]);
-            input.parentNode.appendChild(errorSpan);
+        if(response.status === 422){
+            const errors = await response.json();
+            for(const key in errors){
+                const input = clone.querySelector(`[name="${key}"]`);
+                const errorSpan = createErrorSpan(errors[key][0]);
+                input.parentNode.appendChild(errorSpan);
+            }
+        }else{
+            createToast('error', 'Terjadi kesalahan. Silahkan coba lagi.');
         }
-        stopFetchingAnimation(clone);
         document.addEventListener('click', handleClickOutside); // if error, add back click outside
     }
 }

@@ -6,10 +6,9 @@ form.addEventListener('submit', async function(e){
     playFetchingAnimation(form);
 
     const formData = new FormData(form);
-    const data = Object.fromEntries(formData.entries());
     const url = form.getAttribute('action');
-
-    const response = await fetchValidate(url, data);
+    
+    const response = await fetchValidate(url, formData);
     stopFetchingAnimation(form);
 
     if(response.ok){
@@ -18,6 +17,7 @@ form.addEventListener('submit', async function(e){
     }else{
         if(response.status === 422){
             const errors = await response.json();
+            console.log(errors);
             for(const key in errors){
                 const input = form.querySelector(`[name="${key}"]`);
                 const errorSpan = createErrorSpan(errors[key][0]);
@@ -29,19 +29,13 @@ form.addEventListener('submit', async function(e){
     }
 });
 
-function fetchValidate(url, data){
+function fetchValidate(url, formData){
     return fetch(url, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': data._token,
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
         },
-        body: JSON.stringify(
-            {
-                "nama-tipe": data['nama-tipe'],
-                "kode-tipe": data['kode-tipe'],
-            }
-        )
+        body: formData,
     })
 }
 

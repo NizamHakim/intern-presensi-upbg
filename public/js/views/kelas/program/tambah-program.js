@@ -9,7 +9,6 @@ form.addEventListener('submit', async function(e){
     const data = Object.fromEntries(formData.entries());
     const url = form.getAttribute('action');
 
-    
     const response = await fetchValidate(url, data);
     stopFetchingAnimation(form);
 
@@ -25,7 +24,7 @@ form.addEventListener('submit', async function(e){
                 input.parentNode.appendChild(errorSpan);
             }
         }else{
-            exceptionToast();
+            createToast('error', 'Terjadi kesalahan. Silahkan coba lagi.');
         }
     }
 });
@@ -33,7 +32,6 @@ form.addEventListener('submit', async function(e){
 function fetchValidate(url, data){
     return fetch(url, {
         method: 'POST',
-        redirect: 'follow',
         headers: {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': data._token,

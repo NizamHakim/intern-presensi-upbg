@@ -49,6 +49,11 @@ class TipeKelasController extends Controller
             'kode' => $request['kode-tipe'],
         ]);
 
+        session()->flash('toast', [
+            'type' => 'success',
+            'message' => 'Tipe ' . $request['nama-tipe'] . ' - ' . $request['kode-tipe'] . ' berhasil ditambahkan'
+        ]);
+
         return response(['redirect' => route('tipe-kelas.index')], 200);
     }
 
@@ -94,6 +99,12 @@ class TipeKelasController extends Controller
         }else{
             $tipeKelas->delete();
         }
+
+        session()->flash('toast', [
+            'type' => 'success',
+            'message' => 'Tipe ' . $tipeKelas->nama . ' - ' . $tipeKelas->kode . ' berhasil dihapus'
+        ]);
+        
         return redirect()->route('tipe-kelas.index');
     }
 }
