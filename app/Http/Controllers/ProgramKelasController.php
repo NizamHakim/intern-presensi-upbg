@@ -21,7 +21,11 @@ class ProgramKelasController extends Controller
 
     public function create()
     {
-        $breadcrumbs = RouteGraph::generate('program-kelas.create');
+        $breadcrumbs = [
+            'Program Kelas' => route('program-kelas.index'),
+            'Tambah Program' => route('program-kelas.create')
+        ];
+
         return view('kelas.program.tambah-program', [
             'breadcrumbs' => $breadcrumbs
         ]);

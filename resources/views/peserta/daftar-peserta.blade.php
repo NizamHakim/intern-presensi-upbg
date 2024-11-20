@@ -37,7 +37,7 @@
                             </div>
                         </td>
                         <td class="px-3 py-4">
-                            <span>{{ $peserta->occupation }}</span>
+                            <span class="text-gray-800">{{ $peserta->occupation }}</span>
                         </td>
                     </tr>
                 @endforeach

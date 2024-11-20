@@ -79,6 +79,9 @@ export default {
                     "0%": { width: "100%" },
                     "100%": { width: "0%" },
                 }
+            },
+            fontSize: {
+                "2.5xl": "1.75rem",
             }
         },
     },

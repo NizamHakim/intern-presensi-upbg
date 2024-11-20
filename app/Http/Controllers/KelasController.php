@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\RouteGraph;
 use App\Models\Kelas;
 use App\Models\Ruangan;
 use App\Models\TipeKelas;
@@ -136,6 +137,21 @@ class KelasController extends Controller
             'banyakPertemuan' => $banyakPertemuan,
             'tanggalMulai' => $tanggalMulai,
             'kelasList' => $kelasList,
+        ]);
+    }
+
+    public function detail($slug)
+    {
+        $kelas = Kelas::with(['jadwal', 'pengajar', 'pertemuan' => ['ruangan']])->where('slug', $slug)->firstOrFail();
+        $kelas->progress = $kelas->pertemuan->where('terlaksana', true)->count();
+        $breadcrumbs = [
+            'Kelas' => route('kelas.index'),
+            "$kelas->kode" => null,
+        ];
+        
+        return view('kelas.detail-kelas', [
+            'kelas' => $kelas,
+            'breadcrumbs' => $breadcrumbs,
         ]);
     }
 }

@@ -70,24 +70,24 @@
                 @foreach ($kelasList as $kelas)
                     <tr class="bg-white transition hover:bg-gray-100">
                         <td class="px-3 py-4 xl:w-108">
-                            <a href="#" class="text-upbg underline decoration-transparent transition hover:decoration-upbg font-semibold">{{ $kelas->kode }}</a>
+                            <a href="{{ route('kelas.detail', ['slug' => $kelas->slug]) }}" class="text-upbg underline decoration-transparent transition hover:decoration-upbg font-semibold">{{ $kelas->kode }}</a>
                         </td>
                         <td class="px-3 py-4 xl:w-72">
                             <div class="flex flex-col gap-2">
                                 @foreach ($kelas->jadwal as $jadwal)
                                     <div class="flex flex-row gap-1">
-                                        <span class="text-base w-24"><i class="fa-solid fa-calendar-days mr-2"></i>{{ $jadwal->namaHari }}</span>
-                                        <span class="text-base"><i class="fa-regular fa-clock mr-2"></i>{{ $jadwal->waktu_mulai->format('H:i') }} - {{ $jadwal->waktu_selesai->format('H:i') }}</span>
+                                        <span class="text-base w-24 text-gray-800"><i class="fa-solid fa-calendar-days mr-2"></i>{{ $jadwal->namaHari }}</span>
+                                        <span class="text-base text-gray-800"><i class="fa-regular fa-clock mr-2"></i>{{ $jadwal->waktu_mulai->format('H:i') }} - {{ $jadwal->waktu_selesai->format('H:i') }}</span>
                                     </div>
                                 @endforeach
                             </div>
                         </td>
                         <td class="px-3 py-4 xl:w-48">
-                            <span class="text-base"><i class="fa-regular fa-building mr-2"></i>{{ $kelas->ruangan->kode }}</span>
+                            <span class="text-base text-gray-800"><i class="fa-regular fa-building mr-2"></i>{{ $kelas->ruangan->kode }}</span>
                         </td>
                         <td class="px-3 py-4 hidden xl:table-cell">
                             <div class="flex flex-col gap-1 items-end justify-center">
-                                <span class="text-sm font-medium">{{ $kelas->progress . "/" . $kelas->banyak_pertemuan }} Pertemuan</span>
+                                <span class="text-sm font-medium text-gray-800">{{ $kelas->progress . "/" . $kelas->banyak_pertemuan }} Pertemuan</span>
                                 <div class="w-full h-2 border border-gray-400 rounded-xl">
                                     <div data-progress="{{ $kelas->progress }}" data-banyak-pertemuan="{{ $kelas->banyak_pertemuan }}" class="progress-bar h-full @if($kelas->progress == $kelas->banyak_pertemuan) bg-green-600 @else bg-upbg @endif"></div>
                                 </div>

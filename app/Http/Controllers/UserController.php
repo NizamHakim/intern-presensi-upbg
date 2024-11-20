@@ -59,7 +59,10 @@ class UserController extends Controller
     public function create()
     {
         $roleOptions = Role::where('id', 2)->orWhere('id', 3)->get();
-        $breadcrumbs = RouteGraph::generate('user.create');
+        $breadcrumbs = [
+            'User' => route('user.index'),
+            'Tambah User' => route('user.create')
+        ];
 
         return view('user.tambah-user', [
             'roleOptions' => $roleOptions,
@@ -136,7 +139,10 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
         $roleOptions = Role::where('id', 2)->orWhere('id', 3)->get();
-        $breadcrumbs = RouteGraph::generate('user.detail', $user->nama);
+        $breadcrumbs = [
+            'User' => route('user.index'),
+            $user->nama => route('user.detail', $user->id)
+        ];
 
         return view('user.detail-user', [
             'user' => $user,

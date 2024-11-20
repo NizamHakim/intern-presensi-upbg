@@ -25,6 +25,8 @@ class RouteGraph
             'user.index' => ['text' => 'User'],
             'user.create' => ['text' => 'Tambah User', 'parent' => 'user.index'],
             'user.detail' => ['text' => $text, 'parent' => 'user.index'],
+            'kelas.index' => ['text' => 'Kelas'],
+            'kelas.detail' => ['text' => $text, 'parent' => 'kelas.index'],
         ];
 
         $stack = new SplStack();

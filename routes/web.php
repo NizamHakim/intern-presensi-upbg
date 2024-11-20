@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\KelasController;
 use App\Http\Controllers\LevelKelasController;
+use App\Http\Controllers\PertemuanKelasController;
 use App\Http\Controllers\PesertaController;
 use App\Http\Controllers\ProgramKelasController;
 use App\Http\Controllers\RuanganController;
@@ -11,6 +12,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Middleware\Authenticated;
 use App\Http\Middleware\Guest;
 use App\Http\Middleware\HandleGetQuery;
+use App\Models\PertemuanKelas;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -28,6 +30,8 @@ Route::middleware(Authenticated::class)->group(function(){
 
     Route::get('/kelas', [KelasController::class, 'index'])->middleware(HandleGetQuery::class)->name('kelas.index');
     Route::get('/kelas/create', [KelasController::class, 'create'])->name('kelas.create');
+    Route::get('/kelas/{slug}', [KelasController::class, 'detail'])->name('kelas.detail');
+    Route::get('/kelas/{slug}/pertemuan/{id}', [PertemuanKelasController::class, 'detail'])->name('kelas.pertemuan.detail');
 
     Route::get('/user', [UserController::class, 'index'])->middleware(HandleGetQuery::class)->name('user.index');
     Route::get('/user/create', [UserController::class, 'create'])->name('user.create');

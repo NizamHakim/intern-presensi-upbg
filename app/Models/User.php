@@ -80,4 +80,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Kelas::class, 'pengajar_kelas')->withTimestamps();
     }
+
+    public function mengajarPertemuan()
+    {
+        return $this->hasMany(PertemuanKelas::class, 'pengajar_id');
+    }
 }

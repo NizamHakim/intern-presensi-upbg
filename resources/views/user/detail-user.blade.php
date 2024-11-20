@@ -15,21 +15,21 @@
         <div class="size-40 border-2 shadow-md rounded-full overflow-hidden self-center">
             <img src="{{ ($user->profile_picture) ? asset('storage/' . $user->profile_picture) : asset('images/defaultProfilePicture.png') }}" class="rounded-full">
         </div>
-        <div class="flex flex-col">
+        <div class="flex flex-col gap-1">
             <p class="font-semibold text-gray-800 text-sm">Nama</p>
-            <p class="text-base text-gray-600">{{ $user->nama }}</p>
+            <p class="text-base text-gray-600 font-medium">{{ $user->nama }}</p>
         </div>
-        <div class="flex flex-col">
+        <div class="flex flex-col gap-1">
             <p class="font-semibold text-gray-800 text-sm">NIK / NIP</p>
-            <p class="text-base text-gray-600">{{ $user->nik }}</p>
+            <p class="text-base text-gray-600 font-medium">{{ $user->nik }}</p>
         </div>
-        <div class="flex flex-col">
+        <div class="flex flex-col gap-1">
             <p class="font-semibold text-gray-800 text-sm">Email</p>
-            <a href="mailto:{{ $user->email }}" class="text-upbg underline decoration-transparent transition hover:decoration-upbg">{{ $user->email }}</a>
+            <a href="mailto:{{ $user->email }}" class="text-upbg underline decoration-transparent transition hover:decoration-upbg font-medium">{{ $user->email }}</a>
         </div>
-        <div class="flex flex-col">
+        <div class="flex flex-col gap-1">
             <p class="font-semibold text-gray-800 text-sm">No. HP / Whatsapp</p>
-            <a href="{{ 'http://wa.me/62' . substr($user->no_hp, 1) }}" class="text-upbg underline decoration-transparent transition hover:decoration-upbg">{{ $user->no_hp }}</a>
+            <a href="{{ 'http://wa.me/62' . substr($user->no_hp, 1) }}" target="_blank" class="text-upbg underline decoration-transparent transition hover:decoration-upbg font-medium">{{ $user->no_hp }}</a>
         </div>
         <div class="flex flex-col">
             <p class="font-semibold text-gray-800 text-sm">Roles</p>

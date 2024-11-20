@@ -20,7 +20,11 @@ class LevelKelasController extends Controller
 
     public function create()
     {
-        $breadcrumbs = RouteGraph::generate('level-kelas.create');
+        $breadcrumbs = [
+            'Level Kelas' => route('level-kelas.index'),
+            'Tambah Level' => route('level-kelas.create')
+        ];
+
         return view('kelas.level.tambah-level', [
             'breadcrumbs' => $breadcrumbs
         ]);

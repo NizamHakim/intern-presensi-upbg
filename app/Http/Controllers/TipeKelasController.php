@@ -21,7 +21,11 @@ class TipeKelasController extends Controller
 
     public function create()
     {
-        $breadcrumbs = RouteGraph::generate('tipe-kelas.create');
+        $breadcrumbs = [
+            'Tipe Kelas' => route('tipe-kelas.index'),
+            'Tambah Tipe' => route('tipe-kelas.create')
+        ];
+
         return view('kelas.tipe.tambah-tipe', [
             'breadcrumbs' => $breadcrumbs
         ]);
