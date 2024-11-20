@@ -11,4 +11,9 @@ class PresensiPertemuanKelas extends Model
         'peserta_id',
         'hadir',
     ];
+
+    public function pertemuan()
+    {
+        return $this->belongsTo(PertemuanKelas::class);
+    }
 }

@@ -56,4 +56,9 @@ class PertemuanKelas extends Model
     {
         return $this->belongsTo(User::class, 'pengajar_id');
     }
+
+    public function presensi()
+    {
+        return $this->hasMany(PresensiPertemuanKelas::class);
+    }
 }

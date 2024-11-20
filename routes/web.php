@@ -32,6 +32,7 @@ Route::middleware(Authenticated::class)->group(function(){
     Route::get('/kelas/create', [KelasController::class, 'create'])->name('kelas.create');
     Route::get('/kelas/{slug}', [KelasController::class, 'detail'])->name('kelas.detail');
     Route::get('/kelas/{slug}/pertemuan/{id}', [PertemuanKelasController::class, 'detail'])->name('kelas.pertemuan.detail');
+    Route::patch('/kelas/{slug}/pertemuan/{id}', [PertemuanKelasController::class, 'updateStatusPertemuan'])->name('kelas.pertemuan.updateStatus');
 
     Route::get('/user', [UserController::class, 'index'])->middleware(HandleGetQuery::class)->name('user.index');
     Route::get('/user/create', [UserController::class, 'create'])->name('user.create');
