@@ -1,9 +1,67 @@
-const deletePertemuanButton = document.querySelector('.delete-pertemuan');
-deletePertemuanButton.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const deletePertemuanDialog = document.querySelector('.delete-pertemuan-dialog');
-    openDialog(deletePertemuanDialog);
-});
+const deletePertemuan = document.querySelector('.delete-pertemuan');
+if(deletePertemuan){
+    deletePertemuan.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const deletePertemuanDialog = document.querySelector('.delete-pertemuan-dialog');
+        openDialog(deletePertemuanDialog);
+    });
+}
+
+const reschedulePertemuan = document.querySelector('.reschedule-pertemuan');
+if(reschedulePertemuan){
+    reschedulePertemuan.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const reschedulePertemuanModal = document.getElementById('reschedule-pertemuan-modal');
+
+        const modalForm = reschedulePertemuanModal.querySelector('form');
+
+        async function handleSubmit(e){
+            e.preventDefault();
+            clearErrors(modalForm);
+
+            const submitButton = e.submitter;
+            submitButton.classList.add('hidden');
+            const loading = document.createElement('button');
+            loading.setAttribute('class', 'button-loading text-sm flex flex-row items-center justify-center font-semibold px-4 py-2 border border-upbg bg-white rounded-md cursor-progress');
+            loading.setAttribute('disabled', 'true');
+            loading.innerHTML = createLoadingAnimation('Validating...', 'blue');
+            submitButton.insertAdjacentElement('afterend', loading);
+
+            const route = modalForm.action;
+            const formData = new FormData(modalForm);
+            const data = Object.fromEntries(formData.entries());
+
+            const response = await fetchReschedule(route, data);
+            loading.remove();
+            submitButton.classList.remove('hidden');
+
+            if(response.ok){
+                const json = await response.json();
+                window.location.replace(json.redirect);
+            }else{
+                if(response.status === 422){
+                    const errors = await response.json();
+                    for(const key in errors){
+                        const input = modalForm.querySelector(`[name="${key}"]`);
+                        const inputGroup = input.closest('.input-group');
+                        const error = createErrorText(errors[key][0]);
+                        inputGroup.appendChild(error);
+                    }
+                }else{
+                    createToast('error', 'Terjadi kesalahan. Silahkan coba lagi.');
+                }
+            }
+        }
+        modalForm.addEventListener('submit', handleSubmit);
+
+        function closeCallback(){
+            modalForm.removeEventListener('submit', handleSubmit);
+            resetInputs(modalForm);
+        }
+
+        openModal(reschedulePertemuanModal, closeCallback);
+    });
+}
 
 const editTopikCatatanButton = document.querySelector('.edit-topik-catatan');
 editTopikCatatanButton.addEventListener('click', (e) => {
@@ -133,7 +191,7 @@ function playFetchingAnimation(button){
     button.classList.add('hidden');
 
     const loading = document.createElement('button');
-    loading.setAttribute('class', 'button-loading text-sm flex flex-row items-center justify-center font-semibold px-10 py-2 border border-upbg bg-white rounded-md cursor-progress');
+    loading.setAttribute('class', 'button-loading text-sm flex flex-row items-center justify-center font-semibold px-4 py-2 border border-upbg bg-white rounded-md cursor-progress');
     loading.setAttribute('disabled', 'true');
     loading.innerHTML = createLoadingAnimation('Updating...', 'blue');
     button.insertAdjacentElement('afterend', loading);
@@ -157,7 +215,10 @@ if(daftarPresensi) {
             const hadir = e.submitter.value;
             const response = await fetchUpdatePresensi(route, hadir);
             if(response.ok){
+                const json = await response.json();
                 togglePresensiButton(form, hadir);
+                const hadirCount = document.querySelector('.hadir-count');
+                hadirCount.textContent = `${json.hadir} / ${json.total}`;
             }else{
                 createToast('error', 'Terjadi kesalahan. Silahkan coba lagi.');
             }
@@ -186,19 +247,79 @@ if(daftarPresensi) {
         form.insertAdjacentElement('afterend', loading);
 
         const response = await fetchTandaiSemuaHadir(route);
-        loading.remove();
+        loading.remove(); 
         tandaiSemuaHadirButton.classList.remove('hidden');
 
         if(response.ok){
+            const json = await response.json();
             const hadirButtons = document.querySelectorAll('.button-hadir');
             hadirButtons.forEach(button => {
                 button.classList.add('active');
                 button.nextElementSibling.classList.remove('active');
             });
+            const hadirCount = document.querySelector('.hadir-count');
+            hadirCount.textContent = `${json.hadir} / ${json.total}`;
         }else{
             createToast('error', 'Terjadi kesalahan. Silahkan coba lagi.');
         }
     });
+
+    const tambahPresensi = document.getElementById('tambah-presensi');
+    tambahPresensi.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const tambahPresensiModal = document.getElementById('tambah-presensi-modal');
+
+        const modalForm = tambahPresensiModal.querySelector('form');
+        if(modalForm){
+            async function handleSubmit(e){
+                e.preventDefault();
+                clearErrors(modalForm);
+
+                const submitButton = e.submitter;
+                submitButton.classList.add('hidden');
+                const loading = document.createElement('button');
+                loading.setAttribute('class', 'button-loading text-sm flex flex-row items-center justify-center font-semibold px-4 py-2 border border-green-600 bg-white rounded-md cursor-progress');
+                loading.setAttribute('disabled', 'true');
+                loading.innerHTML = createLoadingAnimation('Validating...', 'green');
+                submitButton.insertAdjacentElement('afterend', loading);
+
+                const route = modalForm.action;
+                const formData = new FormData(modalForm);
+                const data = Object.fromEntries(formData.entries());
+    
+                const response = await fetchTambahPresensi(route, data);
+                loading.remove();
+                submitButton.classList.remove('hidden');
+
+                if(response.ok){
+                    const json = await response.json();
+                    window.location.replace(json.redirect);
+                }else{
+                    if(response.status === 422){
+                        const errors = await response.json();
+                        for(const key in errors){
+                            const input = modalForm.querySelector(`[name="${key}"]`);
+                            const inputGroup = input.closest('.input-group');
+                            const error = createErrorText(errors[key][0]);
+                            inputGroup.appendChild(error);
+                        }
+                    }else{
+                        createToast('error', 'Terjadi kesalahan. Silahkan coba lagi.');
+                    }
+                }
+            }
+            modalForm.addEventListener('submit', handleSubmit);
+
+            function closeCallback(){
+                modalForm.removeEventListener('submit', handleSubmit);
+                resetInputs(modalForm);
+            }
+
+            openModal(tambahPresensiModal, closeCallback);
+        }else{
+            openModal(tambahPresensiModal);
+        }
+    })
 }
 
 function fetchUpdatePresensi(route, hadir){
@@ -236,9 +357,20 @@ function fetchTandaiSemuaHadir(route){
     });
 }
 
+function fetchReschedule(route, data){
+    return fetch(route, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify(data)
+    });
+}
+
 function showDeleteDialog(row){
-    const namaPeserta = row.querySelector('.nama-partisipan').textContent;
-    const nikPeserta = row.querySelector('.nik-partisipan').textContent;
+    const namaPeserta = row.querySelector('.nama-peserta').textContent;
+    const nikPeserta = row.querySelector('.nik-peserta').textContent;
     const deletePresensiDialog = document.querySelector('.delete-presensi-dialog');
     const deleteDialogContent = deletePresensiDialog.querySelector('.delete-dialog-content');
     const namaNikUser = deleteDialogContent.querySelector('.nama-nik-user');
@@ -248,4 +380,31 @@ function showDeleteDialog(row){
     inputId.value = row.dataset.presensiId;
 
     openDialog(deletePresensiDialog);
+}
+
+function fetchTambahPresensi(route, data){
+    return fetch(route, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify(data)
+    });
+}
+
+function resetInputs(form){
+    const dropdowns = form.querySelectorAll('.input-dropdown');
+    dropdowns.forEach(dropdown => {
+        resetDropdownValue(dropdown);
+    });
+    const dateInputs = form.querySelectorAll('.input-date');
+    dateInputs.forEach(dateInput => {
+        resetDate(dateInput);
+    });
+    const timeInputs = form.querySelectorAll('.input-time');
+    timeInputs.forEach(timeInput => {
+        resetTime(timeInput);
+    });
+    clearErrors(form);
 }

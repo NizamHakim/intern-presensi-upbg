@@ -1,4 +1,4 @@
-function openModal(modal){
+function openModal(modal, callback = null){
     const modalContent = modal.querySelector('.modal-content');
     const body = document.querySelector('body');
 
@@ -13,22 +13,25 @@ function openModal(modal){
     const cancelButton = modalContent.querySelector('.cancel-button');
     function handleCancel(e){
         e.stopPropagation();
-        closeModal(modal, () => {
-            cancelButton.removeEventListener('click', handleCancel);
-            document.removeEventListener('click', handleClickOutside);
-        });
+        closeModal(modal, closeCallback);
     }
     cancelButton.addEventListener('click', handleCancel);
 
     function handleClickOutside(e){
-        if(!modalContent.contains(e.target)){
-            closeModal(modal, () => {
-                cancelButton.removeEventListener('click', handleCancel);
-                document.removeEventListener('click', handleClickOutside);
-            });
+        if(!modalContent.contains(e.target) &&  e.target.closest('.flatpickr-calendar') === null){ 
+            // bug on flatpickr, prevent closing modal when clicking datepicker
+            closeModal(modal, closeCallback);
         }
     }
     document.addEventListener('click', handleClickOutside);
+    
+    function closeCallback(){
+        cancelButton.removeEventListener('click', handleCancel);
+        document.removeEventListener('click', handleClickOutside);
+        if(callback) callback();
+    }
+
+    return closeCallback;
 }
 
 function closeModal(modal, callback){

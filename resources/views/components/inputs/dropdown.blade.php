@@ -53,7 +53,7 @@
     </ul>
 </div> --}}
 
-<div data-default-text="" data-default-value="" class="w-full input-group input-dropdown">
+<div data-default-text="{{ $selected['text'] }}" data-default-value="{{ $selected['value'] }}" class="w-full input-group input-dropdown">
     @if ($label)
         <label class="block font-medium text-sm mb-1.5 text-gray-600">{{ $label }}</label>
     @endif

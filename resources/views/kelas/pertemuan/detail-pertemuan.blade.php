@@ -58,10 +58,27 @@
                             <i class="fa-regular fa-pen-to-square ml-1 inline-block transition duration-300 translate-x-12 group-hover:translate-x-0"></i>
                         </a>
                     @elseif (auth()->user()->current_role_id == 3)
-                        <a href="#" class="bg-white text-sm border px-4 py-2 rounded-md text-gray-800 overflow-hidden group text-center hover:text-upbg">
-                            <span class="inline-block font-medium translate-x-3 transition duration-300 group-hover:translate-x-0 leading-none">Reschedule</span>
-                            <i class="fa-regular fa-calendar-check ml-1 inline-block transition duration-300 translate-x-12 group-hover:translate-x-0"></i>
-                        </a>
+                        @if (!$pertemuan->terlaksana)
+                            <button type="button" class="reschedule-pertemuan bg-white text-sm border px-4 py-2 rounded-md text-gray-800 overflow-hidden group text-center hover:text-upbg">
+                                <span class="inline-block font-medium translate-x-3 transition duration-300 group-hover:translate-x-0 leading-none">Reschedule</span>
+                                <i class="fa-regular fa-calendar-check ml-1 inline-block transition duration-300 translate-x-12 group-hover:translate-x-0"></i>
+                            </button>
+                            <x-ui.modal id="reschedule-pertemuan-modal">
+                                <h1 class="text-center text-gray-800 text-2xl font-bold">Reschedule Pertemuan</h1>
+                                <form action="{{ route('kelas.pertemuan.reschedule', ['slug' => $kelas->slug, 'id' => $pertemuan->id]) }}" class="w-112 flex flex-col gap-4">
+                                    <x-inputs.date inputName="tanggal" label="Tanggal" placeholder="Pilih tanggal" value="{{ $pertemuan->tanggal }}"/>
+                                    <div class="flex flex-row items-start gap-4">
+                                        <x-inputs.time inputName="waktu-mulai" label="Waktu mulai" placeholder="Pilih waktu mulai" :value="$pertemuan->waktu_mulai"/>
+                                        <x-inputs.time inputName="waktu-selesai" label="Waktu selesai" placeholder="Pilih waktu selesai" :value="$pertemuan->waktu_selesai"/>
+                                    </div>
+                                    <x-inputs.dropdown :selected="$ruanganSelected" :options="$ruanganOptions" inputName="ruangan-kode" label="Pilih ruangan" placeholder="Pilih ruangan"/>
+                                    <div class="flex flex-row justify-end gap-4 mt-6">
+                                        <button type="button" class="cancel-button px-8 py-2 text-gray-600 bg-white transition duration-300 hover:bg-gray-100 font-medium rounded-sm-md">Cancel</button>
+                                        <button type="submit" class="submit-button px-8 py-2 bg-upbg transition duration-300 hover:bg-upbg-dark text-white font-medium rounded-sm-md">Simpan</button>
+                                    </div>
+                                </form>
+                            </x-ui.modal>
+                        @endif
                     @endif
                     <button type="button" class="delete-pertemuan block group overflow-hidden w-full text-red-600 text-sm border rounded-md px-4 py-2 bg-white">
                         <span class="inline-block font-medium translate-x-2.5 transition duration-300 group-hover:translate-x-0">Delete</span>
@@ -80,7 +97,7 @@
                     </x-ui.delete-dialog>
                 </div>
                 <div class="flex flex-col gap-3 items-end">
-                    <p class="text-2xl text-gray-800">Kehadiran Partisipan</p>
+                    <p class="text-2xl text-gray-800">Kehadiran Peserta</p>
                     <p class="text-5xl font-semibold hadir-count">@if ($pertemuan->presensi->isEmpty()) 0 / 0 @else {{ $pertemuan->hadirCount }} / {{ $pertemuan->presensi->count() }} @endif</p>
                 </div>
             </div>
@@ -89,7 +106,7 @@
 
     <hr class="bg-gray-200 my-10">
 
-    <div id="topik-catatan" class="flex flex-col gap-4 shadow-strong mt-6 p-8 relative" data-slug="{{ $kelas->slug }}" data-id="{{ $pertemuan->id }}">
+    <div id="topik-catatan" class="flex flex-col gap-4 shadow-strong mt-6 p-8 relative @if ($pertemuan->presensi->isEmpty() && auth()->user()->current_role_id == 2) mb-20 @endif" data-slug="{{ $kelas->slug }}" data-id="{{ $pertemuan->id }}">
         <div class="topik flex flex-col gap-2 input-group">
             <h3 class="font-semibold text-sm text-gray-800">Topik Bahasan</h3>
             <p class="text-gray-600 text-base">{!! ($pertemuan->topik) ? $pertemuan->topik : '-' !!}</p>
@@ -107,7 +124,7 @@
     @if ($pertemuan->presensi->isEmpty())
         @if (auth()->user()->current_role_id == 3)
             <hr class="bg-gray-200 my-10">
-            <div class="flex flex-col items-center shadow-strong p-8 gap-6 mb-10">
+            <div class="flex flex-col items-center shadow-strong p-8 gap-6 mb-20">
                 <p class="text-gray-600">Mulai pertemuan untuk membuat daftar kehadiran</p>
                 <button id="mulai-pertemuan" @if(now()->isBefore($pertemuan->waktuMulai)) disabled @endif type="button" class="border px-6 py-2 rounded-md bg-upbg text-white font-medium transition duration-300 hover:bg-upbg-dark disabled:opacity-70 disabled:hover:bg-upbg">Mulai Pertemuan</button>
                 
@@ -143,16 +160,41 @@
                         <i class="fa-regular fa-square-check ml-1 inline-block transition duration-300 translate-x-12 group-hover:translate-x-0"></i>
                     </button>
                 </form>
-                <button id="tambah-partisipan" type="button" class="bg-green-600 shadow-md transition duration-300 hover:bg-green-700 text-sm px-4 py-2 font-medium text-white rounded-md">
+                <button id="tambah-presensi" type="button" class="bg-green-600 shadow-md transition duration-300 hover:bg-green-700 text-sm px-4 py-2 font-medium text-white rounded-md">
                     <i class="fa-solid fa-plus mr-1"></i>
-                    <span>Tambah Partisipan</span>
+                    <span>Tambah Presensi</span>
                 </button>
+                <x-ui.modal id="tambah-presensi-modal">
+                    <h1 class="text-center text-gray-800 text-2xl font-bold">Tambah Presensi</h1>
+                    @if ($tambahPesertaOptions->isEmpty())
+                        <div class="w-96 flex flex-col gap-4">
+                            <div class="flex flex-col justify-start p-4 bg-green-100 rounded-md text-sm">
+                                <p class="text-green-600 font-semibold mb-2"><i class="fa-solid fa-circle-info mr-2"></i>Info</p>
+                                <p class="text-green-600">Semua peserta sudah ditambahkan ke pertemuan ini</p>
+                            </div>
+                            <button type="button" class="cancel-button px-8 py-2 text-gray-600 bg-white transition duration-300 hover:bg-gray-100 font-medium rounded-sm-md">Cancel</button>
+                        </div>
+                    @else
+                        <form action="{{ route('presensi.store') }}" class="w-96 flex flex-col gap-4">
+                            <input type="hidden" name="pertemuan-id" value="{{ $pertemuan->id }}">
+                            <x-inputs.dropdown :selected="$tambahPesertaSelected" :options="$tambahPesertaOptions" placeholder="Pilih peserta" inputName="peserta-id" label="Pilih peserta"/>
+                            <div class="flex flex-col justify-start p-4 bg-green-100 rounded-md text-sm">
+                                <p class="text-green-600 font-semibold mb-2"><i class="fa-solid fa-circle-info mr-2"></i>Info</p>
+                                <p class="text-green-600">Jika peserta tidak ada dalam daftar, pastikan peserta sudah terdaftar di kelas ini</p>
+                            </div>
+                            <div class="flex flex-row justify-end gap-4 mt-6">
+                                <button type="button" class="cancel-button px-8 py-2 text-gray-600 bg-white transition duration-300 hover:bg-gray-100 font-medium rounded-sm-md">Cancel</button>
+                                <button type="submit" class="submit-button px-8 py-2 bg-green-600 transition duration-300 hover:bg-green-700 text-white font-medium rounded-sm-md">Tambah</button>
+                            </div>
+                        </form>
+                    @endif
+                </x-ui.modal>
             </div>
             <table class="w-full table-fixed hidden lg:table shadow-strong mt-6">
                 <thead class="bg-gray-50 border-b">
                     <tr>
                         <th class="w-20 px-6 py-4 text-gray-600 font-semibold tracking-wide text-center">No.</th>
-                        <th class="px-6 py-4 text-gray-600 font-semibold tracking-wide text-left">Partisipan</th>
+                        <th class="px-6 py-4 text-gray-600 font-semibold tracking-wide text-left">Peserta</th>
                         <th class="px-6 py-4 text-gray-600 font-semibold tracking-wide text-left">Status Kehadiran</th>
                         <th class="w-40 px-6 py-4 text-gray-600 font-semibold tracking-wide text-center"></th>
                     </tr>
@@ -165,8 +207,8 @@
                             </td>
                             <td class="px-6 py-6">
                                 <div class="flex flex-col">
-                                    <a href="#" class="nama-partisipan font-medium underline decoration-transparent text-gray-800 transition hover:text-upbg hover:decoration-upbg">{{ $presensi->peserta->nama }}</a>
-                                    <p class="nik-partisipan text-sm text-gray-600">{{ $presensi->peserta->nik }}</p>
+                                    <a href="#" class="nama-peserta font-medium underline decoration-transparent text-gray-800 transition hover:text-upbg hover:decoration-upbg">{{ $presensi->peserta->nama }}</a>
+                                    <p class="nik-peserta text-sm text-gray-600">{{ $presensi->peserta->nik }}</p>
                                 </div>
                             </td>
                             <td class="px-6 py-6">
@@ -194,7 +236,7 @@
                 <x-slot:title>Hapus presensi?</x-slot>
                 <x-slot:message>Apakah anda yakin ingin menghapus <span class="font-bold nama-nik-user">User</span> dari daftar kehadiran</x-slot>
                 <x-slot:deleteMessage>
-                    <p class="text-red-600">Anda dapat menambahkan kembali partisipan menggunakan opsi "Tambah Partisipan"</p>
+                    <p class="text-red-600">Anda dapat menambahkan kembali peserta menggunakan opsi "Tambah Presensi"</p>
                 </x-slot>
                 <x-slot:hiddenInputs>
                     <input type="hidden" name="id" value="">

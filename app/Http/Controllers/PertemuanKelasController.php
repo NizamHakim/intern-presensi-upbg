@@ -17,16 +17,22 @@ class PertemuanKelasController extends Controller
         $kelas = Kelas::where('slug', $slug)->firstOrFail();
         $pertemuan = $kelas->pertemuan()->findOrFail($id);
 
-        $pengajarOptions = $kelas->pengajar()->get()->map->only(['text', 'value'])->prepend(['text' => 'Pilih pengajar', 'value' => null]);
-        $pengajarSelected = $pengajarOptions->first();
-
         $breadcrumbs = [
             'Kelas' => route('kelas.index'),
             "$kelas->kode" => route('kelas.detail', $kelas->slug),
             "Pertemuan - $pertemuan->pertemuan_ke" => null,
         ];
-
+        
         $pertemuan->load('presensi.peserta');
+
+        $pengajarOptions = $kelas->pengajar()->get()->map->only(['text', 'value'])->prepend(['text' => 'Pilih pengajar', 'value' => null]); // ?pengajarOptions
+        $pengajarSelected = $pengajarOptions->first();
+        
+        $tambahPesertaOptions = $kelas->peserta()->whereNotIn('peserta.id', $pertemuan->presensi->pluck('peserta_id'))->get();
+        $tambahPesertaSelected = null;
+
+        $ruanganOptions = Ruangan::all();
+        $ruanganSelected = $ruanganOptions->where('id', $pertemuan->ruangan_id)->first();
 
         return view('kelas.pertemuan.detail-pertemuan', [
             'kelas' => $kelas,
@@ -34,6 +40,10 @@ class PertemuanKelasController extends Controller
             'breadcrumbs' => $breadcrumbs,
             'pengajarOptions' => $pengajarOptions,
             'pengajarSelected' => $pengajarSelected,
+            'tambahPesertaOptions' => $tambahPesertaOptions,
+            'tambahPesertaSelected' => $tambahPesertaSelected,
+            'ruanganOptions' => $ruanganOptions,
+            'ruanganSelected' => $ruanganSelected,
         ]);
     }
 
@@ -73,9 +83,9 @@ class PertemuanKelasController extends Controller
 
     public function updateDetail($slug, $id, Request $request)
     {
-        $validator = Validator::make(request()->all(), [
+        $validator = Validator::make($request->all(), [
             'terlaksana' => 'required|boolean',
-            'pengajar-id' => 'required|exists:users,id',
+            'pengajar-id' => 'nullable|required_if:terlaksana,1|prohibited_if:terlaksana,0|exists:pengajar_kelas,id',
             'tanggal' => 'required|date',
             'waktu-mulai' => 'required|date_format:H:i',
             'waktu-selesai' => 'required|date_format:H:i',
@@ -83,7 +93,8 @@ class PertemuanKelasController extends Controller
         ], [
             'terlaksana.required' => 'Status pertemuan tidak boleh kosong',
             'terlaksana.boolean' => 'Status pertemuan tidak valid',
-            'pengajar-id.required' => 'Pengajar tidak boleh kosong',
+            'pengajar-id.required_if' => 'Pengajar tidak boleh kosong untuk pertemuan terlaksana',
+            'pengajar-id.prohibited_if' => 'Pengajar tidak boleh diisi untuk pertemuan tidak terlaksana',
             'pengajar-id.exists' => 'Pengajar tidak valid',
             'tanggal.required' => 'Tanggal tidak boleh kosong',
             'tanggal.date' => 'Tanggal tidak valid',
@@ -160,6 +171,50 @@ class PertemuanKelasController extends Controller
             'topik' => $pertemuan->topik,
             'catatan' => $pertemuan->catatan,
         ], 200);
+    }
+
+    public function reschedule($slug, $id, Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'tanggal' => 'required|date',
+            'waktu-mulai' => 'required|date_format:H:i',
+            'waktu-selesai' => 'required|date_format:H:i',
+            'ruangan-kode' => 'required|exists:ruangan,kode',
+        ], [
+            'tanggal.required' => 'Tanggal tidak boleh kosong',
+            'tanggal.date' => 'Tanggal tidak valid',
+            'waktu-mulai.required' => 'Waktu mulai tidak boleh kosong',
+            'waktu-mulai.date_format' => 'Waktu mulai tidak valid',
+            'waktu-selesai.required' => 'Waktu selesai tidak boleh kosong',
+            'waktu-selesai.date_format' => 'Waktu selesai tidak valid',
+            'ruangan-kode.required' => 'Ruangan tidak boleh kosong',
+            'ruangan-kode.exists' => 'Ruangan tidak valid',
+        ]);
+
+        if ($validator->fails()) {
+            return response($validator->errors(), 422);
+        }else{
+            try{
+                $kelas = Kelas::where('slug', $slug)->firstOrFail();
+                $pertemuan = $kelas->pertemuan()->findOrFail($id);
+
+                $pertemuan->update([
+                    'tanggal' => $request['tanggal'],
+                    'waktu_mulai' => $request['waktu-mulai'],
+                    'waktu_selesai' => $request['waktu-selesai'],
+                    'ruangan_id' => Ruangan::where('kode', $request['ruangan-kode'])->first()->id,
+                ]);
+            }catch(ModelNotFoundException $e){
+                return response('Pertemuan kelas tidak ditemukan', 404);
+            }
+        }
+
+        session()->flash('toast', [
+            'type' => 'success',
+            'message' => 'Pertemuan berhasil diupdate'
+        ]);
+
+        return response(['redirect' => route('kelas.pertemuan.detail', [$kelas->slug, $pertemuan->id])], 200);
     }
 
     public function updateStatusPertemuan($slug, $id, Request $request)
