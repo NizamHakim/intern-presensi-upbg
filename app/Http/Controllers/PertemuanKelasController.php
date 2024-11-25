@@ -217,9 +217,42 @@ class PertemuanKelasController extends Controller
         return response(['redirect' => route('kelas.pertemuan.detail', [$kelas->slug, $pertemuan->id])], 200);
     }
 
-    public function updateStatusPertemuan($slug, $id, Request $request)
+    public function mulaiPertemuan($slug, $id, Request $request)
     {
-        
+        $validator = Validator::make($request->all(), [
+            'terlaksana' => 'required|boolean',
+            'pengajar-id' => 'required|exists:pengajar_kelas,id',
+        ], [
+            'terlaksana.required' => 'Status pertemuan tidak boleh kosong',
+            'terlaksana.boolean' => 'Status pertemuan tidak valid',
+            'pengajar-id.required' => 'Pengajar tidak boleh kosong',
+            'pengajar-id.exists' => 'Pengajar tidak valid',
+        ]);
+
+        if ($validator->fails()) {
+            return response($validator->errors(), 422);
+        }else{
+            try{
+                $kelas = Kelas::where('slug', $slug)->firstOrFail();
+                $pertemuan = $kelas->pertemuan()->findOrFail($id);
+
+                $pertemuan->update([
+                    'terlaksana' => $request['terlaksana'],
+                    'pengajar_id' => $request['pengajar-id'],
+                ]);
+            }catch(ModelNotFoundException $e){
+                return response('Pertemuan kelas tidak ditemukan', 404);
+            }
+        }
+
+        $this->generatePresensi($kelas, $pertemuan);
+
+        session()->flash('toast', [
+            'type' => 'success',
+            'message' => 'Pertemuan berhasil dimulai'
+        ]);
+
+        return response(['redirect' => route('kelas.pertemuan.detail', [$kelas->slug, $pertemuan->id])], 200);
     }
 
     public function destroy(Request $request)

@@ -43,3 +43,7 @@
 .button-alfa.active{
     @apply border-red-600 bg-red-600 text-white font-semibold;
 }
+
+.detail-kelas-navlink.active{
+    @apply text-upbg-dark font-bold;
+}

@@ -149,9 +149,27 @@ class KelasController extends Controller
             "$kelas->kode" => null,
         ];
         
-        return view('kelas.detail-kelas', [
+        return view('kelas.detail-daftar-pertemuan', [
             'kelas' => $kelas,
             'breadcrumbs' => $breadcrumbs,
+        ]);
+    }
+
+    public function daftarPeserta($slug)
+    {
+        $kelas = Kelas::with(['jadwal', 'pengajar', 'pertemuan' => ['ruangan']])->where('slug', $slug)->firstOrFail();
+        $kelas->progress = $kelas->pertemuan->where('terlaksana', true)->count();
+        $breadcrumbs = [
+            'Kelas' => route('kelas.index'),
+            "$kelas->kode" => null,
+        ];
+
+        $pesertaList = $kelas->peserta()->paginate(10);
+        
+        return view('kelas.detail-daftar-peserta', [
+            'kelas' => $kelas,
+            'breadcrumbs' => $breadcrumbs,
+            'pesertaList' => $pesertaList,
         ]);
     }
 }

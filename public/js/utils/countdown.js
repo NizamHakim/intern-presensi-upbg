@@ -19,9 +19,11 @@ if(countdown){
         if (timeRemaining < 0) {
             clearInterval(timerInterval);
             const countdownLabel = document.querySelector('.countdown-label');
-            const countdownFinished = document.createElement('p');
-            countdownFinished.innerHTML = "Silahkan refresh halaman untuk memulai pertemuan";
-            countdownFinished.setAttribute('class', 'countdown-finished text-upbg font-semibold');
+            const countdownFinished = document.createElement('div');
+            countdownFinished.setAttribute('class', 'countdown-finished flex flex-col justify-start p-4 bg-blue-100 rounded-md');
+            countdownFinished.innerHTML = `
+                <p class="text-upbg font-semibold">Silahkan refresh halaman untuk memulai pertemuan</p>
+            `;
             countdownLabel.replaceWith(countdownFinished);
         }
     }, 1000);

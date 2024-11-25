@@ -55,7 +55,7 @@ class DatabaseSeeder extends Seeder
         foreach($kelasList as $kelas){
             $nizam->mengajarKelas()->attach($kelas->id);
             $stafPengajar->random()->mengajarKelas()->attach($kelas->id);
-            $kelas->peserta()->attach($peserta->random(10));
+            $kelas->peserta()->attach($peserta->random(30));
             PertemuanKelasGenerator::generate($kelas);
         }
     }
