@@ -55,6 +55,8 @@ function openDropdown(dropdown, handleDropdownOpen){
         }else{
             dropdownButton.querySelector('span').classList.replace('text-gray-600', 'text-gray-400');
         }
+        const event = new Event('change');
+        dropdownHiddenInput.dispatchEvent(event);
         closeDropdown(dropdown, () => {
             dropdownButton.removeEventListener('click', handleDropdownClose);
             dropdownButton.addEventListener('click', handleDropdownOpen);
@@ -72,7 +74,6 @@ function openDropdown(dropdown, handleDropdownOpen){
 
     const dropdownContent = dropdown.querySelector('.dropdown-content');
     function handleClickOutside(e){
-        console.log('click outside');
         if(!dropdownContent.contains(e.target)){
             closeDropdown(dropdown, () => {
                 dropdownButton.removeEventListener('click', handleDropdownClose);

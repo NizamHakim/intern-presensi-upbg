@@ -11,9 +11,8 @@ class DeleteDialog extends Component
     public $inputName;
     public $useSoftDelete;
     public $action;
-    public function __construct($inputName, $action, $useSoftDelete = false)
+    public function __construct($action, $useSoftDelete = false)
     {
-        $this->inputName = $inputName;
         $this->action = $action;
         $this->useSoftDelete = $useSoftDelete;
     }

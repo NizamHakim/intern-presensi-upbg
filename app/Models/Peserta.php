@@ -20,4 +20,9 @@ class Peserta extends Model
     {
         return $this->belongsToMany(Kelas::class, 'peserta_kelas');
     }
+
+    public function presensi()
+    {
+        return $this->hasMany(PresensiPertemuanKelas::class, 'peserta_id');
+    }
 }

@@ -42,6 +42,27 @@ class PertemuanKelas extends Model
         );
     }
 
+    protected function topik(): Attribute
+    {
+        return Attribute::make(
+            get: fn($value) => nl2br(e($value)),
+        );
+    }
+
+    protected function catatan(): Attribute
+    {
+        return Attribute::make(
+            get: fn($value) => nl2br(e($value)),
+        );
+    }
+
+    protected function hadirCount(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => $this->presensi->where('hadir', true)->count(),
+        );
+    }
+
     public function kelas()
     {
         return $this->belongsTo(Kelas::class);
@@ -59,6 +80,6 @@ class PertemuanKelas extends Model
 
     public function presensi()
     {
-        return $this->hasMany(PresensiPertemuanKelas::class);
+        return $this->hasMany(PresensiPertemuanKelas::class, 'pertemuan_id');
     }
 }

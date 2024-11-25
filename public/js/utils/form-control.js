@@ -19,9 +19,13 @@ function createLoadingAnimation(message, color = 'blue') {
     `;
 }
 
-function createErrorSpan(message) {
-    const errorSpan = document.createElement('span');
+function createErrorText(message) {
+    const errorSpan = document.createElement('p');
     errorSpan.setAttribute('class', 'error');
     errorSpan.textContent = message;
     return errorSpan;
+}
+
+function clearErrors(form) {
+    form.querySelectorAll('.error').forEach(error => error.remove());
 }

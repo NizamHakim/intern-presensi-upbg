@@ -19,7 +19,6 @@
 .scrollbar{
     scrollbar-gutter: stable;
 }
-
  
 .scrollbar::-webkit-scrollbar {
     width: 10px;
@@ -35,4 +34,12 @@
   
 .scrollbar::-webkit-scrollbar-thumb:hover {
     @apply bg-gray-400;
+}
+
+.button-hadir.active{
+    @apply border-green-600 bg-green-600 text-white font-semibold;
+}
+
+.button-alfa.active{
+    @apply border-red-600 bg-red-600 text-white font-semibold;
 }

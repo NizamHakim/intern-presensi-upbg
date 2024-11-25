@@ -4,7 +4,6 @@
     </div>
 </div>
 
-
-@push('script')
+@pushOnce('script')
     <script src="{{ asset('js/views/components/ui/modal.js') }}"></script>
-@endpush
+@endPushOnce

@@ -1,6 +1,5 @@
-function openDialog(){
-    const deleteDialog = document.getElementById('delete-dialog');
-    const deleteDialogContent = document.getElementById('delete-dialog-content');
+function openDialog(deleteDialog){
+    const deleteDialogContent = deleteDialog.querySelector('.delete-dialog-content');
     const body = document.querySelector('body');
 
     const forceDelete = deleteDialogContent.querySelector('[name="force-delete"]');
@@ -19,7 +18,7 @@ function openDialog(){
     const cancelButton = deleteDialogContent.querySelector('.cancel-button');
     function handleCancel(e){
         e.stopPropagation();
-        closeDialog(() => {
+        closeDialog(deleteDialog, () => {
             cancelButton.removeEventListener('click', handleCancel);
             document.removeEventListener('click', handleClickOutside);
         });
@@ -28,7 +27,7 @@ function openDialog(){
 
     function handleClickOutside(e){
         if(!deleteDialogContent.contains(e.target)){
-            closeDialog(() => {
+            closeDialog(deleteDialog, () => {
                 cancelButton.removeEventListener('click', handleCancel);
                 document.removeEventListener('click', handleClickOutside);
             });
@@ -37,9 +36,8 @@ function openDialog(){
     document.addEventListener('click', handleClickOutside);
 }
 
-function closeDialog(callback){
-    const deleteDialogContent = document.getElementById('delete-dialog-content');
-    const deleteDialog = document.getElementById('delete-dialog');
+function closeDialog(deleteDialog, callback){
+    const deleteDialogContent = deleteDialog.querySelector('.delete-dialog-content');
     const body = document.querySelector('body');
 
     deleteDialogContent.classList.replace('scale-100', 'scale-0');

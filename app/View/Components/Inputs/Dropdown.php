@@ -12,15 +12,18 @@ class Dropdown extends Component
     public $options;
     public $label;
     public $inputName;
-    public $style;
+    public $placeholder;
 
-    public function __construct($selected, $options, $inputName, $label = null, $style = null)
+    public function __construct($selected, $options, $inputName, $label = null, $placeholder = null)
     {
-        $this->selected = $selected;
-        $this->options = $options;
-        $this->label = $label;
+        $this->options = $options->map(fn($option) => ['text' => $option['text'], 'value' => $option['value']]);
+        if($placeholder){
+            $this->options->prepend(['text' => $placeholder, 'value' => null]);
+        }
+        $this->selected = $selected ?? $this->options->first();
         $this->inputName = $inputName;
-        $this->style = $style;
+        $this->label = $label;
+        $this->placeholder = $placeholder;
     }
 
     public function render(): View|Closure|string

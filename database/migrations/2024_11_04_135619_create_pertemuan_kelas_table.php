@@ -21,7 +21,7 @@ return new class extends Migration
             $table->time('waktu_mulai');
             $table->time('waktu_selesai');
             $table->boolean('terlaksana')->default(false);
-            $table->string('topik')->nullable();
+            $table->text('topik')->nullable();
             $table->text('catatan')->nullable();
             $table->timestamps();
         });

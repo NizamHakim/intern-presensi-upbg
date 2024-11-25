@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class PresensiPertemuanKelas extends Model
 {
@@ -14,6 +15,11 @@ class PresensiPertemuanKelas extends Model
 
     public function pertemuan()
     {
-        return $this->belongsTo(PertemuanKelas::class);
+        return $this->belongsTo(PertemuanKelas::class, 'pertemuan_id');
+    }
+
+    public function peserta()
+    {
+        return $this->belongsTo(Peserta::class, 'peserta_id');
     }
 }

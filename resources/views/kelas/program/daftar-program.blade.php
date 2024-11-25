@@ -62,7 +62,7 @@
         </tbody>
     </table>
 
-    <x-ui.delete-dialog :useSoftDelete="true" :action="route('program-kelas.destroy')" inputName="program-id">
+    <x-ui.delete-dialog :useSoftDelete="true" :action="route('program-kelas.destroy')" class="delete-program-dialog">
         <x-slot:title>Hapus program?</x-slot>
         <x-slot:message>Apakah anda yakin ingin menghapus program <span class="nama-kode-program font-bold">Nama - kode</span> ?</x-slot>
         <x-slot:softDeleteMessage>
@@ -74,6 +74,9 @@
         </x-slot>
         <x-slot:forceDeleteMessage>
             <p class="text-red-600">Hapus permanen akan menghapus program dari database dan semua data kelas yang terasosiasi dengan program ini!</p>
+        </x-slot>
+        <x-slot:hiddenInputs>
+            <input type="hidden" name="program-id">
         </x-slot>
     </x-ui.delete-dialog>
 

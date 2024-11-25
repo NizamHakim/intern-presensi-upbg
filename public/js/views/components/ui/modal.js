@@ -1,5 +1,4 @@
-function openModal(id){
-    const modal = document.getElementById(id);
+function openModal(modal){
     const modalContent = modal.querySelector('.modal-content');
     const body = document.querySelector('body');
 
@@ -14,7 +13,7 @@ function openModal(id){
     const cancelButton = modalContent.querySelector('.cancel-button');
     function handleCancel(e){
         e.stopPropagation();
-        closeDialog(id, () => {
+        closeModal(modal, () => {
             cancelButton.removeEventListener('click', handleCancel);
             document.removeEventListener('click', handleClickOutside);
         });
@@ -23,7 +22,7 @@ function openModal(id){
 
     function handleClickOutside(e){
         if(!modalContent.contains(e.target)){
-            closeDialog(id, () => {
+            closeModal(modal, () => {
                 cancelButton.removeEventListener('click', handleCancel);
                 document.removeEventListener('click', handleClickOutside);
             });
@@ -32,8 +31,7 @@ function openModal(id){
     document.addEventListener('click', handleClickOutside);
 }
 
-function closeDialog(id, callback){
-    const modal = document.getElementById(id);
+function closeModal(modal, callback){
     const modalContent = modal.querySelector('.modal-content');
     const body = document.querySelector('body');
 

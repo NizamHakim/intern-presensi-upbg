@@ -174,7 +174,8 @@ function showDeleteDialog(row){
     const namaProgram = row.querySelector('.nama-program').textContent;
     const kodeProgram = (row.querySelector('.kode-program').textContent != '-') ? row.querySelector('.kode-program').textContent : '';
 
-    const deleteDialogContent = document.getElementById('delete-dialog-content');
+    const deleteProgramDialog = document.querySelector('.delete-program-dialog');
+    const deleteDialogContent = deleteProgramDialog.querySelector('.delete-dialog-content');
     const namaKodeProgram = deleteDialogContent.querySelector('.nama-kode-program')
     namaKodeProgram.textContent = `${namaProgram}`;
     namaKodeProgram.textContent += (kodeProgram) ? ` - ${kodeProgram}` : '';
@@ -182,5 +183,5 @@ function showDeleteDialog(row){
     const programId = deleteDialogContent.querySelector('[name="program-id"]');
     programId.value = id;
 
-    openDialog();
+    openDialog(deleteProgramDialog);
 }
