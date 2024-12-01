@@ -6,9 +6,9 @@
     <x-slot:title>Daftar Program</x-slot>
     <div class="flex flex-row justify-between items-center gap-4 mt-6 mb-8">
         <h1 class="font-bold text-upbg text-[2rem]">Daftar Program</h1>
-        <a href="{{ route('program-kelas.create') }}" class="relative text-white font-semibold px-3 py-2 bg-green-600 rounded-md shadow-[0px_3px] shadow-green-700 transition ease-linear transform translate-y-0 cursor-pointer active:shadow-none active:translate-y-1">
-            <i class="fa-solid fa-plus mr-2"></i>
-            Tambah Program
+        <a href="{{ route('program-kelas.create') }}" class="bg-green-600 shadow-md transition duration-300 hover:bg-green-700 text-sm px-4 py-2 font-medium text-white rounded-md"">
+            <i class="fa-solid fa-plus mr-1"></i>
+            <span>Tambah Program</span>
         </a>
     </div>
 
@@ -52,8 +52,14 @@
                         </td>
                         <td class="px-8 text-right">
                             <div class="button-container flex flex-row justify-end items-center gap-2">
-                                <button class="edit-program px-4 py-2 text-gray-800 font-semibold">Edit</button>
-                                <button class="delete-program px-4 py-2 text-red-600 font-semibold">Delete</button>
+                                <button class="edit-program bg-white text-sm border px-6 py-2 rounded-md text-gray-800 overflow-hidden text-center group/button hover:text-upbg">
+                                    <span class="inline-block font-medium translate-x-3 transition duration-300 group-hover/button:translate-x-0 leading-none">Edit</span>
+                                    <i class="fa-regular fa-pen-to-square ml-1 inline-block transition duration-300 translate-x-12 group-hover/button:translate-x-0"></i>
+                                </button>
+                                <button type="button" class="delete-program overflow-hidden text-red-600 text-sm border rounded-md px-4 py-2 bg-white group/button">
+                                    <span class="inline-block font-medium translate-x-2.5 transition duration-300 group-hover/button:translate-x-0">Delete</span>
+                                    <i class="fa-regular fa-trash-can ml-1 inline-block transition duration-300 translate-x-12 group-hover/button:translate-x-0""></i>
+                                </button>
                             </div>
                         </td>
                     </tr>

@@ -6,13 +6,11 @@
     <title>{{ $title }}</title>
 </head>
 <body class="flex flex-row min-h-screen font-poppins overflow-y-scroll scrollbar" @session('toast') data-toast-type="{{ $value['type'] }}" data-toast-message="{{ $value['message'] }}" @endsession>
-    @if (auth()->user()->current_role_id == 2)
-        <x-layouts.side-nav/>
-    @endif
+    <x-layouts.side-nav/>
     <div class="flex-1 flex flex-col">
         <x-layouts.top-bar/>
-        <main class="flex-1 flex flex-row justify-center">
-            <div class="w-full max-w-7xl px-6 py-4">
+        <main class="flex-1 flex flex-row justify-center bg-gray-100 text-sm text-gray-600">
+            <div class="w-full max-w-6xl 2xl:max-w-7xl px-4 py-4">
                 {{ $slot }}
             </div>
         </main>

@@ -58,6 +58,6 @@ class Kelas extends Model
 
     public function pertemuan()
     {
-        return $this->hasMany(PertemuanKelas::class);
+        return $this->hasMany(PertemuanKelas::class)->orderBy('tanggal', 'asc')->orderBy('waktu_mulai', 'asc');
     }
 }

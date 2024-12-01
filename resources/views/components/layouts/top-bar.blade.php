@@ -1,5 +1,5 @@
-<nav class="sticky top-0 w-full h-14 flex flex-row justify-center border-b z-10">
-    <div class="flex flex-row justify-between bg-white w-full max-w-7xl h-full py-1 px-6">
+<nav class="sticky top-0 w-full h-14 flex flex-row justify-center z-10 bg-white shadow-sm">
+    <div class="flex flex-row justify-between w-full max-w-7xl h-full py-1 px-6">
         @auth
             @if ((auth()->user()->current_role_id == 3))
                 <img src={{ asset('images/logoGLC.png') }} alt="Logo UPBG" class="h-full">

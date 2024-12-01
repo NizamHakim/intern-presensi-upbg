@@ -1,9 +1,9 @@
 <div class="flex flex-row items-center">
     @foreach ($breadcrumbs as $text => $route)
         @if ($loop->last)
-            <span class="font-semibold text-gray-600">{{ $text }}</span>
+            <span class="font-medium text-gray-600 whitespace-nowrap">{{ $text }}</span>
         @else
-            <a href="{{ $route }}" class="text-upbg font-semibold underline decoration-transparent transition duration-300 hover:decoration-upbg">{{ $text }}</a>
+            <a href="{{ $route }}" class="text-upbg font-medium underline decoration-transparent transition duration-300 hover:decoration-upbg whitespace-nowrap">{{ $text }}</a>
             <i class="fa-solid fa-angle-right mx-2 text-gray-600"></i>
         @endif
     @endforeach

@@ -9,6 +9,7 @@ dropdowns.forEach(dropdown => {
 });
 
 function openDropdown(dropdown, handleDropdownOpen){
+    console.log('openDropdown');
     const dropdownButton = dropdown.querySelector('.dropdown-button');
     dropdownButton.classList.add('active');
     dropdownButton.classList.replace('outline-transparent', 'outline-upbg-light');

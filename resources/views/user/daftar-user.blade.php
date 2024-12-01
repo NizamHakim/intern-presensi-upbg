@@ -2,9 +2,9 @@
     <x-slot:title>Daftar User</x-slot>
     <div class="flex flex-row justify-between items-center gap-4 mt-6 mb-6">
         <h1 class="font-bold text-upbg text-[2rem]">Daftar User</h1>
-        <a href="{{ route('user.create') }}" class="relative text-white font-semibold px-3 py-2 bg-green-600 rounded-md shadow-[0px_3px] shadow-green-700 transition ease-linear transform translate-y-0 cursor-pointer active:shadow-none active:translate-y-1">
-            <i class="fa-solid fa-plus mr-2"></i>
-            Tambah User
+        <a href="{{ route('user.create') }}" class="bg-green-600 shadow-md transition duration-300 hover:bg-green-700 text-sm px-4 py-2 font-medium text-white rounded-md">
+            <i class="fa-solid fa-plus mr-1"></i>
+            <span>Tambah User</span>
         </a>
     </div>
 

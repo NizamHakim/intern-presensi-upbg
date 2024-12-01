@@ -82,6 +82,9 @@ export default {
             },
             fontSize: {
                 "2.5xl": "1.75rem",
+            },
+            screens:{
+                '2xl': '1550px',
             }
         },
     },

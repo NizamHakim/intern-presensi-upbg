@@ -18,13 +18,16 @@
             <label for="kode-program" class="font-medium text-gray-600">Kode Program</label>
             <input id="kode-program" type="text" name="kode-program" placeholder="Kode Program" class="px-3 h-10 rounded-md border border-gray-200 text-gray-600 font-medium placeholder:text-gray-400 outline outline-transparent outline-1.5 outline-offset-0 transition-all focus:outline-upbg-light">
         </div>
-        <button type="submit" class="relative mt-2 text-white font-semibold px-3 py-2 bg-green-600 rounded-md shadow-[0px_3px] shadow-green-700 transition ease-linear transform translate-y-0 cursor-pointer active:shadow-none active:translate-y-1">Tambah</button>
-        <a href="{{ route('program-kelas.index') }}" class="relative text-center text-gray-400 font-semibold border border-gray-400 px-3 py-2 bg-white rounded-md shadow-none transition duration-300 hover:shadow-md">Cancel</a>
+        <hr class="bg-gray-200 my-5">
+        <div class="flex flex-row justify-end items-center gap-4">
+            <a href="{{ route('program-kelas.index') }}" class="relative text-center text-gray-600 font-medium px-8 py-2 bg-gray-100 hover:bg-gray-200 rounded-md transition duration-300">Cancel</a>
+            <button type="submit" class="bg-green-600 shadow-md transition duration-300 hover:bg-green-700 text-base px-8 py-2 font-medium text-white rounded-md">Tambah</button>
+        </div>
     </form>
 
     @push('script')
         <script src="{{ asset('js/utils/form-control.js') }}"></script>
-        <script src="{{ asset('js/views/components/ui/toast.js') }}"></script>
+        <script src="{{ asset('js/utils/toast.js') }}"></script>
         <script src="{{ asset('js/views/kelas/program/tambah-program.js') }}"></script>
     @endpush
 </x-layouts.user-layout>

@@ -148,10 +148,15 @@ class KelasController extends Controller
             'Kelas' => route('kelas.index'),
             "$kelas->kode" => null,
         ];
+
+        $ruanganOptions = Ruangan::all();
+        $ruanganSelected = null;
         
         return view('kelas.detail-daftar-pertemuan', [
             'kelas' => $kelas,
             'breadcrumbs' => $breadcrumbs,
+            'ruanganOptions' => $ruanganOptions,
+            'ruanganSelected' => $ruanganSelected,
         ]);
     }
 
@@ -171,5 +176,52 @@ class KelasController extends Controller
             'breadcrumbs' => $breadcrumbs,
             'pesertaList' => $pesertaList,
         ]);
+    }
+
+    public function store(Request $request)
+    {
+        
+    }
+
+    public function edit($slug)
+    {
+        $kelas = Kelas::with(['jadwal', 'pengajar', 'pertemuan' => ['ruangan']])->where('slug', $slug)->firstOrFail();
+
+        $breadcrumbs = [
+            'Kelas' => route('kelas.index'),
+            "$kelas->kode" => route('kelas.detail', ['slug' => $kelas->slug]),
+            'Edit' => null,
+        ];
+
+        return view('kelas.edit-kelas', [
+            'kelas' => $kelas,
+            'breadcrumbs' => $breadcrumbs,
+        ]);
+    }
+
+    public function destroyPeserta($slug, Request $request)
+    {
+        $kelas = Kelas::where('slug', $slug)->firstOrFail();
+        $kelas->peserta()->detach($request['peserta-id']);
+
+        session()->flash('toast', [
+            'type' => 'success',
+            'message' => 'Peserta berhasil dihapus dari kelas ' . $kelas->kode
+        ]);
+
+        return redirect()->route('kelas.daftarPeserta', ['slug' => $kelas->slug]);
+    }
+
+    public function destroy($slug)
+    {
+        $kelas = Kelas::where('slug', $slug)->firstOrFail();
+        $kelas->delete();
+
+        session()->flash('toast', [
+            'type' => 'success',
+            'message' => 'Kelas ' . $kelas->kode . ' berhasil dihapus'
+        ]);
+
+        return redirect()->route('kelas.index');
     }
 }

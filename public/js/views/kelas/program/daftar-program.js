@@ -1,11 +1,11 @@
 document.addEventListener('click', (e) => {
-    if(e.target.matches('.edit-program')){
+    if(e.target.closest('.edit-program')){
         e.stopPropagation();
         const row = e.target.closest('tr');
         const clone = startEditing(row);
         row.replaceWith(clone);
         clone.querySelector('[name="nama-program"]').focus();
-    }else if(e.target.matches('.delete-program')){
+    }else if(e.target.closest('.delete-program')){
         e.stopPropagation();
         const row = e.target.closest('tr');
         showDeleteDialog(row);
@@ -41,7 +41,7 @@ function startEditing(row){
 
     const cancelButton = document.createElement('button');
     cancelButton.setAttribute('type', 'button');
-    cancelButton.setAttribute('class', 'cancel-button px-4 py-2 text-gray-400 font-semibold');
+    cancelButton.setAttribute('class', 'cancel-button bg-transparent hover:bg-white transition duration-300 text-sm px-6 py-2 font-medium text-gray-800 rounded-md');
     cancelButton.textContent = 'Cancel';
     deleteButton.replaceWith(cancelButton);
 
@@ -66,7 +66,7 @@ function startEditing(row){
 
     const saveButton = document.createElement('button');
     saveButton.setAttribute('type', 'button');
-    saveButton.setAttribute('class', 'px-4 py-2 text-green-600 font-semibold');
+    saveButton.setAttribute('class', 'bg-green-600 transition duration-300 hover:bg-green-700 text-sm px-6 py-2 font-medium text-white rounded-md');
     saveButton.textContent = 'Save';
     saveButton.value = row.getAttribute('data-program-id');
     editButton.replaceWith(saveButton);
@@ -103,8 +103,8 @@ async function saveInput(id, clone, row, handleClickOutside){
             const errors = await response.json();
             for(const key in errors){
                 const input = clone.querySelector(`[name="${key}"]`);
-                const errorSpan = createErrorSpan(errors[key][0]);
-                input.parentNode.appendChild(errorSpan);
+                const errorText = createErrorText(errors[key][0]);
+                input.parentNode.appendChild(errorText);
             }
         }else{
             createToast('error', 'Terjadi kesalahan. Silahkan coba lagi.');

@@ -13,7 +13,7 @@ class Date extends Component
     public $label;
     public $placeholder;
 
-    public function __construct($inputName, $value, $label, $placeholder)
+    public function __construct($inputName, $label, $placeholder,  $value = null)
     {
         $this->inputName = $inputName;
         $this->value = $value;

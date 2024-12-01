@@ -7,6 +7,7 @@ use App\Models\Ruangan;
 use App\Helpers\RouteGraph;
 use Illuminate\Http\Request;
 use App\Models\PertemuanKelas;
+use App\Models\PresensiPertemuanKelas;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -22,10 +23,10 @@ class PertemuanKelasController extends Controller
             "$kelas->kode" => route('kelas.detail', $kelas->slug),
             "Pertemuan - $pertemuan->pertemuan_ke" => null,
         ];
-        
+
         $pertemuan->load('presensi.peserta');
 
-        $pengajarOptions = $kelas->pengajar()->get()->map->only(['text', 'value'])->prepend(['text' => 'Pilih pengajar', 'value' => null]); // ?pengajarOptions
+        $pengajarOptions = $kelas->pengajar()->get();
         $pengajarSelected = $pengajarOptions->first();
         
         $tambahPesertaOptions = $kelas->peserta()->whereNotIn('peserta.id', $pertemuan->presensi->pluck('peserta_id'))->get();
@@ -81,6 +82,52 @@ class PertemuanKelasController extends Controller
         ]);
     }
 
+    public function store($slug, Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'tanggal' => 'required|date',
+            'waktu-mulai' => 'required|date_format:H:i',
+            'waktu-selesai' => 'required|date_format:H:i',
+            'ruangan-kode' => 'required|exists:ruangan,kode',
+        ], [
+            'tanggal.required' => 'Tanggal tidak boleh kosong',
+            'tanggal.date' => 'Tanggal tidak valid',
+            'waktu-mulai.required' => 'Waktu mulai tidak boleh kosong',
+            'waktu-mulai.date_format' => 'Waktu mulai tidak valid',
+            'waktu-selesai.required' => 'Waktu selesai tidak boleh kosong',
+            'waktu-selesai.date_format' => 'Waktu selesai tidak valid',
+            'ruangan-kode.required' => 'Ruangan tidak boleh kosong',
+            'ruangan-kode.exists' => 'Ruangan tidak valid',
+        ]);
+
+        if ($validator->fails()) {
+            return response($validator->errors(), 422);
+        }else{
+            try{
+                $kelas = Kelas::where('slug', $slug)->firstOrFail();
+
+                $kelas->pertemuan()->create([
+                    'pertemuan_ke' => $kelas->pertemuan()->count() + 1,
+                    'tanggal' => $request['tanggal'],
+                    'waktu_mulai' => $request['waktu-mulai'],
+                    'waktu_selesai' => $request['waktu-selesai'],
+                    'ruangan_id' => Ruangan::where('kode', $request['ruangan-kode'])->first()->id,
+                ]);
+            }catch(ModelNotFoundException $e){
+                return response('Pertemuan kelas tidak ditemukan', 404);
+            }
+        }
+
+        $this->reorder($kelas);
+
+        session()->flash('toast', [
+            'type' => 'success',
+            'message' => 'Pertemuan berhasil ditambahkan'
+        ]);
+
+        return response(['redirect' => route('kelas.detail', $kelas->slug)], 200);
+    }
+
     public function updateDetail($slug, $id, Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -131,6 +178,8 @@ class PertemuanKelasController extends Controller
         }else if($request['terlaksana'] == 0){
             $this->deletePresensi($pertemuan);
         }
+
+        $this->reorder($kelas);
 
         session()->flash('toast', [
             'type' => 'success',
@@ -208,6 +257,8 @@ class PertemuanKelasController extends Controller
                 return response('Pertemuan kelas tidak ditemukan', 404);
             }
         }
+
+        $this->reorder($kelas);
 
         session()->flash('toast', [
             'type' => 'success',
@@ -289,7 +340,7 @@ class PertemuanKelasController extends Controller
 
     private function reorder($kelas)
     {
-        $pertemuan = $kelas->pertemuan()->orderBy('pertemuan_ke')->get();
+        $pertemuan = $kelas->pertemuan()->get();
         $pertemuan->each(function($pertemuan, $index) {
             $pertemuan->update(['pertemuan_ke' => $index + 1]);
         });

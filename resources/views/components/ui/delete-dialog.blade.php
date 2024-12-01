@@ -1,7 +1,8 @@
-<div {{ $attributes->merge(['class' => 'delete-dialog fixed bg-black bg-opacity-25 z-10 inset-0 hidden opacity-0 duration-300 justify-center items-center select-none']) }}>
-    <div class="delete-dialog-content bg-white scale-0 transition max-w-2xl rounded-md flex flex-col p-8 gap-6">
-        <p class="text-2xl font-bold text-gray-800 text-center">{{ $title }}</p>
-        <p class="text-center text-gray-800">{{ $message }}</p>
+<div {{ $attributes->merge(['class' => 'delete-dialog fixed bg-black bg-opacity-25 z-10 inset-0 hidden opacity-0 transition duration-300 justify-center items-center select-none']) }}>
+    <div class="delete-dialog-content flex flex-col p-8 gap-6 bg-white -translate-y-5 transition duration-200 mx-4 w-full max-w-2xl rounded-sm-md">
+        <p class="text-xl font-semibold text-gray-700 text-center capitalize">{{ $title }}</p>
+        <hr class="bg-gray-200">
+        <p class="text-gray-700">{{ $message }}</p>
         @if($useSoftDelete)
             <div class="flex flex-col gap-2">
                 {{ $softDeleteMessage }}
@@ -23,9 +24,10 @@
                 <x-inputs.checkbox inputName="force-delete" value="force" :checked="false" label="Hapus permanen" class="checked:bg-red-600 checked:border-red-600"/>
             @endif
             {{ $hiddenInputs }}
-            <div class="flex flex-row justify-center gap-4 mt-6">
-                <button type="button" class="cancel-button px-8 py-2 text-gray-600 bg-white transition duration-300 hover:bg-gray-100 font-semibold rounded-sm-md">Cancel</button>
-                <button type="submit" class="px-8 py-2 bg-red-600 transition duration-300 hover:bg-red-700 text-white font-semibold rounded-sm-md">Delete</button>
+            <hr class="bg-gray-200 w-full my-4">
+            <div class="flex flex-row w-full justify-end gap-4">
+                <button type="button" class="cancel-button button-style border-none text-gray-600 bg-white hover:bg-gray-100">Cancel</button>
+                <button type="submit" class="submit-button button-style bg-red-600 text-white hover:bg-red-700">Delete</button>
             </div>
         </form>
     </div>

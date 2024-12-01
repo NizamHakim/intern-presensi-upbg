@@ -36,6 +36,10 @@
     @apply bg-gray-400;
 }
 
+.button-hadir, .button-alfa{
+    @apply border rounded-full size-9 hover:bg-gray-100 bg-white;
+}
+
 .button-hadir.active{
     @apply border-green-600 bg-green-600 text-white font-semibold;
 }
@@ -46,4 +50,20 @@
 
 .detail-kelas-navlink.active{
     @apply text-upbg-dark font-bold;
+}
+
+.button-style{
+    @apply px-4 py-1.5 rounded-sm-md border font-medium transition text-xs md:text-sm;
+}
+
+.button-loading {
+    @apply flex flex-row justify-center items-center bg-white cursor-progress;
+}
+
+.delete-presensi-container{
+    @apply hidden;
+}
+
+.delete-presensi-container.open{
+    @apply flex;
 }
