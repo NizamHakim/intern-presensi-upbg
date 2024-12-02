@@ -359,32 +359,6 @@ if(daftarPresensi) {
 
         openDialog(deletePresensiDialog);
     }
-
-    // trial
-    // const presensiItem = daftarPresensi.querySelectorAll('.presensi-item');
-    // presensiItem.forEach(presensi => {
-    //     const presensiContent = presensi.querySelector('.presensi-content');
-    //     presensiContent.addEventListener('click', (e) => {
-    //         if(!e.target.closest('.button-alfa') && !e.target.closest('.button-hadir')){
-    //             const deletePresensiContainer = presensi.querySelector('.delete-presensi-container');
-    //             if(deletePresensiContainer.classList.contains('flex')){
-    //                 deletePresensiContainer.classList.remove('flex');
-    //                 deletePresensiContainer.classList.add('hidden');
-    //             }else{
-    //                 deletePresensiContainer.classList.remove('hidden');
-    //                 deletePresensiContainer.classList.add('flex');
-    //             }
-    //         }
-    //     });
-    // });
-
-    // daftarPresensiTable.addEventListener('click', (e) => {
-    //     if(e.target.closest('.delete-presensi')){
-    //         e.stopPropagation();
-    //         const row = e.target.closest('tr');
-    //         showDeleteDialog(row);
-    //     }
-    // })
 }
 
 // function fetchReschedule(route, data){

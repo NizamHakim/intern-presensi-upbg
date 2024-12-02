@@ -35,6 +35,9 @@ class PertemuanKelasController extends Controller
         $ruanganOptions = Ruangan::all();
         $ruanganSelected = $ruanganOptions->where('id', $pertemuan->ruangan_id)->first();
 
+        $statusKehadiranOptions = collect([['text' => 'Tidak Hadir', 'value' => 0], ['text' => 'Hadir', 'value' => 1]]);
+        $statusKehadiranSelected = $statusKehadiranOptions->first();
+
         return view('kelas.pertemuan.detail-pertemuan', [
             'kelas' => $kelas,
             'pertemuan' => $pertemuan,
@@ -45,6 +48,8 @@ class PertemuanKelasController extends Controller
             'tambahPesertaSelected' => $tambahPesertaSelected,
             'ruanganOptions' => $ruanganOptions,
             'ruanganSelected' => $ruanganSelected,
+            'statusKehadiranOptions' => $statusKehadiranOptions,
+            'statusKehadiranSelected' => $statusKehadiranSelected,
         ]);
     }
 
@@ -160,6 +165,12 @@ class PertemuanKelasController extends Controller
                 $kelas = Kelas::where('slug', $slug)->firstOrFail();
                 $pertemuan = $kelas->pertemuan()->findOrFail($id);
 
+                if($request['terlaksana'] == 1 && $pertemuan->terlaksana == 0){
+                    $this->generatePresensi($kelas, $pertemuan);
+                }else if($request['terlaksana'] == 0){
+                    $this->deletePresensi($pertemuan);
+                }
+
                 $pertemuan->update([
                     'terlaksana' => $request['terlaksana'],
                     'pengajar_id' => $request['pengajar-id'],
@@ -171,12 +182,6 @@ class PertemuanKelasController extends Controller
             }catch(ModelNotFoundException $e){
                 return response('Pertemuan kelas tidak ditemukan', 404);
             }
-        }
-
-        if($request['terlaksana'] == 1){
-            $this->generatePresensi($kelas, $pertemuan);
-        }else if($request['terlaksana'] == 0){
-            $this->deletePresensi($pertemuan);
         }
 
         $this->reorder($kelas);

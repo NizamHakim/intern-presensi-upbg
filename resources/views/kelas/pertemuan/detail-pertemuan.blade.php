@@ -11,7 +11,7 @@
 
     <section id="detail-pertemuan" class="flex flex-col gap-6 bg-white shadow-sm mt-6 p-6 md:flex-row md:justify-between">
         <div class="flex flex-col gap-6">
-            <h2 class="text-gray-700 font-semibold text-xl">Pertemuan ke - {{ $pertemuan->pertemuan_ke }}</h2>
+            <h2 class="text-gray-700 font-semibold text-xl md:text-2xl">Pertemuan ke - {{ $pertemuan->pertemuan_ke }}</h2>
             <div class="flex flex-col">
                 <h3 class="font-semibold text-gray-700 mb-1">Status:</h3>
                 @if ($pertemuan->terlaksana)
@@ -34,23 +34,14 @@
             </div>
             <div class="flex flex-col">
                 <h3 class="font-semibold text-gray-700 mb-2">Jadwal:</h3>
-                <div class="flex flex-col gap-3 text-gray-700">
-                    <div class="flex flex-row gap-2">
-                        <i class="fa-solid fa-calendar-days w-4"></i>
-                        <span class="leading-none">{{ $pertemuan->tanggal->isoFormat('dddd, D MMMM YYYY')}}</span>
-                    </div>
-                    <div class="flex flex-row gap-2">
-                        <i class="fa-regular fa-clock w-4"></i>
-                        <span class="leading-none">{{ $pertemuan->waktu_mulai->isoFormat("HH:mm") . " - " . $pertemuan->waktu_selesai->isoFormat("HH:mm") }}</span>
-                    </div>
-                    <div class="flex flex-row gap-2">
-                        <i class="fa-regular fa-building w-4"></i>
-                        <span class="leading-none">{{ $pertemuan->ruangan->kode }}</span>
-                    </div>
+                <div class="flex flex-col gap-2 text-gray-700">
+                    <span><i class="fa-solid fa-calendar-days mr-2"></i>{{ $pertemuan->tanggal->isoFormat('dddd, D MMMM YYYY')}}</span>
+                    <span><i class="fa-regular fa-clock mr-2"></i>{{ $pertemuan->waktu_mulai->isoFormat("HH:mm") . " - " . $pertemuan->waktu_selesai->isoFormat("HH:mm") }}</span>
+                    <span><i class="fa-regular fa-building mr-2"></i>{{ $pertemuan->ruangan->kode }}</span>
                 </div>
             </div>
         </div>
-        <div class="flex flex-col gap-2 md:flex-row h-fit">
+        <div class="flex flex-col gap-2 h-fit md:flex-row">
             <a href="{{ route('kelas.pertemuan.edit', ['slug' => $kelas->slug, 'id' => $pertemuan->id]) }}" class="button-style text-center border-upbg text-upbg hover:bg-upbg hover:text-white"><i class="fa-regular fa-pen-to-square mr-1"></i>Edit</a>
             <button type="button" class="delete-pertemuan button-style border-red-600 text-red-600 hover:bg-red-600 hover:text-white"><i class="fa-regular fa-trash-can mr-1"></i>Delete</button>
         </div>
@@ -70,11 +61,11 @@
     <section id="topik-catatan" class="flex flex-col gap-4 shadow-sm mt-6 p-6 bg-white @if ($pertemuan->presensi->isEmpty() && auth()->user()->current_role_id == 2) mb-20 @endif" data-slug="{{ $kelas->slug }}" data-id="{{ $pertemuan->id }}">
         <div class="topik flex flex-col gap-2 input-group">
             <h3 class="font-semibold text-gray-700">Topik Bahasan</h3>
-            <p class="text-gray-600">{!! ($pertemuan->topik) ? $pertemuan->topik : '-' !!}</p>
+            <p class="text-gray-600 break-words">{!! ($pertemuan->topik) ? $pertemuan->topik : '-' !!}</p>
         </div>
         <div class="catatan flex flex-col gap-2 input-group">
             <h3 class="font-semibold text-gray-700">Catatan</h3>
-            <p class="text-gray-600">{!! ($pertemuan->catatan) ? $pertemuan->catatan : '-' !!}</p>
+            <p class="text-gray-600 break-words">{!! ($pertemuan->catatan) ? $pertemuan->catatan : '-' !!}</p>
         </div>
         <button class="edit-topik-catatan button-style text-upbg border-upbg text-center hover:text-white hover:bg-upbg">
             <i class="fa-regular fa-pen-to-square mr-1"></i>
@@ -114,7 +105,7 @@
             @endif
         @endif
     @else
-        <section id="daftar-presensi" class="flex flex-col shadow-sm mt-6 mb-20">
+        <section id="daftar-presensi" class="flex flex-col shadow-sm mt-6">
             <div class="flex flex-col bg-white p-6 gap-6 md:flex-row md:justify-between">
                 <div class="flex flex-col items-center gap-2 md:items-start">
                     <p class="text-lg text-gray-700 md:text-2xl">Kehadiran Peserta</p>
@@ -140,6 +131,7 @@
                             <form action="{{ route('presensi.store') }}" class="flex flex-col gap-4">
                                 <input type="hidden" name="pertemuan-id" value="{{ $pertemuan->id }}">
                                 <x-inputs.dropdown :selected="$tambahPesertaSelected" :options="$tambahPesertaOptions" placeholder="Pilih peserta" inputName="peserta-id" label="Pilih peserta"/>
+                                <x-inputs.dropdown :selected="$statusKehadiranSelected" :options="$statusKehadiranOptions" inputName="hadir" label="Status Kehadiran"/>
                                 <div class="flex flex-col justify-start p-4 bg-green-100 rounded-md text-sm">
                                     <p class="text-green-600 font-semibold mb-2"><i class="fa-solid fa-circle-info mr-2"></i>Info</p>
                                     <p class="text-green-600">Jika peserta tidak ada dalam daftar, pastikan peserta sudah terdaftar di kelas ini</p>
@@ -164,7 +156,7 @@
                 </div>
                 @foreach ($pertemuan->presensi as $presensi)
                     <div class="presensi-item flex flex-col md:flex-row" data-presensi-id="{{ $presensi->id }}">
-                        <div class="presensi-content flex flex-row items-center py-5 sm:cursor-pointer md:flex-1">
+                        <div class="presensi-content flex flex-row items-center py-5 sm:cursor-pointer md:flex-1 md:cursor-auto">
                             <p class="w-12 text-center font-medium sm:w-20 sm:px-6">{{ $loop->iteration }}.</p>
                             <div class="flex-1 px-2 flex flex-col">
                                 <p class="nama-peserta w-fit font-medium text-gray-700">{{ $presensi->peserta->nama }}</p>

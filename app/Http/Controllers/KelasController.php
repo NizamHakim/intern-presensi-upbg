@@ -193,9 +193,30 @@ class KelasController extends Controller
             'Edit' => null,
         ];
 
+        $programOptions = ProgramKelas::aktif()->get();
+        $programSelected = null;
+        $tipeOptions = TipeKelas::aktif()->get();
+        $tipeSelected = null;
+        $levelOptions = LevelKelas::aktif()->get();
+        $levelSelected = null;
+        $ruanganOptions = Ruangan::all();
+        $ruanganSelected = null;
+        $pengajarOptions = User::pengajar()->get();
+        $pengajarSelected = null;
+
         return view('kelas.edit-kelas', [
             'kelas' => $kelas,
             'breadcrumbs' => $breadcrumbs,
+            'programOptions' => $programOptions,
+            'programSelected' => $programSelected,
+            'tipeOptions' => $tipeOptions,
+            'tipeSelected' => $tipeSelected,
+            'levelOptions' => $levelOptions,
+            'levelSelected' => $levelSelected,
+            'ruanganOptions' => $ruanganOptions,
+            'ruanganSelected' => $ruanganSelected,
+            'pengajarOptions' => $pengajarOptions,
+            'pengajarSelected' => $pengajarSelected,
         ]);
     }
 

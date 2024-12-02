@@ -13,11 +13,13 @@ class PresensiPertemuanKelasController extends Controller
         $validator = Validator::make($request->all(), [
             'pertemuan-id' => 'required|exists:pertemuan_kelas,id',
             'peserta-id' => 'required|exists:peserta,id',
+            'hadir' => 'required|boolean',
         ], [
             'pertemuan-id.required' => 'Pertemuan tidak boleh kosong',
             'pertemuan-id.exists' => 'Pertemuan tidak valid',
             'peserta-id.required' => 'Peserta tidak boleh kosong',
             'peserta-id.exists' => 'Peserta tidak valid',
+            'hadir.required' => 'Status kehadiran tidak boleh kosong',
         ]);
 
         if ($validator->fails()) {
@@ -27,6 +29,7 @@ class PresensiPertemuanKelasController extends Controller
         $presensi = PresensiPertemuanKelas::create([
             'pertemuan_id' => $request['pertemuan-id'],
             'peserta_id' => $request['peserta-id'],
+            'hadir' => $request['hadir'],
         ]);
 
         session()->flash('toast', [

@@ -10,7 +10,7 @@
     <div class="flex-1 flex flex-col">
         <x-layouts.top-bar/>
         <main class="flex-1 flex flex-row justify-center bg-gray-100 text-sm text-gray-600">
-            <div class="w-full max-w-6xl 2xl:max-w-7xl px-4 py-4">
+            <div class="w-full max-w-6xl 2xl:max-w-7xl px-4 pt-4 pb-40">
                 {{ $slot }}
             </div>
         </main>
