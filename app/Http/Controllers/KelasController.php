@@ -11,6 +11,7 @@ use App\Models\ProgramKelas;
 use Illuminate\Http\Request;
 use App\Models\PertemuanKelas;
 use App\Models\User;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ItemNotFoundException;
@@ -217,6 +218,18 @@ class KelasController extends Controller
             'ruanganSelected' => $ruanganSelected,
             'pengajarOptions' => $pengajarOptions,
             'pengajarSelected' => $pengajarSelected,
+        ]);
+    }
+
+    public function update($slug, Request $request)
+    {
+        $kelas = Kelas::where('slug', $slug)->firstOrFail();
+
+        $validator = Validator::make($request->all(), [
+            'kode-kelas' => 'required|string|max:255',
+            'program-kode' => 'required|string|exists:table,column',
+        ], [
+            
         ]);
     }
 

@@ -34,6 +34,7 @@ Route::middleware(Authenticated::class)->group(function(){
     Route::get('/kelas/{slug}/daftar-peserta', [KelasController::class, 'daftarPeserta'])->name('kelas.daftarPeserta');
     Route::post('/kelas', [KelasController::class, 'store'])->name('kelas.store');
     Route::get('/kelas/{slug}/edit', [KelasController::class, 'edit'])->name('kelas.edit');
+    Route::put('/kelas/{slug}', [KelasController::class, 'update'])->name('kelas.update');
     Route::delete('/kelas/{slug}', [KelasController::class, 'destroy'])->name('kelas.destroy');
     Route::delete('/kelas/{slug}/delete-peserta', [KelasController::class, 'destroyPeserta'])->name('kelas.destroyPeserta');
 

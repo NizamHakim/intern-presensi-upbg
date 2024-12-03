@@ -5,9 +5,9 @@
         <x-ui.breadcrumbs :breadcrumbs="$breadcrumbs"/>
     </div>
 
-    <form action="" class="edit-form flex flex-col bg-white p-6 shadow-sm mt-6">
+    <form action="{{ route('kelas.update', ['slug' => $kelas->slug]) }}" class="edit-form flex flex-col bg-white p-6 shadow-sm mt-6">
         <div class="flex flex-col col-span-full">
-            <h1 class="text-gray-700 font-medium mb-1">Kode Kelas</h1>
+            <h1 class="text-gray-700 font-medium mb-1.5">Kode Kelas</h1>
             <input name="kode-kelas" readonly type="text" placeholder="Pilih kategori untuk membuat kode kelas" class="input-style">
         </div>
         <hr class="my-5">
@@ -15,12 +15,12 @@
             <x-inputs.dropdown :selected="$programSelected" :options="$programOptions" inputName="program-kode" label="Program" placeholder="Pilih program" class="col-span-full kode-former md:col-span-3 xl:col-span-2"/>
             <x-inputs.dropdown :selected="$tipeSelected" :options="$tipeOptions" inputName="tipe-kode" label="Tipe" placeholder="Pilih tipe" class="col-span-full kode-former md:col-span-3 xl:col-span-2"/>
             <div class="flex flex-col col-span-full input-group kode-former md:col-span-3 xl:col-span-2">
-                <label class="text-gray-700 font-medium mb-1">Nomor Kelas</label>
+                <label class="text-gray-700 font-medium mb-1.5">Nomor Kelas</label>
                 <input type="number" name="nomor-kelas" class="input-style input-number" placeholder="Nomor kelas">
             </div>
             <x-inputs.dropdown :selected="$levelSelected" :options="$levelOptions" inputName="level-kode" label="Level" placeholder="Pilih level" class="col-span-full kode-former md:col-span-3 xl:col-span-2"/>
             <div class="flex flex-col col-span-full input-group kode-former md:col-span-3 xl:col-span-2">
-                <label class="text-gray-700 font-medium mb-1">Banyak Pertemuan</label>
+                <label class="text-gray-700 font-medium mb-1.5">Banyak Pertemuan</label>
                 <input type="number" name="banyak-pertemuan" class="input-style input-number" placeholder="Banyak pertemuan">
             </div>
             <x-inputs.date inputName="tanggal-mulai" label="Tanggal mulai" placeholder="Pilih tanggal mulai" class="col-span-full kode-former md:col-span-3 xl:col-span-2"/>
@@ -46,8 +46,9 @@
             <button type="submit" class="button-style bg-green-600 border-green-600 text-white hover:bg-green-700">Simpan</button>
         </div>
     </form>
-    
+
     @push('script')
+        <script src="{{ asset('js/utils/form-control.js') }}"></script>
         <script src="{{ asset('js/views/kelas/edit-kelas.js') }}"></script>
     @endpush
 </x-layouts.user-layout>

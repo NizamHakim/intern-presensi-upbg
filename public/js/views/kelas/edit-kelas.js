@@ -1,25 +1,65 @@
 const editForm = document.querySelector('.edit-form');
-editForm.addEventListener('submit', function(e){
+editForm.addEventListener('submit', async function(e){
     e.preventDefault();
+    clearErrors(editForm);
+    const route = editForm.getAttribute('action');
+    const submitButton = e.submitter;
+
     const formData = new FormData(editForm);
     const data = Object.fromEntries(formData);
-    console.log(data);
+    data['pengajar'] = formData.getAll('pengajar[]');
+    
+    playFetchingAnimation(submitButton, 'green', 'Validating...');
+    const response = await fetchRequest(route, 'PUT', data);
+    stopFetchingAnimation(submitButton);
+
+    if(response.ok){
+        const json = await response.json();
+        window.location.replace(json.redirect);
+    }else{
+        handleError(response, editForm);
+    }
 });
 
-const kodeKelas = editForm.querySelector('.kode-kelas');
 const kodeFormers = editForm.querySelectorAll('.kode-former');
 kodeFormers.forEach(former => {
     const input = former.querySelector('input');
     if(input.type == 'number'){
         input.addEventListener('input', function(){
-            console.log(input.value);
+            updateKodeKelas();
         });
     }else{
         input.addEventListener('change', function(){
-            console.log(input.value);
+            updateKodeKelas();
         });
     }
 });
+
+function updateKodeKelas(){
+    const kodeKelas = editForm.querySelector('[name="kode-kelas"]');
+    const kodeProgram = extractDropdownText(editForm.querySelector('[name="program-kode"]').previousElementSibling);
+    const kodeTipe = extractDropdownText(editForm.querySelector('[name="tipe-kode"]').previousElementSibling);
+    const nomorKelas = editForm.querySelector('[name="nomor-kelas"]').value;
+    const kodeLevel = extractDropdownText(editForm.querySelector('[name="level-kode"]').previousElementSibling);
+    const banyakPertemuan = editForm.querySelector('[name="banyak-pertemuan"]').value;
+    const tanggalMulai = new Date(editForm.querySelector('[name="tanggal-mulai"]').value)
+    const bulanMulai = monthParse(tanggalMulai.getMonth());
+    const tahunMulai = tanggalMulai.getFullYear();
+
+    let array = [`${kodeProgram}`, `${kodeTipe}.${nomorKelas}`, `${kodeLevel}`, `${banyakPertemuan}`, `${bulanMulai}`, `${tahunMulai}`];
+    array = array.filter(item => item !== '' && item !== null && item !== 'NaN' && item !== 'undefined' && item !== '.');
+    kodeKelas.value = array.join('/');
+}
+
+function extractDropdownText(dropdownButton){
+    const text = dropdownButton.querySelector('span').textContent;
+    return (text.match(/\(([^)]+)\)/)) ? text.match(/\(([^)]+)\)/)[1] : '';
+}
+
+function monthParse(num){
+    const roman = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
+    return roman[num];
+}
 
 const pengajarContainer = editForm.querySelector('.pengajar-container');
 pengajarContainer.addEventListener('click', function(e){
@@ -35,6 +75,7 @@ tambahPengajar.addEventListener('click', function(){
     const dropdownPengajar = document.querySelector('.dropdown-pengajar');
     const dropdownPengajarClone = dropdownPengajar.cloneNode(true);
     addDeletePengajarButton(dropdownPengajarClone);
+    resetDropdownValue(dropdownPengajarClone.querySelector('.input-dropdown'));
     pengajarContainer.appendChild(dropdownPengajarClone);
 });
 
