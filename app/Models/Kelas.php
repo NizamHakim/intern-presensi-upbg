@@ -36,14 +36,29 @@ class Kelas extends Model
         }
     }
 
-    public function jadwal()
+    public function program()
     {
-        return $this->hasMany(JadwalKelas::class)->orderBy('hari', 'asc');
+        return $this->belongsTo(ProgramKelas::class);
+    }
+
+    public function tipe()
+    {
+        return $this->belongsTo(TipeKelas::class);
+    }
+
+    public function level()
+    {
+        return $this->belongsTo(LevelKelas::class);
     }
 
     public function ruangan()
     {
         return $this->belongsTo(Ruangan::class);
+    }
+
+    public function jadwal()
+    {
+        return $this->hasMany(JadwalKelas::class)->orderBy('hari', 'asc');
     }
 
     public function pengajar()

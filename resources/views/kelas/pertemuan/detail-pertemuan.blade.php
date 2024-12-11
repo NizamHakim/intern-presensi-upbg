@@ -156,7 +156,7 @@
                 </div>
                 @foreach ($pertemuan->presensi as $presensi)
                     <div class="presensi-item flex flex-col md:flex-row" data-presensi-id="{{ $presensi->id }}">
-                        <div class="presensi-content flex flex-row items-center py-5 sm:cursor-pointer md:flex-1 md:cursor-auto">
+                        <div class="presensi-content flex flex-row items-center py-5 cursor-pointer md:flex-1 md:cursor-auto">
                             <p class="w-12 text-center font-medium sm:w-20 sm:px-6">{{ $loop->iteration }}.</p>
                             <div class="flex-1 px-2 flex flex-col">
                                 <p class="nama-peserta w-fit font-medium text-gray-700">{{ $presensi->peserta->nama }}</p>

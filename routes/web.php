@@ -13,6 +13,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Middleware\Authenticated;
 use App\Http\Middleware\Guest;
 use App\Http\Middleware\HandleGetQuery;
+use App\Models\ProgramKelas;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -31,11 +32,13 @@ Route::middleware(Authenticated::class)->group(function(){
     Route::get('/kelas', [KelasController::class, 'index'])->middleware(HandleGetQuery::class)->name('kelas.index');
     Route::get('/kelas/create', [KelasController::class, 'create'])->name('kelas.create');
     Route::get('/kelas/{slug}', [KelasController::class, 'detail'])->name('kelas.detail');
-    Route::get('/kelas/{slug}/daftar-peserta', [KelasController::class, 'daftarPeserta'])->name('kelas.daftarPeserta');
     Route::post('/kelas', [KelasController::class, 'store'])->name('kelas.store');
     Route::get('/kelas/{slug}/edit', [KelasController::class, 'edit'])->name('kelas.edit');
     Route::put('/kelas/{slug}', [KelasController::class, 'update'])->name('kelas.update');
     Route::delete('/kelas/{slug}', [KelasController::class, 'destroy'])->name('kelas.destroy');
+    Route::get('/kelas/{slug}/daftar-peserta', [KelasController::class, 'daftarPeserta'])->name('kelas.daftarPeserta');
+    Route::get('/kelas/{slug}/daftar-peserta/tambah', [KelasController::class, 'tambahPeserta'])->name('kelas.tambahPeserta');
+    Route::post('/kelas/{slug}/daftar-peserta/tambah', [KelasController::class, 'storePeserta'])->name('kelas.storePeserta');
     Route::delete('/kelas/{slug}/delete-peserta', [KelasController::class, 'destroyPeserta'])->name('kelas.destroyPeserta');
 
     Route::get('/kelas/{slug}/pertemuan/{id}', [PertemuanKelasController::class, 'detail'])->name('kelas.pertemuan.detail');
@@ -79,4 +82,13 @@ Route::middleware(Authenticated::class)->group(function(){
     Route::delete('/level-kelas', [LevelKelasController::class, 'destroy'])->name('level-kelas.destroy');
 
     Route::get('/ruangan', [RuanganController::class, 'index'])->name('ruangan.index');
+});
+
+Route::get('/component-testing', function(){
+    $programOptions = ProgramKelas::aktif()->get();
+    $programSelected = ProgramKelas::aktif()->first();
+    return view('component-testing', [
+        'programOptions' => $programOptions,
+        'programSelected' => $programSelected,
+    ]);
 });

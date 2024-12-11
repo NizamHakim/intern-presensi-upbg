@@ -383,49 +383,49 @@ if(daftarPresensi) {
 //     })
 // }
 
-function fetchRequest(route, method, data = {}){
-    return fetch(route, {
-        method: method,
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-        },
-        body: JSON.stringify(data)
-    });
-}
+// function fetchRequest(route, method, data = {}){
+//     return fetch(route, {
+//         method: method,
+//         headers: {
+//             'Content-Type': 'application/json',
+//             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+//         },
+//         body: JSON.stringify(data)
+//     });
+// }
 
-async function handleError(response, container){
-    if(response.status === 422){
-        const errors = await response.json();
-        for(const key in errors){
-            const input = container.querySelector(`[name="${key}"]`);
-            const inputGroup = input.closest('.input-group');
-            const error = createErrorText(errors[key][0]);
-            inputGroup.appendChild(error);
-        }
-    }else{
-        createToast('error', 'Terjadi kesalahan. Silahkan coba lagi.');
-    }
-}
+// async function handleError(response, container){
+//     if(response.status === 422){
+//         const errors = await response.json();
+//         for(const key in errors){
+//             const input = container.querySelector(`[name="${key}"]`);
+//             const inputGroup = input.closest('.input-group');
+//             const error = createErrorText(errors[key][0]);
+//             inputGroup.appendChild(error);
+//         }
+//     }else{
+//         createToast('error', 'Terjadi kesalahan. Silahkan coba lagi.');
+//     }
+// }
 
-function playFetchingAnimation(element, style, message){
-    const colors = {
-        'green': 'border-green-600',
-        'blue': 'border-upbg',
-    };
+// function playFetchingAnimation(element, style, message){
+//     const colors = {
+//         'green': 'border-green-600',
+//         'blue': 'border-upbg',
+//     };
 
-    element.classList.add('hidden');
+//     element.classList.add('hidden');
 
-    const loading = document.createElement('button');
-    loading.setAttribute('class', 'button-loading button-style ' + colors[style]);
-    loading.setAttribute('disabled', 'true');
-    loading.innerHTML = createLoadingAnimation(message, style);
-    element.insertAdjacentElement('afterend', loading);
-}
+//     const loading = document.createElement('button');
+//     loading.setAttribute('class', 'button-loading button-style ' + colors[style]);
+//     loading.setAttribute('disabled', 'true');
+//     loading.innerHTML = createLoadingAnimation(message, style);
+//     element.insertAdjacentElement('afterend', loading);
+// }
 
-function stopFetchingAnimation(element){
-    const loading = element.nextElementSibling;
-    loading.remove();
+// function stopFetchingAnimation(element){
+//     const loading = element.nextElementSibling;
+//     loading.remove();
 
-    element.classList.remove('hidden');
-}
+//     element.classList.remove('hidden');
+// }

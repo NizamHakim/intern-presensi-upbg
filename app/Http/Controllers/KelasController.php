@@ -2,19 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\RouteGraph;
+use App\Models\User;
 use App\Models\Kelas;
 use App\Models\Ruangan;
 use App\Models\TipeKelas;
 use App\Models\LevelKelas;
+use App\Helpers\RouteGraph;
 use App\Models\ProgramKelas;
 use Illuminate\Http\Request;
 use App\Models\PertemuanKelas;
-use App\Models\User;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use App\Helpers\KodeKelasGenerator;
+use App\Models\Peserta;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ItemNotFoundException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class KelasController extends Controller
 {
@@ -151,31 +154,11 @@ class KelasController extends Controller
         ];
 
         $ruanganOptions = Ruangan::all();
-        $ruanganSelected = null;
         
         return view('kelas.detail-daftar-pertemuan', [
             'kelas' => $kelas,
             'breadcrumbs' => $breadcrumbs,
             'ruanganOptions' => $ruanganOptions,
-            'ruanganSelected' => $ruanganSelected,
-        ]);
-    }
-
-    public function daftarPeserta($slug)
-    {
-        $kelas = Kelas::with(['jadwal', 'pengajar', 'pertemuan' => ['ruangan']])->where('slug', $slug)->firstOrFail();
-        $kelas->progress = $kelas->pertemuan->where('terlaksana', true)->count();
-        $breadcrumbs = [
-            'Kelas' => route('kelas.index'),
-            "$kelas->kode" => null,
-        ];
-
-        $pesertaList = $kelas->peserta()->paginate(10);
-        
-        return view('kelas.detail-daftar-peserta', [
-            'kelas' => $kelas,
-            'breadcrumbs' => $breadcrumbs,
-            'pesertaList' => $pesertaList,
         ]);
     }
 
@@ -186,7 +169,7 @@ class KelasController extends Controller
 
     public function edit($slug)
     {
-        $kelas = Kelas::with(['jadwal', 'pengajar', 'pertemuan' => ['ruangan']])->where('slug', $slug)->firstOrFail();
+        $kelas = Kelas::with(['jadwal', 'pengajar'])->where('slug', $slug)->firstOrFail();
 
         $breadcrumbs = [
             'Kelas' => route('kelas.index'),
@@ -195,29 +178,29 @@ class KelasController extends Controller
         ];
 
         $programOptions = ProgramKelas::aktif()->get();
-        $programSelected = null;
         $tipeOptions = TipeKelas::aktif()->get();
-        $tipeSelected = null;
         $levelOptions = LevelKelas::aktif()->get();
-        $levelSelected = null;
         $ruanganOptions = Ruangan::all();
-        $ruanganSelected = null;
         $pengajarOptions = User::pengajar()->get();
-        $pengajarSelected = null;
+        $hariOptions = collect([
+            ['text' => 'Minggu', 'value' => 0],
+            ['text' => 'Senin', 'value' => 1],
+            ['text' => 'Selasa', 'value' => 2],
+            ['text' => 'Rabu', 'value' => 3],
+            ['text' => 'Kamis', 'value' => 4],
+            ['text' => 'Jumat', 'value' => 5],
+            ['text' => 'Sabtu', 'value' => 6],
+        ]);
 
         return view('kelas.edit-kelas', [
             'kelas' => $kelas,
             'breadcrumbs' => $breadcrumbs,
             'programOptions' => $programOptions,
-            'programSelected' => $programSelected,
             'tipeOptions' => $tipeOptions,
-            'tipeSelected' => $tipeSelected,
             'levelOptions' => $levelOptions,
-            'levelSelected' => $levelSelected,
             'ruanganOptions' => $ruanganOptions,
-            'ruanganSelected' => $ruanganSelected,
             'pengajarOptions' => $pengajarOptions,
-            'pengajarSelected' => $pengajarSelected,
+            'hariOptions' => $hariOptions,
         ]);
     }
 
@@ -226,11 +209,165 @@ class KelasController extends Controller
         $kelas = Kelas::where('slug', $slug)->firstOrFail();
 
         $validator = Validator::make($request->all(), [
-            'kode-kelas' => 'required|string|max:255',
-            'program-kode' => 'required|string|exists:table,column',
-        ], [
-            
+            'kode-kelas' => 'required|unique:kelas,kode,' . $kelas->id,
+            'program' => 'required|exists:program_kelas,id',
+            'tipe' => 'required|exists:tipe_kelas,id',
+            'nomor-kelas' => 'required|numeric',
+            'level' => 'required|exists:level_kelas,id',
+            'banyak-pertemuan' => 'required|numeric',
+            'tanggal-mulai' => 'required|date',
+            'ruangan' => 'required|exists:ruangan,id',
+            'hari' => 'required|array',
+            'hari.*' => 'required|numeric',
+            'waktu-mulai' => 'required|array',
+            'waktu-mulai.*' => 'required|date_format:H:i',
+            'waktu-selesai' => 'required|array',
+            'waktu-selesai.*' => 'required|date_format:H:i',
+            'pengajar' => 'required|array',
+            'pengajar.*' => 'required|exists:users,id',
+        ], [ 
+            'kode-kelas.required' => 'Kode kelas tidak boleh kosong',
+            'kode-kelas.unique' => 'Kode kelas sudah digunakan',
+            'program.required' => 'Program tidak boleh kosong',
+            'program.exists' => 'Program tidak valid',
+            'tipe.required' => 'Tipe tidak boleh kosong',
+            'tipe.exists' => 'Tipe tidak valid',
+            'nomor-kelas.required' => 'Nomor kelas tidak boleh kosong',
+            'nomor-kelas.numeric' => 'Nomor kelas harus berupa angka',
+            'level.required' => 'Level tidak boleh kosong',
+            'level.exists' => 'Level tidak valid',
+            'banyak-pertemuan.required' => 'Banyak pertemuan tidak boleh kosong',
+            'banyak-pertemuan.numeric' => 'Banyak pertemuan harus berupa angka',
+            'tanggal-mulai.required' => 'Tanggal mulai tidak boleh kosong',
+            'tanggal-mulai.date' => 'Tanggal mulai tidak valid',
+            'ruangan.required' => 'Ruangan tidak boleh kosong',
+            'ruangan.exists' => 'Ruangan tidak valid',
+            'hari.required' => 'Hari tidak boleh kosong',
+            'hari.array' => 'Hari tidak valid',
+            'hari.*.required' => 'Hari tidak boleh kosong',
+            'hari.*.numeric' => 'Hari tidak valid',
+            'waktu-mulai.required' => 'Waktu mulai tidak boleh kosong',
+            'waktu-mulai.array' => 'Waktu mulai tidak valid',
+            'waktu-mulai.*.required' => 'Waktu mulai tidak boleh kosong',
+            'waktu-mulai.*.date_format' => 'Waktu mulai tidak valid',
+            'waktu-selesai.required' => 'Waktu selesai tidak boleh kosong',
+            'waktu-selesai.array' => 'Waktu selesai tidak valid',
+            'waktu-selesai.*.required' => 'Waktu selesai tidak boleh kosong',
+            'pengajar.required' => 'Pengajar tidak boleh kosong',
+            'pengajar.array' => 'Pengajar tidak valid',
+            'pengajar.*.required' => 'Pengajar tidak boleh kosong',
+            'pengajar.*.exists' => 'Pengajar tidak valid',
         ]);
+
+        if ($validator->fails()) {
+            return response($validator->errors(), 422);
+        }else{
+            $kelas->update([
+                'kode' => $request['kode-kelas'],
+                'slug' => KodeKelasGenerator::slug($request['kode-kelas']),
+                'program_id' => $request['program'],
+                'tipe_id' => $request['tipe'],
+                'nomor_kelas' => $request['nomor-kelas'],
+                'level_id' => $request['level'],
+                'banyak_pertemuan' => $request['banyak-pertemuan'],
+                'tanggal_mulai' => $request['tanggal-mulai'],
+                'ruangan_id' => $request['ruangan'],
+            ]);
+
+            $kelas->jadwal()->delete();
+            for($i = 0; $i < count($request['hari']); $i++){
+                $kelas->jadwal()->create([
+                    'hari' => $request['hari'][$i],
+                    'waktu_mulai' => $request['waktu-mulai'][$i],
+                    'waktu_selesai' => $request['waktu-selesai'][$i],
+                ]);
+            }
+            
+            $kelas->pengajar()->sync($request['pengajar']);
+        }
+        
+        session()->flash('toast', [
+            'type' => 'success',
+            'message' => 'Detail kelas berhasil diubah'
+        ]);
+
+        return response(['redirect' => route('kelas.detail', ['slug' => $kelas->slug])], 200);
+    }
+
+    public function destroy($slug)
+    {
+        $kelas = Kelas::where('slug', $slug)->firstOrFail();
+        $kelas->delete();
+
+        session()->flash('toast', [
+            'type' => 'success',
+            'message' => 'Kelas ' . $kelas->kode . ' berhasil dihapus'
+        ]);
+
+        return redirect()->route('kelas.index');
+    }
+
+    public function daftarPeserta($slug)
+    {
+        $kelas = Kelas::where('slug', $slug)->firstOrFail();
+        $breadcrumbs = [
+            'Kelas' => route('kelas.index'),
+            "$kelas->kode" => route('kelas.detail', ['slug' => $kelas->slug]),
+            'Daftar Peserta' => null,
+        ];
+
+        $pesertaList = $kelas->peserta()->orderBy('nama')->paginate(20);
+        
+        return view('kelas.detail-daftar-peserta', [
+            'kelas' => $kelas,
+            'breadcrumbs' => $breadcrumbs,
+            'pesertaList' => $pesertaList,
+        ]);
+    }
+
+    public function tambahPeserta($slug)
+    {
+        $kelas = Kelas::where('slug', $slug)->firstOrFail();
+        $breadcrumbs = [
+            'Kelas' => route('kelas.index'),
+            "$kelas->kode" => route('kelas.detail', ['slug' => $kelas->slug]),
+            'Daftar Peserta' => route('kelas.daftarPeserta', ['slug' => $kelas->slug]),
+            'Tambah' => null,
+        ];
+
+        return view('kelas.tambah-peserta', [
+            'kelas' => $kelas,
+            'breadcrumbs' => $breadcrumbs,
+        ]);
+    }
+
+    public function storePeserta($slug, Request $request)
+    {
+        $kelas = Kelas::where('slug', $slug)->firstOrFail();
+
+        $validator = $this->validatePeserta($request, $kelas);
+
+        if ($validator->fails()) {
+            return response($validator->errors(), 422);
+        }else{
+            for($i = 0; $i < count($request['nik-peserta']); $i++){
+                $peserta = Peserta::firstOrCreate([
+                    'nik' => $request['nik-peserta'][$i],
+                ], [
+                    'nama' => $request['nama-peserta'][$i],
+                    'occupation' => $request['occupation-peserta'][$i],
+                ]);
+
+                $kelas->peserta()->attach($peserta->id);
+            }
+        }
+
+        session()->flash('toast', [
+            'type' => 'success',
+            'message' => 'Peserta berhasil ditambahkan',
+        ]);
+
+        return response(['redirect' => route('kelas.daftarPeserta', ['slug' => $kelas->slug])], 200);
     }
 
     public function destroyPeserta($slug, Request $request)
@@ -246,16 +383,30 @@ class KelasController extends Controller
         return redirect()->route('kelas.daftarPeserta', ['slug' => $kelas->slug]);
     }
 
-    public function destroy($slug)
+    private function validatePeserta($request, $kelas)
     {
-        $kelas = Kelas::where('slug', $slug)->firstOrFail();
-        $kelas->delete();
+        Validator::extend('unique_peserta', function($attribute, $value, $parameters, $validator){
+            $kelas = Kelas::where('slug', $parameters[0])->first();
+            $peserta = Peserta::where('nik', $value)->first();
+            if(!$peserta) return true;
+            return $kelas->peserta()->where('peserta_id', $peserta->id)->count() == 0;
+        });
 
-        session()->flash('toast', [
-            'type' => 'success',
-            'message' => 'Kelas ' . $kelas->kode . ' berhasil dihapus'
+        $validator = Validator::make($request->all(), [
+            'nik-peserta' => 'nullable|array',
+            'nik-peserta.*' => 'required|numeric|unique_peserta:' . $kelas->slug,
+            'nama-peserta' => 'nullable|array',
+            'nama-peserta.*' => 'required',
+            'occupation-peserta' => 'nullable|array',
+            'occupation-peserta.*' => 'required',
+        ], [ 
+            'nik-peserta.*.required' => 'NIK / NRP tidak boleh kosong',
+            'nik-peserta.*.numeric' => 'NIK / NRP harus berupa angka',
+            'nik-peserta.*.unique_peserta' => 'Peserta sudah terdaftar di kelas ini',
+            'nama-peserta.*.required' => 'Nama tidak boleh kosong',
+            'occupation-peserta.*.required' => 'Departemen / Occupation tidak boleh kosong',
         ]);
 
-        return redirect()->route('kelas.index');
+        return $validator;
     }
 }

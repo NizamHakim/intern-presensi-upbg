@@ -1,34 +1,40 @@
-const deleteKelas = document.querySelector('.delete-kelas');
-if(deleteKelas){
-    deleteKelas.addEventListener('click', function(e){
-        e.stopPropagation();
-        const deleteKelasDialog = document.querySelector('.delete-kelas-dialog');
-        openDialog(deleteKelasDialog);
-    });
-}
-
-const daftarPesertaSection = document.getElementById('daftar-peserta');
-if(daftarPesertaSection){
-    const daftarPesertaTable = daftarPesertaSection.querySelector('table');
-    daftarPesertaTable.addEventListener('click', (e) => {
-        if(e.target.closest('.delete-peserta')){
+const daftarPeserta = document.getElementById('daftar-peserta');
+if (daftarPeserta) {
+    const pesertaContainer = daftarPeserta.querySelector('.peserta-container');
+    pesertaContainer.addEventListener('click', (e) => {
+        if(e.target.closest('.peserta-content')){
             e.stopPropagation();
-            const row = e.target.closest('tr');
-            showDeleteDialog(row);
+            const pesertaContent = e.target.closest('.peserta-content');
+            const deletePesertaContainer = pesertaContent.parentElement.querySelector('.delete-peserta-container');
+            if(deletePesertaContainer.classList.contains('open')){
+                deletePesertaContainer.classList.remove('open');
+            }else{
+                const deletePesertaContainerOpen = pesertaContainer.querySelector('.delete-peserta-container.open');
+                if(deletePesertaContainerOpen){
+                    deletePesertaContainerOpen.classList.remove('open');
+                }
+                deletePesertaContainer.classList.add('open');
+            }
+        }else if(e.target.closest('.delete-peserta')){
+            e.stopPropagation();
+            const pesertaItem = e.target.closest('.peserta-item');
+            console.log(pesertaItem);
+            createDeletePesertaDialog(pesertaItem);
         }
     });
-}
 
-function showDeleteDialog(row){
-    const namaPeserta = row.querySelector('.nama-peserta').textContent;
-    const nikPeserta = row.querySelector('.nik-peserta').textContent;
-    const deletePresensiDialog = document.querySelector('.delete-peserta-dialog');
-    const deleteDialogContent = deletePresensiDialog.querySelector('.delete-dialog-content');
-    const namaNikUser = deleteDialogContent.querySelector('.nama-nik-user');
-    namaNikUser.textContent = `${namaPeserta} - ${nikPeserta}`;
+    function createDeletePesertaDialog(pesertaItem){
+        const namaPeserta = pesertaItem.querySelector('.nama-peserta').textContent;
+        const nikPeserta = pesertaItem.querySelector('.nik-peserta').textContent;
 
-    const inputId = deletePresensiDialog.querySelector('input[name="peserta-id"]');
-    inputId.value = row.dataset.pesertaId;
+        const deletePesertaDialog = daftarPeserta.querySelector('.delete-peserta-dialog');
+        const deleteDialogContent = deletePesertaDialog.querySelector('.delete-dialog-content');
+        const namaNikUser = deleteDialogContent.querySelector('.nama-nik-user');
+        namaNikUser.textContent = `${namaPeserta} - ${nikPeserta}`;
 
-    openDialog(deletePresensiDialog);
+        const inputId = deletePesertaDialog.querySelector('[name="peserta-id"]');
+        inputId.value = pesertaItem.dataset.pesertaId;
+
+        openDialog(deletePesertaDialog);
+    }
 }

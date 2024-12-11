@@ -4,6 +4,14 @@
     @endpush
 
     <x-slot:title>{{ $kelas->kode }}</x-slot>
+    <x-slot:sidenav>
+        <x-layouts.navgroup title="{{ $kelas->kode }}">
+            <x-layouts.navlink href="{{ route('kelas.detail', ['slug' => $kelas->slug]) }}" routeName="kelas.detail">Detail Kelas</x-layouts.navlink>
+            <x-layouts.navlink href="{{ route('kelas.daftarPeserta', ['slug' => $kelas->slug]) }}" routeName="kelas.daftarPeserta">Daftar Peserta</x-layouts.navlink>
+        </x-layouts.navgroup>
+        <hr>
+    </x-slot>
+
     <div class="flex flex-col gap-6 mt-6 mb-8">
         <h1 class="font-bold text-upbg text-3xl">Detail Kelas</h1>
         <x-ui.breadcrumbs :breadcrumbs="$breadcrumbs"/>
@@ -65,7 +73,11 @@
                         <x-inputs.time inputName="waktu-mulai" label="Waktu mulai" placeholder="Pilih waktu mulai"/>
                         <x-inputs.time inputName="waktu-selesai" label="Waktu selesai" placeholder="Pilih waktu selesai"/>
                     </div>
-                    <x-inputs.dropdown :selected="$ruanganSelected" :options="$ruanganOptions" inputName="ruangan-kode" label="Pilih ruangan" placeholder="Pilih ruangan"/>
+                    <x-inputs.dropdown.select name="ruangan" label="Ruangan" placeholder="Pilih ruangan" :selected="['text' => $kelas->ruangan->kode, 'value' => $kelas->ruangan->id]">
+                        @foreach ($ruanganOptions as $ruangan)
+                            <x-inputs.dropdown.option :value="$ruangan->id" class="{{ ($ruangan->id == $kelas->ruangan->id) ? 'selected' : '' }}">{{ $ruangan->kode }}</x-inputs.dropdown.option>
+                        @endforeach
+                    </x-inputs.dropdown.select>
                     <hr class="bg-gray-200 w-full my-4">
                     <div class="flex flex-row justify-end gap-4">
                         <button type="button" class="cancel-button button-style border-none bg-white hover:bg-gray-100">Cancel</button>
@@ -118,9 +130,9 @@
             </div>
         @endforeach
     </section>
-
-    @push('script')
+    
+    @pushOnce('script')
         <script src="{{ asset('js/utils/form-control.js') }}"></script>
-        <script src="{{ asset('js/views/kelas/detail-daftar-pertemuan.js') }}"></script>
-    @endpush
+        <script src="{{ asset('js/views/kelas/detail-daftar-pertemuan.js') }}"></script>        
+    @endPushOnce
 </x-layouts.user-layout>

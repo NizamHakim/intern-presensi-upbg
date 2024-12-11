@@ -93,7 +93,7 @@ class PertemuanKelasController extends Controller
             'tanggal' => 'required|date',
             'waktu-mulai' => 'required|date_format:H:i',
             'waktu-selesai' => 'required|date_format:H:i',
-            'ruangan-kode' => 'required|exists:ruangan,kode',
+            'ruangan' => 'required|exists:ruangan,id',
         ], [
             'tanggal.required' => 'Tanggal tidak boleh kosong',
             'tanggal.date' => 'Tanggal tidak valid',
@@ -101,8 +101,8 @@ class PertemuanKelasController extends Controller
             'waktu-mulai.date_format' => 'Waktu mulai tidak valid',
             'waktu-selesai.required' => 'Waktu selesai tidak boleh kosong',
             'waktu-selesai.date_format' => 'Waktu selesai tidak valid',
-            'ruangan-kode.required' => 'Ruangan tidak boleh kosong',
-            'ruangan-kode.exists' => 'Ruangan tidak valid',
+            'ruangan.required' => 'Ruangan tidak boleh kosong',
+            'ruangan.exists' => 'Ruangan tidak valid',
         ]);
 
         if ($validator->fails()) {
@@ -116,7 +116,7 @@ class PertemuanKelasController extends Controller
                     'tanggal' => $request['tanggal'],
                     'waktu_mulai' => $request['waktu-mulai'],
                     'waktu_selesai' => $request['waktu-selesai'],
-                    'ruangan_id' => Ruangan::where('kode', $request['ruangan-kode'])->first()->id,
+                    'ruangan_id' => $request['ruangan'],
                 ]);
             }catch(ModelNotFoundException $e){
                 return response('Pertemuan kelas tidak ditemukan', 404);

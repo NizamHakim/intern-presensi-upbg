@@ -26,8 +26,8 @@ function createErrorText(message) {
     return errorSpan;
 }
 
-function clearErrors(form) {
-    form.querySelectorAll('.error').forEach(error => error.remove());
+function clearErrors(element) {
+    element.querySelectorAll('.error').forEach(error => error.remove());
 }
 
 function fetchRequest(route, method, data = {}){
@@ -45,6 +45,14 @@ async function handleError(response, container){
     if(response.status === 422){
         const errors = await response.json();
         for(const key in errors){
+            if(key.includes('.')){
+                const arrKey = key.split('.');
+                const inputs = container.querySelectorAll(`[name="${arrKey[0]}"]`);
+                const inputGroup = inputs[arrKey[1]].closest('.input-group');
+                const error = createErrorText(errors[key][0]);
+                inputGroup.appendChild(error);
+                continue;
+            }
             const input = container.querySelector(`[name="${key}"]`);
             const inputGroup = input.closest('.input-group');
             const error = createErrorText(errors[key][0]);
@@ -75,4 +83,34 @@ function stopFetchingAnimation(element){
     loading.remove();
 
     element.classList.remove('hidden');
+}
+
+function parseFile(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.addEventListener('load', function (e) {
+            try {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                const json = XLSX.utils.sheet_to_json(sheet);
+                verifyFileHeader(Object.keys(json[0]));
+                resolve(json);
+            } catch (error) {
+                reject(error);
+            }
+        });
+        reader.addEventListener('error', (error) => reject(error));
+        reader.readAsArrayBuffer(file);
+    });
+}
+
+function verifyFileHeader(header){
+    if(!header.includes('NIK/NRP')){
+        throw new Error('File harus memiliki header "NIK/NRP"');
+    }else if(!header.includes('Nama')){
+        throw new Error('File harus memiliki header "Nama"');
+    }else if(!header.includes('Dept./Occupation')){
+        throw new Error('File harus memiliki header "Dept./Occupation"');
+    }
 }

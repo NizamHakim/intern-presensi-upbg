@@ -1,4 +1,4 @@
-<div class="flex flex-row items-center">
+<div class="flex flex-row items-center flex-wrap text-xs md:text-sm">
     @foreach ($breadcrumbs as $text => $route)
         @if ($loop->last)
             <span class="font-medium text-gray-600 whitespace-nowrap">{{ $text }}</span>
