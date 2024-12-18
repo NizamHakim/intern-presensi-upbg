@@ -13,7 +13,7 @@
     </x-slot>
 
     <div class="flex flex-col gap-6 mt-6 mb-8">
-        <h1 class="font-bold text-upbg text-3xl">Detail Kelas</h1>
+        <h1 class="page-title">Detail Kelas</h1>
         <x-ui.breadcrumbs :breadcrumbs="$breadcrumbs"/>
     </div>
 
@@ -24,7 +24,7 @@
                 <h3 class="font-semibold text-gray-700 mb-1">Pengajar:</h3>
                 <ul class="list-none">
                     @foreach ($kelas->pengajar as $pengajar)
-                        <li><a href="{{ route('user.detail', ['id' => $pengajar->id]) }}" class="underline decoration-transparent text-gray-700 transition hover:text-upbg hover:decoration-upbg">{{ $pengajar->nama }}</a></li>
+                        <li><a href="{{ route('user.detail', ['id' => $pengajar->id]) }}" class="underline decoration-transparent text-upbg transition hover:decoration-upbg">{{ $pengajar->nama }}</a></li>
                     @endforeach
                 </ul>
             </div>
@@ -49,10 +49,12 @@
                 @endif
             </div>
         </div>
-        <div class="flex flex-col gap-2 h-fit md:flex-row">
-            <a href="{{ route('kelas.edit', ['slug' => $kelas->slug]) }}" class="button-style text-center border-upbg text-upbg hover:bg-upbg hover:text-white"><i class="fa-regular fa-pen-to-square mr-1"></i>Edit</a>
-            <button type="button" class="delete-kelas button-style border-red-600 text-red-600 hover:bg-red-600 hover:text-white"><i class="fa-regular fa-trash-can mr-1"></i>Delete</button>
-        </div>
+        @if (auth()->user()->current_role_id == 2)
+            <div class="flex flex-col gap-2 h-fit md:flex-row">
+                <a href="{{ route('kelas.edit', ['slug' => $kelas->slug]) }}" class="button-style button-upbg-outline text-center"><i class="fa-regular fa-pen-to-square mr-1"></i>Edit</a>
+                <button type="button" class="delete-kelas button-style button-red-outline"><i class="fa-regular fa-trash-can mr-1"></i>Delete</button>
+            </div>
+        @endif
         <x-ui.modal id="delete-kelas-modal">
             <form action="{{ route('kelas.destroy', ['slug' => $kelas->slug]) }}" method="POST" class="flex flex-col gap-4">
                 @csrf

@@ -4,11 +4,8 @@ form.addEventListener('submit', async function(e){
     clearErrors(form);
     const route = form.action;
     const submitButton = e.submitter;
-
     const formData = new FormData(form);
     const data = Object.fromEntries(formData);
-
-    console.log(data);
 
     playFetchingAnimation(submitButton, 'blue', 'Validating...');
     const response = await fetchRequest(route, 'PUT', data);
@@ -16,7 +13,6 @@ form.addEventListener('submit', async function(e){
 
     if(response.ok){
         const json = await response.json();
-        console.log(json);
         saveToast('success', json.message);
         window.location.replace(json.redirect);
     }else{

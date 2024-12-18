@@ -22,7 +22,7 @@ tambahPesertaForm.addEventListener('submit', async function(e) {
     if(response.ok){
         const json = await response.json();
         saveToast('success', json.message);
-        window.location.replace(json.redirect);
+        window.location.href = json.redirect;
     }else{
         handleError(response, tambahPesertaForm);
     }

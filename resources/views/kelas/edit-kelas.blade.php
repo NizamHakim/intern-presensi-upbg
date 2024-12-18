@@ -28,6 +28,11 @@
             </x-inputs.dropdown.select>
         </div>
 
+        <div class="flex flex-col input-group mt-4">
+            <p class="input-label">Whatsapp Group Link (opsional)</p>
+            <input type="text" name="group-link" value="{{ $kelas->group_link }}" class="input-style" placeholder="https://chat.whatsapp.com/">
+        </div>
+
         <hr class="my-5">
 
         <x-kelas.jadwal-dynamic :hariOptions="$hariOptions" :kelas="$kelas"/>

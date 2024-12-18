@@ -45,7 +45,7 @@ class AuthController extends Controller
     {
         User::findOrFail(Auth::id())->update(['current_role_id' => $request['role_id']]);
 
-        return redirect()->route('kelas.index');
+        return redirect()->back();
     }
 
     public function handleLogoutRequest()

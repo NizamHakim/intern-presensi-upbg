@@ -16,7 +16,7 @@
     </x-slot>
 
     <div class="flex flex-col gap-6 mt-6 mb-8">
-        <h1 class="font-bold text-upbg text-3xl">Edit Pertemuan</h1>
+        <h1 class="page-title">Edit Pertemuan</h1>
         <x-ui.breadcrumbs :breadcrumbs="$breadcrumbs"/>
     </div>
     
@@ -51,7 +51,7 @@
         
         <div class="input-group col-span-2">
             <p class="input-label">Ruangan</p>
-            <x-inputs.dropdown.select name="ruangan-id" placeholder="Pilih ruangan" :selected="['text' => $pertemuan->ruangan->kode, 'value' => $pertemuan->ruangan_id]" class="ruangan-dropdown">
+            <x-inputs.dropdown.select name="ruangan" placeholder="Pilih ruangan" :selected="['text' => $pertemuan->ruangan->kode, 'value' => $pertemuan->ruangan_id]" class="ruangan-dropdown">
                 @foreach ($ruanganOptions as $ruangan)
                     <x-inputs.dropdown.option :value="$ruangan->id" class="{{ ($ruangan->id == $pertemuan->ruangan_id) ? 'selected' : '' }}">{{ "$ruangan->kode" }}</x-inputs.dropdown.option>
                 @endforeach

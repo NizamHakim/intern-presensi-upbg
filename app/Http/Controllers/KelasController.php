@@ -14,10 +14,10 @@ use App\Models\PertemuanKelas;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Helpers\KodeKelasGenerator;
+use App\Helpers\PertemuanKelasGenerator;
 use App\Models\Peserta;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\ItemNotFoundException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class KelasController extends Controller
 {
@@ -44,7 +44,7 @@ class KelasController extends Controller
             ['text' => 'Kode Kelas (Z-A)', 'value' => 'kode-desc'],
         ]);
 
-        $progress = PertemuanKelas::select('kelas_id', DB::raw('count(*) as progress'))->where('terlaksana', true)->groupBy('kelas_id');
+        $progress = PertemuanKelas::select('kelas_id', DB::raw('SUM(terlaksana=1) as progress'))->groupBy('kelas_id');
         $kelasList = Kelas::with(['ruangan', 'jadwal']);
         $kelasList->joinSub($progress, 'progress', function($join){
             $join->on('kelas.id', '=', 'progress.kelas_id');
@@ -86,19 +86,27 @@ class KelasController extends Controller
 
         $kelasList->when($request->query('order'), function($query) use ($request){
             return $query->sort($request->query('order'));
-        });
-
-        $kelasList->when($request->query('pengajar'), function($query) use ($request){
-            return $query->whereHas('pengajar', function($query) use ($request){
-                $query->where('user_id', $request->query('pengajar'));
-            });
+        }, function($query){
+            return $query->latest();
         });
 
         $kelasList->when($request->query('kode'), function($query) use ($request){
             return $query->where('kode', 'like', '%' . $request->query('kode') . '%');
         });
 
-        $kelasList = $kelasList->paginate(10)->appends($request->query());
+        if(Auth::user()->current_role_id == 2){        
+            $kelasList->when($request->query('pengajar'), function($query) use ($request){
+                return $query->whereHas('pengajar', function($query) use ($request){
+                    $query->where('user_id', $request->query('pengajar'));
+                });
+            });
+        }else{
+            $kelasList->whereHas('pengajar', function($query){
+                $query->where('user_id', Auth::id());
+            });
+        }
+
+        $kelasList = $kelasList->paginate(10)->appends($request->all());
 
         $selected = [
             'program' => ProgramKelas::find($request->query('program')),
@@ -180,7 +188,122 @@ class KelasController extends Controller
 
     public function store(Request $request)
     {
-        
+        Validator::extend('jadwal_include_tanggal_mulai', function($attribute, $value, $parameters, $validator){
+            $tanggalMulai = Carbon::parse($parameters[0]);
+            $hariArray = $value;
+
+            $result = false;
+            foreach($hariArray as $hari){
+                if($tanggalMulai->dayOfWeek == $hari){
+                    $result = true;
+                    break;
+                }
+            }
+            return $result;
+        });
+
+        $validator = Validator::make($request->all(), [
+            'kode-kelas' => 'required|unique:kelas,kode',
+            'program' => 'required|exists:program_kelas,id',
+            'tipe' => 'required|exists:tipe_kelas,id',
+            'nomor-kelas' => 'required|numeric',
+            'level' => 'required|exists:level_kelas,id',
+            'banyak-pertemuan' => 'required|numeric',
+            'tanggal-mulai' => 'required|date',
+            'ruangan' => 'required|exists:ruangan,id',
+            'group-link' => 'nullable|url:https',
+            'hari' => 'required|array|jadwal_include_tanggal_mulai:' . $request['tanggal-mulai'],
+            'hari.*' => 'required|numeric',
+            'waktu-mulai' => 'required|array',
+            'waktu-mulai.*' => 'required|date_format:H:i',
+            'waktu-selesai' => 'required|array',
+            'waktu-selesai.*' => 'required|date_format:H:i',
+            'pengajar' => 'required|array',
+            'pengajar.*' => 'required|exists:users,id',
+            'nik-peserta' => 'nullable|array',
+            'nik-peserta.*' => 'required|numeric',
+            'nama-peserta' => 'nullable|array',
+            'nama-peserta.*' => 'required',
+            'occupation-peserta' => 'nullable|array',
+            'occupation-peserta.*' => 'required',
+        ], [ 
+            'kode-kelas.required' => 'Kode kelas tidak boleh kosong',
+            'kode-kelas.unique' => 'Kode kelas sudah digunakan',
+            'program.required' => 'Program tidak boleh kosong',
+            'program.exists' => 'Program tidak valid',
+            'tipe.required' => 'Tipe tidak boleh kosong',
+            'tipe.exists' => 'Tipe tidak valid',
+            'nomor-kelas.required' => 'Nomor kelas tidak boleh kosong',
+            'nomor-kelas.numeric' => 'Nomor kelas harus berupa angka',
+            'level.required' => 'Level tidak boleh kosong',
+            'level.exists' => 'Level tidak valid',
+            'banyak-pertemuan.required' => 'Banyak pertemuan tidak boleh kosong',
+            'banyak-pertemuan.numeric' => 'Banyak pertemuan harus berupa angka',
+            'tanggal-mulai.required' => 'Tanggal mulai tidak boleh kosong',
+            'tanggal-mulai.date' => 'Tanggal mulai tidak valid',
+            'ruangan.required' => 'Ruangan tidak boleh kosong',
+            'ruangan.exists' => 'Ruangan tidak valid',
+            'group-link.url' => 'Link harus dalam format https',
+            'hari.required' => 'Hari tidak boleh kosong',
+            'hari.jadwal_include_tanggal_mulai' => 'Jadwal harus mencakup hari tanggal mulai',
+            'hari.*.required' => 'Hari tidak boleh kosong',
+            'hari.*.numeric' => 'Hari tidak valid',
+            'waktu-mulai.required' => 'Waktu mulai tidak boleh kosong',
+            'waktu-mulai.*.required' => 'Waktu mulai tidak boleh kosong',
+            'waktu-mulai.*.date_format' => 'Waktu mulai tidak valid',
+            'waktu-selesai.required' => 'Waktu selesai tidak boleh kosong',
+            'waktu-selesai.*.required' => 'Waktu selesai tidak boleh kosong',
+            'pengajar.required' => 'Pengajar tidak boleh kosong',
+            'pengajar.*.required' => 'Pengajar tidak boleh kosong',
+            'pengajar.*.exists' => 'Pengajar tidak valid',
+            'nik-peserta.*.required' => 'NIK / NRP tidak boleh kosong',
+            'nik-peserta.*.numeric' => 'NIK / NRP harus berupa angka',
+            'nama-peserta.*.required' => 'Nama tidak boleh kosong',
+            'occupation-peserta.*.required' => 'Departemen / Occupation tidak boleh kosong',
+        ]);
+
+        if ($validator->fails()) {
+            return response($validator->errors(), 422);
+        }
+
+        $kelas = Kelas::create([
+            'kode' => $request['kode-kelas'],
+            'slug' => KodeKelasGenerator::slug($request['kode-kelas']),
+            'program_id' => $request['program'],
+            'tipe_id' => $request['tipe'],
+            'nomor_kelas' => $request['nomor-kelas'],
+            'level_id' => $request['level'],
+            'banyak_pertemuan' => $request['banyak-pertemuan'],
+            'tanggal_mulai' => $request['tanggal-mulai'],
+            'ruangan_id' => $request['ruangan'],
+            'group_link' => $request['group-link'],
+        ]);
+
+        for($i = 0; $i < count($request['hari']); $i++){
+            $kelas->jadwal()->create([
+                'hari' => $request['hari'][$i],
+                'waktu_mulai' => $request['waktu-mulai'][$i],
+                'waktu_selesai' => $request['waktu-selesai'][$i],
+            ]);
+        };
+
+        PertemuanKelasGenerator::generate($kelas);
+
+        $kelas->pengajar()->attach($request['pengajar']);
+
+        for($i = 0; $i < count($request['nik-peserta']); $i++){
+            $peserta = Peserta::firstOrCreate(['nik' => $request['nik-peserta'][$i]], [
+                'nama' => $request['nama-peserta'][$i],
+                'occupation' => $request['occupation-peserta'][$i],
+            ]);
+
+            $kelas->peserta()->attach($peserta->id);
+        }
+
+        return response([
+            'redirect' => route('kelas.index'),
+            'message' => 'Kelas berhasil ditambahkan'
+        ], 200);
     }
 
     public function edit($slug)
@@ -233,6 +356,7 @@ class KelasController extends Controller
             'banyak-pertemuan' => 'required|numeric',
             'tanggal-mulai' => 'required|date',
             'ruangan' => 'required|exists:ruangan,id',
+            'group-link' => 'nullable|url:https',
             'hari' => 'required|array',
             'hari.*' => 'required|numeric',
             'waktu-mulai' => 'required|array',
@@ -258,56 +382,52 @@ class KelasController extends Controller
             'tanggal-mulai.date' => 'Tanggal mulai tidak valid',
             'ruangan.required' => 'Ruangan tidak boleh kosong',
             'ruangan.exists' => 'Ruangan tidak valid',
+            'group-link.url' => 'Link harus dalam format https',
             'hari.required' => 'Hari tidak boleh kosong',
-            'hari.array' => 'Hari tidak valid',
             'hari.*.required' => 'Hari tidak boleh kosong',
             'hari.*.numeric' => 'Hari tidak valid',
             'waktu-mulai.required' => 'Waktu mulai tidak boleh kosong',
-            'waktu-mulai.array' => 'Waktu mulai tidak valid',
             'waktu-mulai.*.required' => 'Waktu mulai tidak boleh kosong',
             'waktu-mulai.*.date_format' => 'Waktu mulai tidak valid',
             'waktu-selesai.required' => 'Waktu selesai tidak boleh kosong',
-            'waktu-selesai.array' => 'Waktu selesai tidak valid',
             'waktu-selesai.*.required' => 'Waktu selesai tidak boleh kosong',
             'pengajar.required' => 'Pengajar tidak boleh kosong',
-            'pengajar.array' => 'Pengajar tidak valid',
             'pengajar.*.required' => 'Pengajar tidak boleh kosong',
             'pengajar.*.exists' => 'Pengajar tidak valid',
         ]);
 
         if ($validator->fails()) {
             return response($validator->errors(), 422);
-        }else{
-            $kelas->update([
-                'kode' => $request['kode-kelas'],
-                'slug' => KodeKelasGenerator::slug($request['kode-kelas']),
-                'program_id' => $request['program'],
-                'tipe_id' => $request['tipe'],
-                'nomor_kelas' => $request['nomor-kelas'],
-                'level_id' => $request['level'],
-                'banyak_pertemuan' => $request['banyak-pertemuan'],
-                'tanggal_mulai' => $request['tanggal-mulai'],
-                'ruangan_id' => $request['ruangan'],
-            ]);
-
-            $kelas->jadwal()->delete();
-            for($i = 0; $i < count($request['hari']); $i++){
-                $kelas->jadwal()->create([
-                    'hari' => $request['hari'][$i],
-                    'waktu_mulai' => $request['waktu-mulai'][$i],
-                    'waktu_selesai' => $request['waktu-selesai'][$i],
-                ]);
-            }
-            
-            $kelas->pengajar()->sync($request['pengajar']);
         }
-        
-        session()->flash('toast', [
-            'type' => 'success',
-            'message' => 'Detail kelas berhasil diubah'
+
+        $kelas->update([
+            'kode' => $request['kode-kelas'],
+            'slug' => KodeKelasGenerator::slug($request['kode-kelas']),
+            'program_id' => $request['program'],
+            'tipe_id' => $request['tipe'],
+            'nomor_kelas' => $request['nomor-kelas'],
+            'level_id' => $request['level'],
+            'banyak_pertemuan' => $request['banyak-pertemuan'],
+            'tanggal_mulai' => $request['tanggal-mulai'],
+            'ruangan_id' => $request['ruangan'],
+            'group_link' => $request['group-link'],
         ]);
 
-        return response(['redirect' => route('kelas.detail', ['slug' => $kelas->slug])], 200);
+        $kelas->jadwal()->delete();
+        for($i = 0; $i < count($request['hari']); $i++){
+            $kelas->jadwal()->create([
+                'hari' => $request['hari'][$i],
+                'waktu_mulai' => $request['waktu-mulai'][$i],
+                'waktu_selesai' => $request['waktu-selesai'][$i],
+            ]);
+        }
+        
+        $kelas->pengajar()->sync($request['pengajar']);
+
+        return response([
+            'redirect' => route('kelas.detail', ['slug' => $kelas->slug]),
+            'message' => 'Detail kelas berhasil diubah'
+        ], 200);
     }
 
     public function destroy($slug)
@@ -359,21 +479,39 @@ class KelasController extends Controller
     {
         $kelas = Kelas::where('slug', $slug)->firstOrFail();
 
-        $validator = $this->validatePeserta($request, $kelas);
+        Validator::extend('unique_peserta', function($attribute, $value, $parameters, $validator){
+            $kelas = Kelas::where('slug', $parameters[0])->first();
+            $peserta = Peserta::where('nik', $value)->first();
+            if(!$peserta) return true;
+            return $kelas->peserta()->where('peserta_id', $peserta->id)->count() == 0;
+        });
+
+        $validator = Validator::make($request->all(), [
+            'nik-peserta' => 'nullable|array',
+            'nik-peserta.*' => 'required|numeric|unique_peserta:' . $kelas->slug,
+            'nama-peserta' => 'nullable|array',
+            'nama-peserta.*' => 'required',
+            'occupation-peserta' => 'nullable|array',
+            'occupation-peserta.*' => 'required',
+        ], [ 
+            'nik-peserta.*.required' => 'NIK / NRP tidak boleh kosong',
+            'nik-peserta.*.numeric' => 'NIK / NRP harus berupa angka',
+            'nik-peserta.*.unique_peserta' => 'Peserta sudah terdaftar di kelas ini',
+            'nama-peserta.*.required' => 'Nama tidak boleh kosong',
+            'occupation-peserta.*.required' => 'Departemen / Occupation tidak boleh kosong',
+        ]);
 
         if ($validator->fails()) {
             return response($validator->errors(), 422);
-        }else{
-            for($i = 0; $i < count($request['nik-peserta']); $i++){
-                $peserta = Peserta::firstOrCreate([
-                    'nik' => $request['nik-peserta'][$i],
-                ], [
-                    'nama' => $request['nama-peserta'][$i],
-                    'occupation' => $request['occupation-peserta'][$i],
-                ]);
+        }
+        
+        for($i = 0; $i < count($request['nik-peserta']); $i++){
+            $peserta = Peserta::firstOrCreate(['nik' => $request['nik-peserta'][$i]], [
+                'nama' => $request['nama-peserta'][$i],
+                'occupation' => $request['occupation-peserta'][$i],
+            ]);
 
-                $kelas->peserta()->attach($peserta->id);
-            }
+            $kelas->peserta()->attach($peserta->id);
         }
 
         return response([
@@ -414,32 +552,5 @@ class KelasController extends Controller
             'redirect' => route('kelas.daftarPeserta', ['slug' => $kelas->slug]),
             'message' => 'Berhasil menghapus peserta dari kelas'
         ], 200);
-    }
-
-    private function validatePeserta($request, $kelas)
-    {
-        Validator::extend('unique_peserta', function($attribute, $value, $parameters, $validator){
-            $kelas = Kelas::where('slug', $parameters[0])->first();
-            $peserta = Peserta::where('nik', $value)->first();
-            if(!$peserta) return true;
-            return $kelas->peserta()->where('peserta_id', $peserta->id)->count() == 0;
-        });
-
-        $validator = Validator::make($request->all(), [
-            'nik-peserta' => 'nullable|array',
-            'nik-peserta.*' => 'required|numeric|unique_peserta:' . $kelas->slug,
-            'nama-peserta' => 'nullable|array',
-            'nama-peserta.*' => 'required',
-            'occupation-peserta' => 'nullable|array',
-            'occupation-peserta.*' => 'required',
-        ], [ 
-            'nik-peserta.*.required' => 'NIK / NRP tidak boleh kosong',
-            'nik-peserta.*.numeric' => 'NIK / NRP harus berupa angka',
-            'nik-peserta.*.unique_peserta' => 'Peserta sudah terdaftar di kelas ini',
-            'nama-peserta.*.required' => 'Nama tidak boleh kosong',
-            'occupation-peserta.*.required' => 'Departemen / Occupation tidak boleh kosong',
-        ]);
-
-        return $validator;
     }
 }

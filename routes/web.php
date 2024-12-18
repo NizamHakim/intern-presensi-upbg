@@ -44,18 +44,18 @@ Route::middleware(Authenticated::class)->group(function(){
     Route::delete('/kelas/{slug}/delete-peserta', [KelasController::class, 'destroyPeserta'])->name('kelas.destroyPeserta');
 
     Route::get('/kelas/{slug}/pertemuan/{id}', [PertemuanKelasController::class, 'detail'])->name('kelas.pertemuan.detail');
+    Route::get('/kelas/{slug}/pertemuan/{id}/edit', [PertemuanKelasController::class, 'edit'])->name('kelas.pertemuan.edit');
     Route::post('/kelas/{slug}/pertemuan', [PertemuanKelasController::class, 'store'])->name('kelas.pertemuan.store');
     Route::delete('/kelas/{slug}/pertemuan{id}', [PertemuanKelasController::class, 'destroy'])->name('kelas.pertemuan.destroy');
-    Route::get('/kelas/{slug}/pertemuan/{id}/edit', [PertemuanKelasController::class, 'edit'])->name('kelas.pertemuan.edit');
     Route::put('/kelas/{slug}/pertemuan/{id}/update-detail', [PertemuanKelasController::class, 'updateDetail'])->name('kelas.pertemuan.updateDetail');
     Route::patch('/kelas/{slug}/pertemuan/{id}/update-topik-catatan', [PertemuanKelasController::class, 'updateTopikCatatan'])->name('kelas.pertemuan.updateTopikCatatan');
     Route::patch('/kelas/{slug}/pertemuan/{id}/reschedule', [PertemuanKelasController::class, 'reschedule'])->name('kelas.pertemuan.reschedule');
     Route::patch('/kelas/{slug}/pertemuan/{id}/mulai-pertemuan', [PertemuanKelasController::class, 'mulaiPertemuan'])->name('kelas.pertemuan.mulaiPertemuan');
     
-    Route::post('/presensi/create', [PresensiPertemuanKelasController::class, 'store'])->name('presensi.store');
-    Route::delete('/presensi/destroy', [PresensiPertemuanKelasController::class, 'destroy'])->name('presensi.destroy');
-    Route::patch('/presensi/{id}', [PresensiPertemuanKelasController::class, 'updatePresensi'])->name('presensi.updatePresensi');
-    Route::put('/presensi-all/{pertemuanId}', [PresensiPertemuanKelasController::class, 'updatePresensiAll'])->name('presensi.updatePresensiAll');
+    Route::post('/kelas/{slug}/pertemuan/{id}', [PresensiPertemuanKelasController::class, 'store'])->name('presensi.store');
+    Route::delete('/kelas/{slug}/pertemuan/{id}/presensi/destroy', [PresensiPertemuanKelasController::class, 'destroy'])->name('presensi.destroy');
+    Route::patch('/kelas/{slug}/pertemuan/{id}/presensi/{presensiId}', [PresensiPertemuanKelasController::class, 'updatePresensi'])->name('presensi.updatePresensi');
+    Route::put('/kelas/{slug}/pertemuan/{id}/presensi-all', [PresensiPertemuanKelasController::class, 'updatePresensiAll'])->name('presensi.updatePresensiAll');
 
     Route::get('/user', [UserController::class, 'index'])->middleware(HandleGetQuery::class)->name('user.index');
     Route::get('/user/create', [UserController::class, 'create'])->name('user.create');

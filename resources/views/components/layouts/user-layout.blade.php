@@ -20,6 +20,7 @@
         </main>
     </div>
     <x-layouts.script/>
+    <script src="{{ asset('js/views/components/layouts/user-layout.js') }}"></script>
     @stack('script')
 </body>
 </html>

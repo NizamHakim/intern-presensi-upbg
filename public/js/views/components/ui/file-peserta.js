@@ -104,7 +104,7 @@ function appendPeserta(nik = '', nama = '', occupation = ''){
         </div>
         <div class="flex flex-row gap-2 absolute top-2 right-2 md:static">
             <button type="button" class="edit-peserta font-medium text-upbg bg-white size-8 rounded-sm-md transition hover:bg-upbg hover:text-white hover:border-upbg md:hidden"><i class="fa-regular fa-pen-to-square"></i></button>
-            <button type="button" class="delete-peserta font-medium text-red-600 bg-white size-8 rounded-sm-md transition hover:bg-red-600 hover:text-white hover:border-red-600 md:size-10 md:rounded-full md:border"><i class="fa-regular fa-trash-can"></i></button>
+            <button type="button" class="delete-peserta font-medium text-red-600 bg-white size-8 rounded-sm-md transition hover:bg-red-600 hover:text-white hover:border-red-600 md:size-10 md:rounded-full md:border md:shadow-sm"><i class="fa-regular fa-trash-can"></i></button>
         </div>
     `
     pesertaContainer.appendChild(pesertaItem);

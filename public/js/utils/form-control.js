@@ -57,10 +57,12 @@ async function handleError(response, container){
                 inputGroup.appendChild(error);
                 continue;
             }
-            const input = container.querySelector(`[name="${key}"]`);
-            const inputGroup = input.closest('.input-group');
-            const error = createErrorText(errors[key][0]);
-            inputGroup.appendChild(error);
+            const inputs = container.querySelectorAll(`[name="${key}"]`);
+            for(const input of inputs){
+                const inputGroup = input.closest('.input-group');
+                const error = createErrorText(errors[key][0]);
+                inputGroup.appendChild(error);
+            }
         }
     }else{
         const error = await response.json();

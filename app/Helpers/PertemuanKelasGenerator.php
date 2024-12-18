@@ -4,6 +4,8 @@ namespace App\Helpers;
 
 use App\Models\Kelas;
 
+use function Illuminate\Log\log;
+
 class PertemuanKelasGenerator
 {
     public static function generate(Kelas $kelas): void
@@ -26,7 +28,7 @@ class PertemuanKelasGenerator
                 'tanggal' => $tanggal,
                 'waktu_mulai' => $jadwal[$i % $mod]->waktu_mulai,
                 'waktu_selesai' => $jadwal[$i % $mod]->waktu_selesai,
-                'terlaksana' => fake()->randomElement([true, false]),
+                'terlaksana' => ($tanggal->month == 12) ? true : false
             ]);
             $tanggal->next($jadwal[$i % $mod]->hari);
         }

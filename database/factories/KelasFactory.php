@@ -23,9 +23,7 @@ class KelasFactory extends Factory
     {
         $program = ProgramKelas::inRandomOrder()->first();
         $tipe = TipeKelas::inRandomOrder()->first();
-        $level = ($tipe->kode == 'C') 
-            ? LevelKelas::where('kode', '')->first() 
-            : LevelKelas::where('kode', '!=', 'C')->inRandomOrder()->first();
+        $level = ($tipe->kode == 'C') ? null : LevelKelas::inRandomOrder()->first();
         $ruangan = Ruangan::inRandomOrder()->first();
         $nomorKelas = strval(fake()->numberBetween(1, 99));
         $banyakPertemuan = fake()->randomElement([16, 24]);
@@ -35,7 +33,7 @@ class KelasFactory extends Factory
             $program->kode,
             $tipe->kode,
             $nomorKelas,
-            $level->kode,
+            $level->kode ?? '',
             $banyakPertemuan,
             $tanggalMulai
         );

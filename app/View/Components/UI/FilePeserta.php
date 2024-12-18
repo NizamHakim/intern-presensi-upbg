@@ -8,9 +8,10 @@ use Illuminate\View\Component;
 
 class FilePeserta extends Component
 {
-    public function __construct()
+    public $required;
+    public function __construct($required = false)
     {
-
+        $this->required = $required;
     }
 
     public function render(): View|Closure|string

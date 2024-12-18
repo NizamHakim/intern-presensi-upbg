@@ -13,21 +13,25 @@
     </x-slot>
 
     <div class="flex flex-col gap-6 mt-6 mb-8">
-        <h1 class="font-bold text-upbg text-3xl">Daftar Peserta</h1>
+        <h1 class="page-title">Daftar Peserta</h1>
         <x-ui.breadcrumbs :breadcrumbs="$breadcrumbs"/>
     </div>
 
     <section id="daftar-peserta" class="flex flex-col">
-        <div class="flex flex-row justify-end mb-4">
-            <a href="{{ route('kelas.tambahPeserta', ['slug' => $kelas->slug]) }}" class="button-style border-green-600 bg-green-600 hover:bg-green-700 text-white"><i class="fa-solid fa-plus mr-1"></i>Tambah Peserta</a>
-        </div>
+        @if (auth()->user()->current_role_id == 2)
+            <div class="flex flex-row justify-end mb-4">
+                <a href="{{ route('kelas.tambahPeserta', ['slug' => $kelas->slug]) }}" class="button-style button-green-solid"><i class="fa-solid fa-plus mr-1"></i>Tambah Peserta</a>
+            </div>
+        @endif
         <div class="peserta-container flex flex-col bg-white divide-y shadow-sm">
             <div class="peserta-header py-2 flex flex-row items-center sm:py-4">
                 <p class="w-12 text-gray-600 font-semibold tracking-wide text-center sm:w-20 sm:px-6">No.</p>
                 <p class="flex-1 px-2 text-gray-600 font-semibold tracking-wide text-left">Peserta</p>
                 <p class="hidden flex-1 text-gray-600 font-semibold tracking-wide text-left md:block md:max-w-36 md:px-6 xl:max-w-52">Tanggal Bergabung</p>
                 <p class="hidden flex-1 text-gray-600 font-semibold tracking-wide text-center md:block md:px-4">Status</p>
-                <div class="w-20 sm:w-24 sm:pr-6 md:w-28"></div>
+                @if (auth()->user()->current_role_id == 2)
+                    <div class="w-20 sm:w-24 sm:pr-6 md:w-28"></div>
+                @endif
             </div>
             @foreach ($pesertaList as $peserta)
                 <div class="peserta-item flex flex-row items-center border-t py-5" data-peserta-id="{{ $peserta->id }}">
@@ -46,27 +50,16 @@
                             <p class="aktif-peserta bg-red-300 text-red-800 text-sm font-semibold px-2 rounded-full">Tidak Aktif</p>
                         @endif
                     </div>
-                    <div class="buttons-container flex flex-col gap-2 w-20 pr-2 sm:w-24 sm:pr-6 md:w-28">
-                        <button type="button" class="detail-peserta button-style bg-white shadow-sm md:hidden">Detail</button>
-                        <button type="button" class="edit-peserta hidden select-none px-4 py-1.5 rounded-sm-md border font-medium transition text-xs button-upbg-outline md:flow-root">Edit</button>
-                        <button type="button" class="delete-peserta hidden select-none px-4 py-1.5 rounded-sm-md border font-medium transition text-xs button-red-outline md:flow-root">Remove</button>
-                    </div>
+                    @if (auth()->user()->current_role_id == 2)
+                        <div class="buttons-container flex flex-col gap-2 w-20 pr-2 sm:w-24 sm:pr-6 md:w-28">
+                            <button type="button" class="detail-peserta button-style button-upbg-solid md:hidden">Detail</button>
+                            <button type="button" class="edit-peserta hidden select-none px-4 py-1.5 rounded-sm-md border font-medium transition text-xs bg-white text-upbg border-upbg hover:text-white hover:bg-upbg md:flow-root">Edit</button>
+                            <button type="button" class="delete-peserta hidden select-none px-4 py-1.5 rounded-sm-md border font-medium transition text-xs bg-white text-red-600 border-red-600 hover:text-white hover:bg-red-600 md:flow-root">Remove</button>
+                        </div>
+                    @endif
                 </div>
             @endforeach
         </div>
-        <x-ui.delete-dialog :action="route('kelas.destroyPeserta', ['slug' => $kelas->slug])" class="delete-peserta-dialog">
-            <x-slot:title>Hapus Peserta</x-slot>
-            <x-slot:message>Apakah anda yakin ingin menghapus <span class="font-bold nama-nik-user">User</span> dari kelas ini?</x-slot>
-            <x-slot:deleteMessage>
-                <ul class="list-disc pl-4">
-                    <li class="text-red-600">Daftar kehadiran peserta ini pada pertemuan yang sudah dilaksanakan tidak akan dihapus.</li>
-                    <li class="text-red-600">Peserta ini tidak akan dimasukkan ke daftar presensi pertemuan yang akan datang.</li>
-                </ul>
-            </x-slot>
-            <x-slot:hiddenInputs>
-                <input type="hidden" name="peserta-id" value="">
-            </x-slot>
-        </x-ui.delete-dialog>
 
         <x-ui.modal id="detail-peserta-modal">
             <form action="{{ route('kelas.updatePeserta', ['slug' => $kelas->slug]) }}" class="flex flex-col gap-4">
@@ -87,7 +80,7 @@
                 </div>
                 <div class="flex flex-col gap-2">
                     <p class="text-gray-700 font-semibold">Status</p>
-                    <div class="flex flex-row gap-2 items-center">
+                    <div class="flex flex-row gap-2 items-center mb-1">
                         <x-inputs.checkbox id="aktif" type="blue" inputName="aktif" value="aktif" :checked="true"/>
                         <label for="aktif" class="label-aktif cursor-pointer">Status</label>
                     </div>

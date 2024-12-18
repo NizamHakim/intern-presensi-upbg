@@ -2,7 +2,9 @@
     <x-slot:title>Daftar Kelas</x-slot>
     <div class="flex flex-row gap-2 justify-between items-center mt-6 mb-8">
         <h1 class="page-title">Daftar Kelas</h1>
-        <a href="{{ route('kelas.create') }}" class="button-style text-center button-green-solid"><i class="fa-solid fa-plus mr-1"></i>Tambah Kelas</a>
+        @if (auth()->user()->current_role_id == 2)
+            <a href="{{ route('kelas.create') }}" class="button-style text-center button-green-solid"><i class="fa-solid fa-plus mr-1"></i>Tambah Kelas</a>
+        @endif
     </div>
 
     <section id="filter-kelas" class="mb-4">
@@ -72,7 +74,7 @@
                             @endforeach
                         </x-inputs.dropdown.select>
                     </div>
-                    <div class="input-group">
+                    <div class="input-group @if (auth()->user()->current_role_id == 3) sm:col-span-2 lg:col-span-1 xl:col-span-2 @endif">
                         <p class="text-gray-600 font-medium mb-1">Sort By</p>
                         <x-inputs.dropdown.select name="order" placeholder="None" class="sort-dropdown filter-field" :selected="($selected['sortby']) ? ['text' => $selected['sortby']['text'], 'value' => $selected['sortby']['value']] : null">
                             @foreach ($sortbyOptions as $sortby)
@@ -80,20 +82,22 @@
                             @endforeach
                         </x-inputs.dropdown.select>
                     </div>
-                    <div class="input-group">
-                        <p class="text-gray-600 font-medium mb-1">Pengajar</p>
-                        <x-inputs.dropdown.select name="pengajar" placeholder="Semua" class="pengajar-dropdown filter-field" :selected="($selected['pengajar']) ? ['text' => $selected['pengajar']->nama . ' (' . $selected['pengajar']->nik . ' )', 'value' => $selected['pengajar']->id] : null">
-                            @foreach ($pengajarOptions as $pengajar)
-                                <x-inputs.dropdown.option :value="$pengajar->id" class="{{ ($selected['pengajar'] && $selected['pengajar']->id == $pengajar->id) ? 'selected' : '' }}">{{ "$pengajar->nama ($pengajar->nik)" }}</x-inputs.dropdown.option>
-                            @endforeach
-                        </x-inputs.dropdown.select>
-                    </div>
+                    @if (auth()->user()->current_role_id == 2)
+                        <div class="input-group">
+                            <p class="text-gray-600 font-medium mb-1">Pengajar</p>
+                            <x-inputs.dropdown.select name="pengajar" placeholder="Semua" class="pengajar-dropdown filter-field" :selected="($selected['pengajar']) ? ['text' => $selected['pengajar']->nama . ' (' . $selected['pengajar']->nik . ' )', 'value' => $selected['pengajar']->id] : null">
+                                @foreach ($pengajarOptions as $pengajar)
+                                    <x-inputs.dropdown.option :value="$pengajar->id" class="{{ ($selected['pengajar'] && $selected['pengajar']->id == $pengajar->id) ? 'selected' : '' }}">{{ "$pengajar->nama ($pengajar->nik)" }}</x-inputs.dropdown.option>
+                                @endforeach
+                            </x-inputs.dropdown.select>
+                        </div>
+                    @endif
                     <hr class="sm:hidden">
                     <div class="input-group sm:hidden">
                         <p class="text-gray-600 font-medium mb-1">Kode Kelas</p>
                         <input type="search" name="kode" value="{{ $selected['kode'] }}" placeholder="Cari kode kelas" class="input-style w-full">
                     </div>
-                    <button type="submit" class="px-4 py-2 self-end border rounded-sm-md button-upbg-solid sm:row-start-6 sm:row-span-1 sm:col-start-2 sm:col-span-1 lg:row-start-4 lg:row-span-1 lg:col-start-3 lg:col-span-1 xl:row-start-3 xl:row-span-1 xl:col-start-4 xl:col-span-1"><i class="fa-solid fa-magnifying-glass mr-2"></i>Search</button>
+                    <button type="submit" class="px-4 py-2 self-end border rounded-sm-md transition bg-upbg border-upbg text-white hover:bg-upbg-dark sm:row-start-6 sm:row-span-1 sm:col-start-2 sm:col-span-1 lg:row-start-4 lg:row-span-1 lg:col-start-3 lg:col-span-1 xl:row-start-3 xl:row-span-1 xl:col-start-4 xl:col-span-1"><i class="fa-solid fa-magnifying-glass mr-2"></i>Search</button>
                     <button type="button" class="reset-filter self-end font-medium px-4 py-2 border rounded-sm-md border-red-600 text-red-600 bg-white transition hover:bg-red-600 hover:text-white sm:row-start-6 sm:row-span-1 sm:col-start-1 sm:col-span-1 lg:row-start-4 lg:row-span-1 lg:col-start-2 lg:col-span-1 xl:row-start-3 xl:row-span-1 xl:col-start-3 xl:col-span-1">Reset Filter</button>
                 </div>
             </div>

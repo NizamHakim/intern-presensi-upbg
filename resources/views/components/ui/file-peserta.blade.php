@@ -1,7 +1,7 @@
 <section id="file-peserta-section" class="flex flex-col gap-2">
-    <h1 class="text-gray-700 font-medium mb-2">Peserta</h1>
+    <h1 class="text-gray-700 font-medium mb-2">Peserta @if(!$required)(opsional)@endif</h1>
     <div class="flex flex-row items-center gap-6 mb-2">
-        <label id="excel-csv-label" for="excel-csv" class="button-style text-gray-700 text-nowrap cursor-pointer hover:bg-gray-100"><i class="fa-solid fa-file mr-2"></i>Pilih file</label>
+        <label id="excel-csv-label" for="excel-csv" class="button-style text-gray-700 shadow-sm text-nowrap cursor-pointer hover:bg-gray-100"><i class="fa-solid fa-file mr-2"></i>Pilih file</label>
         <input id="excel-csv" name="input-excel-csv" type="file" class="hidden" accept=".xlsx,.csv">
         <div class="panduan-penggunaan flex flex-row items-center gap-2 text-upbg cursor-pointer">
             <i class="fa-solid fa-circle-info text-base"></i>

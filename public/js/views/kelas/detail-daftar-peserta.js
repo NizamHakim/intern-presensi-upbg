@@ -2,7 +2,7 @@ const daftarPeserta = document.getElementById('daftar-peserta');
 const pesertaContainer = daftarPeserta.querySelector('.peserta-container');
 
 pesertaContainer.addEventListener('click', (e) => {
-    if(e.target.closest('.detail-peserta')){
+    if(e.target.closest('.detail-peserta') || e.target.closest('.edit-peserta')){
         e.stopPropagation();
         const pesertaItem = e.target.closest('.peserta-item');
         showDetailPesertaModal(pesertaItem);
@@ -10,10 +10,6 @@ pesertaContainer.addEventListener('click', (e) => {
         e.stopPropagation();
         const pesertaItem = e.target.closest('.peserta-item');
         showDeletePesertaModal(pesertaItem);
-    }else if(e.target.closest('.edit-peserta')){
-        e.stopPropagation();
-        const pesertaItem = e.target.closest('.peserta-item');
-        showDetailPesertaModal(pesertaItem);
     }
 })
 

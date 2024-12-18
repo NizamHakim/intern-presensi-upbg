@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class Kelas extends Model
@@ -58,6 +59,13 @@ class Kelas extends Model
                 $query->orderBy('kode', 'desc');
                 break;
         }
+    }
+
+    protected function tanggalMulai(): Attribute
+    {
+        return Attribute::make(
+            get: fn($value) => Carbon::parse($value),
+        );
     }
 
     public function program()

@@ -1,12 +1,17 @@
 <nav class="sticky top-0 w-full h-14 flex flex-row justify-center z-10 bg-white shadow-sm">
     <div class="flex flex-row justify-between w-full max-w-7xl h-full py-1 px-6">
         @auth
-            <a href="{{ route('kelas.index') }}" class="lg:hidden">
-                <img src={{ asset('images/logoGLC.png') }} alt="Logo UPBG" class="h-full">
-            </a>
+            <div class="flex flex-row gap-6 w-fit">
+                <button class="open-sidenav rounded-full lg:hidden">
+                    <div class="relative w-4 h-0.75 bg-upbg rounded-full before:absolute before:left-0 before:top-2 before:rounded-full before:w-2 before:h-0.75 before:bg-upbg after:absolute after:left-0 after:bottom-2 after:rounded-full after:w-6 after:h-0.75 after:bg-upbg"></div>
+                </button>
+                <a href="{{ route('kelas.index') }}" class="lg:hidden">
+                    <img src={{ asset('images/logoGLC.png') }} alt="Logo UPBG" class="h-full">
+                </a>
+            </div>
             <div x-data="{ showDropdown: false, showRoles: false }" x-on:click.outside="showDropdown = false; showRoles = false" class="flex flex-row ml-auto h-full items-center relative">
-                <button x-on:click="showDropdown = !showDropdown; if (!showDropdown) showRoles = false" class="h-full p-0.5 rounded-full transition hover:bg-gray-200">
-                    <img src="https://placehold.co/400" class="h-full rounded-full">
+                <button x-on:click="showDropdown = !showDropdown; if (!showDropdown) showRoles = false" class="size-11 rounded-full transition hover:bg-gray-200">
+                    <img src="https://placehold.co/400" class="size-11 rounded-full">
                 </button>
                 <ul x-cloak x-show="showDropdown" class="absolute -bottom-2 right-0 translate-y-full bg-white border shadow-strong w-72 rounded-md">
                     <li class="w-full hover:bg-gray-100">

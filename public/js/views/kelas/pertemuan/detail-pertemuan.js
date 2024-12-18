@@ -32,115 +32,81 @@ if(deletePertemuan){
     });
 }
 
-// const reschedulePertemuan = document.querySelector('.reschedule-pertemuan');
-// if(reschedulePertemuan){
-//     reschedulePertemuan.addEventListener('click', (e) => {
-//         e.stopPropagation();
-//         const reschedulePertemuanModal = document.getElementById('reschedule-pertemuan-modal');
+const reschedulePertemuan = document.querySelector('.reschedule-pertemuan');
+if(reschedulePertemuan){
+    reschedulePertemuan.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const reschedulePertemuanModal = document.getElementById('reschedule-pertemuan-modal');
 
-//         const modalForm = reschedulePertemuanModal.querySelector('form');
+        const modalForm = reschedulePertemuanModal.querySelector('form');
 
-//         async function handleSubmit(e){
-//             e.preventDefault();
-//             clearErrors(modalForm);
+        async function handleSubmit(e){
+            e.preventDefault();
+            clearErrors(modalForm);
 
-//             const submitButton = e.submitter;
-//             submitButton.classList.add('hidden');
-//             const loading = document.createElement('button');
-//             loading.setAttribute('class', 'button-loading button-style border-upbg');
-//             loading.setAttribute('disabled', 'true');
-//             loading.innerHTML = createLoadingAnimation('Validating...', 'blue');
-//             submitButton.insertAdjacentElement('afterend', loading);
+            const submitButton = e.submitter;
+            const route = modalForm.action;
+            const formData = new FormData(modalForm);
+            const data = Object.fromEntries(formData.entries());
 
-//             const route = modalForm.action;
-//             const formData = new FormData(modalForm);
-//             const data = Object.fromEntries(formData.entries());
+            playFetchingAnimation(submitButton, 'blue', 'Validating...');
+            const response = await fetchRequest(route, 'PATCH', data);
+            stopFetchingAnimation(submitButton);
 
-//             const response = await fetchReschedule(route, data);
-//             loading.remove();
-//             submitButton.classList.remove('hidden');
+            if(response.ok){
+                const json = await response.json();
+                saveToast('success', json.message);
+                window.location.replace(json.redirect);
+            }else{
+                handleError(response, modalForm);
+            }
+        }
+        modalForm.addEventListener('submit', handleSubmit);
 
-//             if(response.ok){
-//                 const json = await response.json();
-//                 window.location.replace(json.redirect);
-//             }else{
-//                 if(response.status === 422){
-//                     const errors = await response.json();
-//                     for(const key in errors){
-//                         const input = modalForm.querySelector(`[name="${key}"]`);
-//                         const inputGroup = input.closest('.input-group');
-//                         const error = createErrorText(errors[key][0]);
-//                         inputGroup.appendChild(error);
-//                     }
-//                 }else{
-//                     createToast('error', 'Terjadi kesalahan. Silahkan coba lagi.');
-//                 }
-//             }
-//         }
-//         modalForm.addEventListener('submit', handleSubmit);
+        function closeCallback(){
+            modalForm.removeEventListener('submit', handleSubmit);
+        }
 
-//         function closeCallback(){
-//             modalForm.removeEventListener('submit', handleSubmit);
-//         }
+        openModal(reschedulePertemuanModal, closeCallback);
+    });
+}
 
-//         openModal(reschedulePertemuanModal, closeCallback);
-//     });
-// }
+const mulaiPertemuan = document.querySelector('.mulai-pertemuan');
+if(mulaiPertemuan){
+    mulaiPertemuan.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const mulaiPertemuanModal = document.getElementById('mulai-pertemuan-modal');
 
-// const mulaiPertemuan = document.querySelector('.mulai-pertemuan');
-// if(mulaiPertemuan){
-//     mulaiPertemuan.addEventListener('click', (e) => {
-//         e.stopPropagation();
-//         const mulaiPertemuanModal = document.getElementById('mulai-pertemuan-modal');
+        const modalForm = mulaiPertemuanModal.querySelector('form');
 
-//         const modalForm = mulaiPertemuanModal.querySelector('form');
+        async function handleSubmit(e){
+            e.preventDefault();
+            clearErrors(modalForm);
+            const route = modalForm.action;
+            const submitButton = e.submitter;
+            const formData = new FormData(modalForm);
+            const data = Object.fromEntries(formData.entries());
 
-//         async function handleSubmit(e){
-//             e.preventDefault();
-//             clearErrors(modalForm);
+            playFetchingAnimation(submitButton, 'blue', 'Updating...');
+            const response = await fetchRequest(route, 'PATCH', data);
+            stopFetchingAnimation(submitButton);
 
-//             const submitButton = e.submitter;
-//             submitButton.classList.add('hidden');
-//             const loading = document.createElement('button');
-//             loading.setAttribute('class', 'button-loading text-sm flex flex-row items-center justify-center font-semibold px-4 py-2 border border-upbg bg-white rounded-md cursor-progress');
-//             loading.setAttribute('disabled', 'true');
-//             loading.innerHTML = createLoadingAnimation('Validating...', 'blue');
-//             submitButton.insertAdjacentElement('afterend', loading);
+            if(response.ok){
+                const json = await response.json();
+                window.location.replace(json.redirect);
+            }else{
+                handleError(response, modalForm);
+            }
+        }
+        modalForm.addEventListener('submit', handleSubmit);
 
-//             const route = modalForm.action;
-//             const formData = new FormData(modalForm);
-//             const data = Object.fromEntries(formData.entries());
+        function closeCallback(){
+            modalForm.removeEventListener('submit', handleSubmit);
+        }
 
-//             const response = await fetchMulaiPertemuan(route, data);
-//             loading.remove();
-//             submitButton.classList.remove('hidden');
-
-//             if(response.ok){
-//                 const json = await response.json();
-//                 window.location.replace(json.redirect);
-//             }else{
-//                 if(response.status === 422){
-//                     const errors = await response.json();
-//                     for(const key in errors){
-//                         const input = modalForm.querySelector(`[name="${key}"]`);
-//                         const inputGroup = input.closest('.input-group');
-//                         const error = createErrorText(errors[key][0]);
-//                         inputGroup.appendChild(error);
-//                     }
-//                 }else{
-//                     createToast('error', 'Terjadi kesalahan. Silahkan coba lagi.');
-//                 }
-//             }
-//         }
-//         modalForm.addEventListener('submit', handleSubmit);
-
-//         function closeCallback(){
-//             modalForm.removeEventListener('submit', handleSubmit);
-//         }
-
-//         openModal(mulaiPertemuanModal, closeCallback);
-//     });
-// }
+        openModal(mulaiPertemuanModal, closeCallback);
+    });
+}
 
 const editTopikCatatan = document.querySelector('.edit-topik-catatan');
 editTopikCatatan.addEventListener('click', (e) => {
@@ -276,13 +242,14 @@ if(daftarPresensi) {
 
                 if(response.ok){
                     const json = await response.json();
+                    saveToast('success', json.message);
                     window.location.replace(json.redirect);
                 }else{
                     handleError(response, modalForm);
                 }
             }
             modalForm.addEventListener('submit', handleSubmit);
-            // remove event listener upon closing modal
+
             function closeCallback(){
                 modalForm.removeEventListener('submit', handleSubmit);
             }
@@ -295,12 +262,12 @@ if(daftarPresensi) {
     const tandaiSemuaHadir = daftarPresensi.querySelector('.tandai-semua-hadir');
     tandaiSemuaHadir.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const form = e.target;
-        const route = form.action;
+        const route = e.target.action;
+        const submitButton = e.submitter;
 
-        playFetchingAnimation(tandaiSemuaHadir, 'green', 'Updating...');
+        playFetchingAnimation(submitButton, 'green', 'Updating...');
         const response = await fetchRequest(route, 'PUT');
-        stopFetchingAnimation(tandaiSemuaHadir);
+        stopFetchingAnimation(submitButton);
 
         if(response.ok){
             const json = await response.json();
@@ -349,136 +316,4 @@ if(daftarPresensi) {
         const hadirCount = document.querySelector('.hadir-count');
         hadirCount.textContent = `${hadir} / ${total}`;
     }
-
-    presensiContainer.addEventListener('click', (e) => {
-        if(e.target.closest('.presensi-content') && !e.target.closest('.button-alfa') && !e.target.closest('.button-hadir')){
-            e.stopPropagation();
-            const presensiContent = e.target.closest('.presensi-content');
-            const deletePresensiContainer = presensiContent.parentElement.querySelector('.delete-presensi-container'); 
-            if(deletePresensiContainer.classList.contains('open')){
-                deletePresensiContainer.classList.remove('open');
-            }else{
-                const deletePresensiContainerOpen = presensiContainer.querySelector('.delete-presensi-container.open');
-                if(deletePresensiContainerOpen){
-                    deletePresensiContainerOpen.classList.remove('open');
-                }
-                deletePresensiContainer.classList.add('open');
-            }
-        }else if(e.target.closest('.delete-presensi')){
-            e.stopPropagation();
-            const presensiItem = e.target.closest('.presensi-item');
-            createDeletePresensiModal(presensiItem);
-        }
-    });
-
-    function createDeletePresensiModal(presensiItem){
-        const namaPeserta = presensiItem.querySelector('.nama-peserta').textContent;
-        const nikPeserta = presensiItem.querySelector('.nik-peserta').textContent;
-        
-        const deletePresensiModal = document.getElementById('delete-presensi-modal');
-        const namaNikUser = deletePresensiModal.querySelector('.nama-nik-user');
-        namaNikUser.textContent = `${namaPeserta} - ${nikPeserta}`;
-        
-        const inputPresensiId = deletePresensiModal.querySelector('[name="presensi-id"]');
-        inputPresensiId.value = presensiItem.dataset.presensiId;
-        
-        openModal(deletePresensiModal, removeEventListener);
-        
-        const modalForm = deletePresensiModal.querySelector('form');
-        async function handleSubmit(e){
-            e.preventDefault();
-            const route = modalForm.action;
-            const submitButton = e.submitter;
-            
-            const formData = new FormData(modalForm);
-            const data = Object.fromEntries(formData.entries());
-            console.log(data);
-
-            playFetchingAnimation(submitButton, 'red', 'Deleting...');
-            const response = await fetchRequest(route, 'DELETE', data);
-            stopFetchingAnimation(submitButton);
-
-            if(response.ok){
-                const json = await response.json();
-                saveToast('success', json.message);
-                window.location.replace(json.redirect);
-            }else{
-                handleError(response, deletePresensiModal);
-            }
-        }
-        modalForm.addEventListener('submit', handleSubmit);
-
-        function removeEventListener(){
-            modalForm.removeEventListener('submit', handleSubmit);
-        }
-    }
 }
-
-// function fetchReschedule(route, data){
-//     return fetch(route, {
-//         method: 'PATCH',
-//         headers: {
-//             'Content-Type': 'application/json',
-//             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-//         },
-//         body: JSON.stringify(data)
-//     });
-// }
-
-// function fetchMulaiPertemuan(route, data){
-//     return fetch(route, {
-//         method: 'PATCH',
-//         headers: {
-//             'Content-Type': 'application/json',
-//             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-//         },
-//         body: JSON.stringify(data)
-//     })
-// }
-
-// function fetchRequest(route, method, data = {}){
-//     return fetch(route, {
-//         method: method,
-//         headers: {
-//             'Content-Type': 'application/json',
-//             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-//         },
-//         body: JSON.stringify(data)
-//     });
-// }
-
-// async function handleError(response, container){
-//     if(response.status === 422){
-//         const errors = await response.json();
-//         for(const key in errors){
-//             const input = container.querySelector(`[name="${key}"]`);
-//             const inputGroup = input.closest('.input-group');
-//             const error = createErrorText(errors[key][0]);
-//             inputGroup.appendChild(error);
-//         }
-//     }else{
-//         createToast('error', 'Terjadi kesalahan. Silahkan coba lagi.');
-//     }
-// }
-
-// function playFetchingAnimation(element, style, message){
-//     const colors = {
-//         'green': 'border-green-600',
-//         'blue': 'border-upbg',
-//     };
-
-//     element.classList.add('hidden');
-
-//     const loading = document.createElement('button');
-//     loading.setAttribute('class', 'button-loading button-style ' + colors[style]);
-//     loading.setAttribute('disabled', 'true');
-//     loading.innerHTML = createLoadingAnimation(message, style);
-//     element.insertAdjacentElement('afterend', loading);
-// }
-
-// function stopFetchingAnimation(element){
-//     const loading = element.nextElementSibling;
-//     loading.remove();
-
-//     element.classList.remove('hidden');
-// }

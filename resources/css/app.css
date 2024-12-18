@@ -1,9 +1,9 @@
 @tailwind base;
-@tailwind components;
-@tailwind utilities;
 
-.topbar-active{
-    @apply text-upbg-dark font-bold;
+@tailwind components;
+
+.page-title{
+    @apply font-bold text-upbg text-2xl sm:text-3xl;
 }
 
 .error{
@@ -13,8 +13,6 @@
 .input-number{
     @apply [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-full;
 }
-
-[x-cloak] { display: none !important; }
 
 .scrollbar{
     scrollbar-gutter: stable;
@@ -47,49 +45,54 @@
 .button-alfa.active{
     @apply border-red-600 bg-red-600 text-white font-semibold;
 }
-
-.detail-kelas-navlink.active{
-    @apply text-upbg-dark font-bold;
+@layer components{
+    .button-style{
+        @apply px-4 py-1.5 rounded-sm-md border font-medium transition text-xs md:text-sm;
+    }
+    
+    .button-style.button-green-solid{
+        @apply bg-green-600 border-green-600 hover:bg-green-700 hover:border-green-700 text-white;
+    }
+    
+    .button-style.button-green-outline{
+        @apply bg-white border-green-600 text-green-600 hover:bg-green-600 hover:text-white;
+    }
+    
+    .button-style.button-red-solid{
+        @apply bg-red-600 border-red-600 hover:bg-red-700 hover:border-red-700 text-white;
+    }
+    
+    .button-style.button-red-outline{
+        @apply bg-white border-red-600 text-red-600 hover:bg-red-600 hover:text-white;
+    }
+    
+    .button-style.button-upbg-solid{
+        @apply bg-upbg border-upbg hover:bg-upbg-dark hover:border-upbg-dark text-white;
+    }
+    
+    .button-style.button-upbg-outline{
+        @apply bg-white border-upbg text-upbg hover:bg-upbg hover:text-white;
+    }
+    
+    .button-style.button-loading {
+        @apply flex flex-row justify-center items-center bg-white cursor-progress;
+    }
 }
 
-.button-style{
-    @apply px-4 py-1.5 rounded-sm-md border font-medium transition text-xs md:text-sm;
+.input-label{
+    @apply text-gray-700 font-medium mb-1.5;
 }
 
-.button-green-solid{
-    @apply bg-green-600 border-green-600 hover:bg-green-700 hover:border-green-700 text-white;
+.modal-title{
+    @apply text-xl font-semibold text-gray-700 text-center capitalize;
 }
 
-.button-green-outline{
-    @apply bg-white border-green-600 text-green-600 hover:bg-green-600 hover:text-white;
+.danger-container{
+    @apply rounded-md bg-red-100 p-3 text-red-600;
 }
 
-.button-red-solid{
-    @apply bg-red-600 border-red-600 hover:bg-red-700 hover:border-red-700 text-white;
-}
-
-.button-red-outline{
-    @apply bg-white border-red-600 text-red-600 hover:bg-red-600 hover:text-white;
-}
-
-.button-upbg-solid{
-    @apply bg-upbg border-upbg hover:bg-upbg-dark hover:border-upbg-dark text-white;
-}
-
-.button-upbg-outline{
-    @apply bg-white border-upbg text-upbg hover:bg-upbg hover:text-white;
-}
-
-.button-loading {
-    @apply flex flex-row justify-center items-center bg-white cursor-progress;
-}
-
-.delete-presensi-container, .delete-peserta-container{
-    @apply hidden;
-}
-
-.delete-presensi-container.open, .delete-peserta-container.open{
-    @apply flex;
+.info-container{
+    @apply rounded-md bg-blue-100 p-3 text-upbg;
 }
 
 .dropdown-button.open{
@@ -112,26 +115,6 @@
     @apply border-upbg;
 }
 
-.input-label{
-    @apply text-gray-700 font-medium mb-1.5;
-}
-
-.modal-title{
-    @apply text-xl font-semibold text-gray-700 text-center capitalize;
-}
-
-.danger-container{
-    @apply rounded-md bg-red-100 p-3 text-red-600;
-}
-
-.info-container{
-    @apply rounded-md bg-blue-100 p-3 text-upbg;
-}
-
-.text-style{
-    @apply text-gray-600 bg-white p-0 border-none pointer-events-none truncate h-fit;
-}
-
 .filter-container.open{
     @apply translate-x-0 sm:max-h-[470px] sm:py-4;
 }
@@ -140,15 +123,24 @@
     @apply rotate-180;
 }
 
-.page-title{
-    @apply font-bold text-upbg text-2xl sm:text-3xl;
+@tailwind utilities;
+
+.topbar-active{
+    @apply text-upbg-dark font-bold;
+}
+
+[x-cloak] { display: none !important; }
+
+.detail-kelas-navlink.active{
+    @apply text-upbg-dark font-bold;
 }
 
 @layer utilities{
-    .input-style{
-        @apply border bg-gray-200 font-medium px-3 py-2 h-10 outline outline-transparent outline-1.5 outline-offset-0 transition-all focus:outline-upbg-light rounded-md read-only:outline-none read-only:focus:outline-none pointer-events-auto placeholder:text-gray-400;
-    }
     .input-text-style{
         @apply text-gray-600 bg-white p-0 border-none pointer-events-none truncate h-fit placeholder:text-transparent;
+    }
+    
+    .input-style{
+        @apply border bg-gray-200 font-medium px-3 py-2 h-10 outline outline-transparent outline-1.5 outline-offset-0 transition-all focus:outline-upbg-light rounded-md read-only:outline-none read-only:focus:outline-none pointer-events-auto placeholder:text-gray-400;
     }
 }
