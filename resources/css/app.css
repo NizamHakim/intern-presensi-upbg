@@ -116,8 +116,32 @@
     @apply text-gray-700 font-medium mb-1.5;
 }
 
+.modal-title{
+    @apply text-xl font-semibold text-gray-700 text-center capitalize;
+}
+
+.danger-container{
+    @apply rounded-md bg-red-100 p-3 text-red-600;
+}
+
+.info-container{
+    @apply rounded-md bg-blue-100 p-3 text-upbg;
+}
+
 .text-style{
     @apply text-gray-600 bg-white p-0 border-none pointer-events-none truncate h-fit;
+}
+
+.filter-container.open{
+    @apply translate-x-0 sm:max-h-[470px] sm:py-4;
+}
+
+.open-filter.open i{
+    @apply rotate-180;
+}
+
+.page-title{
+    @apply font-bold text-upbg text-2xl sm:text-3xl;
 }
 
 @layer utilities{

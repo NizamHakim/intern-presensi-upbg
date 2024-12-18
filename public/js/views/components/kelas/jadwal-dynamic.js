@@ -54,17 +54,17 @@ function createNewJadwalItem(hari = '', waktuMulai = '', waktuSelesai = ''){
     const hariDropdown = jadwalItemClone.querySelector('.hari-dropdown');
     const hariArray = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
     changeDropdownValue(hariDropdown, hari);
-    jadwalItemClone.querySelector('.hari-mobile').textContent = (hari == '') ? 'Pilih hari' : hariArray[hari];
+    jadwalItemClone.querySelector('.hari-mobile').textContent = (hari == '') ? 'Hari,' : hariArray[hari];
 
     const waktuMulaiInput = jadwalItemClone.querySelector('.waktu-mulai');
     attachTimepicker(waktuMulaiInput);
     changeTimeValue(waktuMulaiInput, waktuMulai);
-    jadwalItemClone.querySelector('.waktu-mulai-mobile').textContent = (waktuMulai == '') ? 'Waktu mulai' : waktuMulai;
+    jadwalItemClone.querySelector('.waktu-mulai-mobile').textContent = (waktuMulai == '') ? 'Mulai' : waktuMulai;
 
     const waktuSelesaiInput = jadwalItemClone.querySelector('.waktu-selesai');
     attachTimepicker(waktuSelesaiInput);
     changeTimeValue(waktuSelesaiInput, waktuSelesai);
-    jadwalItemClone.querySelector('.waktu-selesai-mobile').textContent = (waktuSelesai == '') ? 'Waktu selesai' : waktuSelesai;
+    jadwalItemClone.querySelector('.waktu-selesai-mobile').textContent = (waktuSelesai == '') ? 'Selesai' : waktuSelesai;
 
     jadwalContainer.appendChild(jadwalItemClone);
 }
@@ -75,7 +75,7 @@ function addDeleteJadwalButton(jadwalItem){
 
     const deleteButton = document.createElement('button');
     deleteButton.setAttribute('type', 'button');
-    deleteButton.setAttribute('class', 'delete-jadwal font-medium text-red-600 bg-white size-8 rounded-sm-md transition md:hover:bg-red-600 md:hover:text-white md:hover:border-red-600 md:size-10 md:rounded-full md:border');
+    deleteButton.setAttribute('class', 'delete-jadwal font-medium text-red-600 bg-white size-8 rounded-sm-md transition md:hover:bg-red-600 md:hover:text-white md:hover:border-red-600 md:size-10 md:rounded-full md:border md:shadow-sm');
     deleteButton.innerHTML = '<i class="fa-regular fa-trash-can"></i>';
     jadwalButtons.appendChild(deleteButton);
 }

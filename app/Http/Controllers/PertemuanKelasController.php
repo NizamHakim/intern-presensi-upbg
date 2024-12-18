@@ -119,29 +119,27 @@ class PertemuanKelasController extends Controller
                     'ruangan_id' => $request['ruangan'],
                 ]);
             }catch(ModelNotFoundException $e){
-                return response('Pertemuan kelas tidak ditemukan', 404);
+                return response(['error' => 'Kelas tidak ditemukan'], 404);
             }
         }
 
         $this->reorder($kelas);
 
-        session()->flash('toast', [
-            'type' => 'success',
+        return response([
+            'redirect' => route('kelas.detail', $kelas->slug),
             'message' => 'Pertemuan berhasil ditambahkan'
-        ]);
-
-        return response(['redirect' => route('kelas.detail', $kelas->slug)], 200);
+        ], 200);
     }
 
     public function updateDetail($slug, $id, Request $request)
     {
         $validator = Validator::make($request->all(), [
             'terlaksana' => 'required|boolean',
-            'pengajar-id' => 'nullable|required_if:terlaksana,1|prohibited_if:terlaksana,0|exists:pengajar_kelas,id',
+            'pengajar-id' => 'nullable|required_if:terlaksana,1|prohibited_if:terlaksana,0|exists:pengajar_kelas,user_id',
             'tanggal' => 'required|date',
             'waktu-mulai' => 'required|date_format:H:i',
             'waktu-selesai' => 'required|date_format:H:i',
-            'ruangan-kode' => 'required|exists:ruangan,kode',
+            'ruangan-id' => 'required|exists:ruangan,id',
         ], [
             'terlaksana.required' => 'Status pertemuan tidak boleh kosong',
             'terlaksana.boolean' => 'Status pertemuan tidak valid',
@@ -154,8 +152,8 @@ class PertemuanKelasController extends Controller
             'waktu-mulai.date_format' => 'Waktu mulai tidak valid',
             'waktu-selesai.required' => 'Waktu selesai tidak boleh kosong',
             'waktu-selesai.date_format' => 'Waktu selesai tidak valid',
-            'ruangan-kode.required' => 'Ruangan tidak boleh kosong',
-            'ruangan-kode.exists' => 'Ruangan tidak valid',
+            'ruangan-id.required' => 'Ruangan tidak boleh kosong',
+            'ruangan-id.exists' => 'Ruangan tidak valid',
         ]);
 
         if ($validator->fails()) {
@@ -165,7 +163,7 @@ class PertemuanKelasController extends Controller
                 $kelas = Kelas::where('slug', $slug)->firstOrFail();
                 $pertemuan = $kelas->pertemuan()->findOrFail($id);
 
-                if($request['terlaksana'] == 1 && $pertemuan->terlaksana == 0){
+                if($request['terlaksana'] == 1 && $pertemuan->presensi->isEmpty()){
                     $this->generatePresensi($kelas, $pertemuan);
                 }else if($request['terlaksana'] == 0){
                     $this->deletePresensi($pertemuan);
@@ -177,7 +175,7 @@ class PertemuanKelasController extends Controller
                     'tanggal' => $request['tanggal'],
                     'waktu_mulai' => $request['waktu-mulai'],
                     'waktu_selesai' => $request['waktu-selesai'],
-                    'ruangan_id' => Ruangan::where('kode', $request['ruangan-kode'])->first()->id,
+                    'ruangan_id' => $request['ruangan-id'],
                 ]);
             }catch(ModelNotFoundException $e){
                 return response('Pertemuan kelas tidak ditemukan', 404);
@@ -186,12 +184,10 @@ class PertemuanKelasController extends Controller
 
         $this->reorder($kelas);
 
-        session()->flash('toast', [
-            'type' => 'success',
+        return response([
+            'redirect' => route('kelas.pertemuan.detail', [$kelas->slug, $pertemuan->id]),
             'message' => 'Pertemuan berhasil diupdate'
-        ]);
-
-        return response(['redirect' => route('kelas.pertemuan.detail', [$kelas->slug, $pertemuan->id])], 200);
+        ], 200);
     }
 
     public function updateTopikCatatan($slug, $id, Request $request)
@@ -311,36 +307,19 @@ class PertemuanKelasController extends Controller
         return response(['redirect' => route('kelas.pertemuan.detail', [$kelas->slug, $pertemuan->id])], 200);
     }
 
-    public function destroy(Request $request)
+    public function destroy($slug, $id)
     {
-        $kelas = Kelas::where('slug', $request['kelas-slug'])->first();
-        if (!$kelas) {
-            session()->flash('toast', [
-                'type' => 'error',
-                'message' => 'Gagal menghapus, kelas tidak valid'
-            ]);
-            return redirect()->route('kelas.index');
-        }
-
-        $pertemuan = $kelas->pertemuan()->find($request['pertemuan-id']);
-        if(!$pertemuan) {
-            session()->flash('toast', [
-                'type' => 'error',
-                'message' => 'Gagal menghapus, pertemuan tidak valid'
-            ]);
-            return redirect()->route('kelas.detail', $kelas->slug);
-        }
-
+        $kelas = Kelas::where('slug', $slug)->firstOrFail();
+        $pertemuan = $kelas->pertemuan()->findOrFail($id);
+        
         $pertemuan->delete();
 
         $this->reorder($kelas);
-
-        session()->flash('toast', [
-            'type' => 'success',
-            'message' => 'Pertemuan berhasil dihapus'
-        ]);
    
-        return redirect()->route('kelas.detail', $kelas->slug);
+        return response([
+            'redirect' => route('kelas.detail', $kelas->slug),
+            'message' => 'Pertemuan berhasil dihapus'
+        ], 200);
     }
 
     private function reorder($kelas)

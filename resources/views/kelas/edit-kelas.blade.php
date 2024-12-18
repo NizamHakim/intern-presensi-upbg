@@ -34,7 +34,7 @@
         
         <hr class="my-5">
         
-        <x-kelas.pengajar-dynamic type="edit" :pengajarOptions="$pengajarOptions" :pengajarKelas="$kelas->pengajar"/>
+        <x-kelas.pengajar-dynamic :pengajarOptions="$pengajarOptions" :kelas="$kelas"/>
         
         <hr class="my-5">
         

@@ -13,7 +13,6 @@ class LevelKelasSeeder extends Seeder
      */
     public function run(): void
     {
-        LevelKelas::create(['nama' => 'Semua', 'kode' => '']);
         LevelKelas::create(['nama' => 'Beginner', 'kode' => 'B']);
         LevelKelas::create(['nama' => 'Elementary', 'kode' => 'E']);
         LevelKelas::create(['nama' => 'Intermediate', 'kode' => 'I']);

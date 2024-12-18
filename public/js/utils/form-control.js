@@ -8,6 +8,10 @@ function createLoadingAnimation(message, color = 'blue') {
             'fill': 'fill-upbg',
             'text': 'text-upbg',
         },
+        'red': {
+            'fill': 'fill-red-600',
+            'text': 'text-red-600',
+        }
     }
 
     return `
@@ -59,7 +63,8 @@ async function handleError(response, container){
             inputGroup.appendChild(error);
         }
     }else{
-        createToast('error', 'Terjadi kesalahan. Silahkan coba lagi.');
+        const error = await response.json();
+        createToast('error', (error) ? error.error : 'Terjadi kesalahan');
     }
 }
 
@@ -67,6 +72,7 @@ function playFetchingAnimation(element, style, message){
     const colors = {
         'green': 'border-green-600',
         'blue': 'border-upbg',
+        'red': 'border-red-600',
     };
 
     element.classList.add('hidden');

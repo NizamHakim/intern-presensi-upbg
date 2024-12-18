@@ -1,9 +1,9 @@
 <nav class="sticky top-0 w-full h-14 flex flex-row justify-center z-10 bg-white shadow-sm">
     <div class="flex flex-row justify-between w-full max-w-7xl h-full py-1 px-6">
         @auth
-            @if ((auth()->user()->current_role_id == 3))
+            <a href="{{ route('kelas.index') }}" class="lg:hidden">
                 <img src={{ asset('images/logoGLC.png') }} alt="Logo UPBG" class="h-full">
-            @endif
+            </a>
             <div x-data="{ showDropdown: false, showRoles: false }" x-on:click.outside="showDropdown = false; showRoles = false" class="flex flex-row ml-auto h-full items-center relative">
                 <button x-on:click="showDropdown = !showDropdown; if (!showDropdown) showRoles = false" class="h-full p-0.5 rounded-full transition hover:bg-gray-200">
                     <img src="https://placehold.co/400" class="h-full rounded-full">
@@ -38,7 +38,12 @@
                                 class="overflow-hidden transition-all duration-300 shadow-inner-2">
                                 @foreach (auth()->user()->roles as $role)
                                     <li class="w-full hover:bg-gray-100 text-sm">
-                                        <button type="button" class="w-full p-3 text-left border-l-4 @if($role->id == auth()->user()->current_role_id) border-upbg @else border-transparent @endif" value="{{ $role->id }}">{{ $role->nama }}</button>
+                                        <form action="{{ route('auth.switchRole') }}" method="POST">
+                                            @csrf
+                                            @method('PATCH')
+                                            <input type="hidden" name="role_id" value="{{ $role->id }}">
+                                            <button type="submit" class="w-full p-3 text-left border-l-4 @if($role->id == auth()->user()->current_role_id) border-upbg @else border-transparent @endif" value="{{ $role->id }}">{{ $role->nama }}</button>
+                                        </form>
                                     </li>                                
                                 @endforeach
                             </ul>

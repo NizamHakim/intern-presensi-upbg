@@ -9,14 +9,16 @@ use Illuminate\View\Component;
 class Date extends Component
 {
     public $inputName;
-    public $value;
+    public $plugin;
     public $placeholder;
+    public $value;
 
-    public function __construct($inputName, $placeholder,  $value = null)
+    public function __construct($inputName, $placeholder, $plugin = 'default', $value = null)
     {
         $this->inputName = $inputName;
-        $this->value = $value;
         $this->placeholder = $placeholder;
+        $this->plugin = $plugin;
+        $this->value = $value;
     }
 
     public function render(): View|Closure|string

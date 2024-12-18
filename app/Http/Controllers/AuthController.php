@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -30,6 +31,8 @@ class AuthController extends Controller
             switch($user->current_role_id){
                 case(2):
                     return redirect()->intended(route('kelas.index'));
+                case(3):
+                    return redirect()->intended(route('kelas.index'));
             };
         }
 
@@ -38,8 +41,18 @@ class AuthController extends Controller
         ])->onlyInput('email');
     }
 
+    public function switchRole(Request $request)
+    {
+        User::findOrFail(Auth::id())->update(['current_role_id' => $request['role_id']]);
+
+        return redirect()->route('kelas.index');
+    }
+
     public function handleLogoutRequest()
     {
-
+        Auth::logout();
+        session()->invalidate();
+        session()->regenerateToken();
+        return redirect()->route('auth.loginPage');
     }
 }

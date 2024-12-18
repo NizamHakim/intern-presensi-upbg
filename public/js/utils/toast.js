@@ -1,7 +1,14 @@
-if(document.body.dataset.toastType && document.body.dataset.toastMessage){
-    document.addEventListener('DOMContentLoaded', () => {
-        createToast(document.body.dataset.toastType, document.body.dataset.toastMessage);
-    }, {once: true});
+document.addEventListener('DOMContentLoaded', () => {
+    const toast = sessionStorage.getItem('toast');
+    if(toast){
+        const {type, message} = JSON.parse(toast);
+        createToast(type, message);
+        sessionStorage.removeItem('toast');
+    }
+});
+
+function saveToast(type, message){
+    sessionStorage.setItem('toast', JSON.stringify({type, message}));
 }
 
 function showToast(toast){
@@ -29,7 +36,7 @@ function createToast(type, message){
 
     const newToast = document.createElement('div');
     newToast.id = 'toast';
-    newToast.setAttribute('class', 'fixed hidden transition border-l-4 translate-y-2 duration-300 opacity-0 flex-row gap-4 items-center px-4 py-4 right-5 bottom-10 rounded-md bg-white shadow-strong w-96 z-10 after:absolute after:rounded-bl-md after:h-1 after:bottom-0 after:left-0 after:animate-[toast-progress_2s_linear]');
+    newToast.setAttribute('class', 'fixed hidden transition border-l-4 translate-y-2 duration-300 opacity-0 flex-row gap-4 items-center px-4 py-4 right-5 bottom-10 rounded-md bg-white shadow-strong w-96 z-10 after:absolute after:rounded-bl-md after:h-1 after:bottom-0 after:left-0 after:animate-[toast-progress_2.5s_linear]');
     
     switch (type) {
         case 'success':
@@ -68,13 +75,19 @@ function createToast(type, message){
 
     document.body.appendChild(newToast);
     showToast(newToast);
-    const toastTimer = setTimeout(() => {
-        closeToast(newToast);
-    }, 2000);
+
+    let toastTimer = null;
+    if(type == 'success'){
+        toastTimer = setTimeout(() => {
+            closeToast(newToast);
+        }, 2500);
+    }
 
     const closeToastButton = newToast.querySelector('.close-toast-button');
     closeToastButton.addEventListener('click', () => {
-        clearTimeout(toastTimer);
+        if(toastTimer){
+            clearTimeout(toastTimer);
+        }
         closeToast(newToast);
     });
 }

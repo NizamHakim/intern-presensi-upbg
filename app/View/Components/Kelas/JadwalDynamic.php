@@ -11,7 +11,7 @@ class JadwalDynamic extends Component
     public $hariOptions;
     public $kelas;
 
-    public function __construct($hariOptions, $kelas)
+    public function __construct($hariOptions, $kelas = null)
     {
         $this->hariOptions = $hariOptions;
         $this->kelas = $kelas;

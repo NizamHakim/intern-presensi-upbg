@@ -27,9 +27,10 @@ Route::middleware(Guest::class)->group(function(){
 });
 
 Route::middleware(Authenticated::class)->group(function(){
+    Route::patch('/switch-role', [AuthController::class, 'switchRole'])->name('auth.switchRole');
     Route::post('/logout', [AuthController::class, 'handleLogoutRequest'])->name('auth.handleLogoutRequest');
 
-    Route::get('/kelas', [KelasController::class, 'index'])->middleware(HandleGetQuery::class)->name('kelas.index');
+    Route::get('/kelas', [KelasController::class, 'index'])->name('kelas.index');
     Route::get('/kelas/create', [KelasController::class, 'create'])->name('kelas.create');
     Route::get('/kelas/{slug}', [KelasController::class, 'detail'])->name('kelas.detail');
     Route::post('/kelas', [KelasController::class, 'store'])->name('kelas.store');
@@ -39,11 +40,12 @@ Route::middleware(Authenticated::class)->group(function(){
     Route::get('/kelas/{slug}/daftar-peserta', [KelasController::class, 'daftarPeserta'])->name('kelas.daftarPeserta');
     Route::get('/kelas/{slug}/daftar-peserta/tambah', [KelasController::class, 'tambahPeserta'])->name('kelas.tambahPeserta');
     Route::post('/kelas/{slug}/daftar-peserta/tambah', [KelasController::class, 'storePeserta'])->name('kelas.storePeserta');
+    Route::patch('/kelas/{slug}/daftar-peserta/update', [KelasController::class, 'updatePeserta'])->name('kelas.updatePeserta');
     Route::delete('/kelas/{slug}/delete-peserta', [KelasController::class, 'destroyPeserta'])->name('kelas.destroyPeserta');
 
     Route::get('/kelas/{slug}/pertemuan/{id}', [PertemuanKelasController::class, 'detail'])->name('kelas.pertemuan.detail');
     Route::post('/kelas/{slug}/pertemuan', [PertemuanKelasController::class, 'store'])->name('kelas.pertemuan.store');
-    Route::delete('/pertemuan', [PertemuanKelasController::class, 'destroy'])->name('kelas.pertemuan.destroy');
+    Route::delete('/kelas/{slug}/pertemuan{id}', [PertemuanKelasController::class, 'destroy'])->name('kelas.pertemuan.destroy');
     Route::get('/kelas/{slug}/pertemuan/{id}/edit', [PertemuanKelasController::class, 'edit'])->name('kelas.pertemuan.edit');
     Route::put('/kelas/{slug}/pertemuan/{id}/update-detail', [PertemuanKelasController::class, 'updateDetail'])->name('kelas.pertemuan.updateDetail');
     Route::patch('/kelas/{slug}/pertemuan/{id}/update-topik-catatan', [PertemuanKelasController::class, 'updateTopikCatatan'])->name('kelas.pertemuan.updateTopikCatatan');

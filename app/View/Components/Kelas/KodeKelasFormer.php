@@ -14,7 +14,7 @@ class KodeKelasFormer extends Component
     public $ruanganOptions;
     public $kelas;
 
-    public function __construct($programOptions, $tipeOptions, $levelOptions, $ruanganOptions, $kelas)
+    public function __construct($programOptions, $tipeOptions, $levelOptions, $ruanganOptions, $kelas = null)
     {
         $this->programOptions = $programOptions;
         $this->tipeOptions = $tipeOptions;

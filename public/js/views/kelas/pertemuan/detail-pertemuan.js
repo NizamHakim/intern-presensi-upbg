@@ -2,8 +2,33 @@ const deletePertemuan = document.querySelector('.delete-pertemuan');
 if(deletePertemuan){
     deletePertemuan.addEventListener('click', (e) => {
         e.stopPropagation();
-        const deletePertemuanDialog = document.querySelector('.delete-pertemuan-dialog');
-        openDialog(deletePertemuanDialog);
+        const deletePertemuanModal = document.getElementById('delete-pertemuan-modal');
+        const modalForm = deletePertemuanModal.querySelector('form');
+
+        openModal(deletePertemuanModal, removeEventListener);
+
+        async function handleSubmit(e){
+            e.preventDefault();
+            const route = modalForm.action;
+            const submitButton = e.submitter;
+
+            playFetchingAnimation(submitButton, 'red', 'Deleting...');
+            const response = await fetchRequest(route, 'DELETE')
+            stopFetchingAnimation(submitButton);
+
+            if(response.ok){
+                const json = await response.json();
+                saveToast('success', json.message);
+                window.location.replace(json.redirect);
+            }else{
+                handleError(response, modalForm);
+            }
+        }
+        modalForm.addEventListener('submit', handleSubmit);
+
+        function removeEventListener(){
+            modalForm.removeEventListener('submit', handleSubmit);
+        }
     });
 }
 
@@ -226,6 +251,7 @@ function updateText(json, topikText, catatanText){
     catatanText.innerHTML = (json.catatan) ? json.catatan : '-';
 }
 
+
 const daftarPresensi = document.getElementById('daftar-presensi'); 
 if(daftarPresensi) {
     const tambahPresensi = daftarPresensi.querySelector('.tambah-presensi');
@@ -341,23 +367,50 @@ if(daftarPresensi) {
         }else if(e.target.closest('.delete-presensi')){
             e.stopPropagation();
             const presensiItem = e.target.closest('.presensi-item');
-            createDeletePresensiDialog(presensiItem);
+            createDeletePresensiModal(presensiItem);
         }
     });
 
-    function createDeletePresensiDialog(presensiItem){
+    function createDeletePresensiModal(presensiItem){
         const namaPeserta = presensiItem.querySelector('.nama-peserta').textContent;
         const nikPeserta = presensiItem.querySelector('.nik-peserta').textContent;
-
-        const deletePresensiDialog = daftarPresensi.querySelector('.delete-presensi-dialog');
-        const deleteDialogContent = deletePresensiDialog.querySelector('.delete-dialog-content');
-        const namaNikUser = deleteDialogContent.querySelector('.nama-nik-user');
+        
+        const deletePresensiModal = document.getElementById('delete-presensi-modal');
+        const namaNikUser = deletePresensiModal.querySelector('.nama-nik-user');
         namaNikUser.textContent = `${namaPeserta} - ${nikPeserta}`;
+        
+        const inputPresensiId = deletePresensiModal.querySelector('[name="presensi-id"]');
+        inputPresensiId.value = presensiItem.dataset.presensiId;
+        
+        openModal(deletePresensiModal, removeEventListener);
+        
+        const modalForm = deletePresensiModal.querySelector('form');
+        async function handleSubmit(e){
+            e.preventDefault();
+            const route = modalForm.action;
+            const submitButton = e.submitter;
+            
+            const formData = new FormData(modalForm);
+            const data = Object.fromEntries(formData.entries());
+            console.log(data);
 
-        const inputId = deletePresensiDialog.querySelector('[name="id"]');
-        inputId.value = presensiItem.dataset.presensiId;
+            playFetchingAnimation(submitButton, 'red', 'Deleting...');
+            const response = await fetchRequest(route, 'DELETE', data);
+            stopFetchingAnimation(submitButton);
 
-        openDialog(deletePresensiDialog);
+            if(response.ok){
+                const json = await response.json();
+                saveToast('success', json.message);
+                window.location.replace(json.redirect);
+            }else{
+                handleError(response, deletePresensiModal);
+            }
+        }
+        modalForm.addEventListener('submit', handleSubmit);
+
+        function removeEventListener(){
+            modalForm.removeEventListener('submit', handleSubmit);
+        }
     }
 }
 

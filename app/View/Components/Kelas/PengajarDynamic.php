@@ -8,15 +8,13 @@ use Illuminate\View\Component;
 
 class PengajarDynamic extends Component
 {
-    public $type;
     public $pengajarOptions;
-    public $pengajarKelas;
+    public $kelas;
 
-    public function __construct($type, $pengajarOptions, $pengajarKelas)
+    public function __construct($pengajarOptions, $kelas = null)
     {
-        $this->type = $type;
         $this->pengajarOptions = $pengajarOptions;
-        $this->pengajarKelas = $pengajarKelas;
+        $this->kelas = $kelas;
     }
 
     public function render(): View|Closure|string

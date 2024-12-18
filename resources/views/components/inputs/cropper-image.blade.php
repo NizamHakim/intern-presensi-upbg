@@ -11,6 +11,6 @@
     </div>
 </div>
 
-@push('script')
+@pushOnce('script')
     <script src="{{ asset('js/views/components/inputs/cropper.js') }}"></script>
-@endpush
+@endPushOnce

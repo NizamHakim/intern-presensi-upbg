@@ -27,12 +27,36 @@ class Kelas extends Model
 
     public function scopeStatus(Builder $query, string $status): void
     {
-        if($status == 'completed'){
-            $query->whereColumn('banyak_pertemuan', '=', 'progress');
-        }elseif($status == 'upcoming'){
-            $query->where('progress', '=', 0);
-        }elseif($status == 'inprogress'){
-            $query->where('progress', '>', 0)->whereColumn('progress', '<', 'banyak_pertemuan');
+        switch($status){
+            case 'completed':
+                $query->whereColumn('banyak_pertemuan', '=', 'progress');
+                break;
+            case 'upcoming':
+                $query->where('progress', '=', 0);
+                break;
+            case 'in-progress':
+                $query->where('progress', '>', 0)->whereColumn('progress', '<', 'banyak_pertemuan');
+                break;
+            default:
+                $query->where('progress', '=', -1); // error handling, show no data
+        }
+    }
+
+    public function scopeSort(Builder $query, string $sort): void
+    {
+        switch($sort){
+            case 'tanggal-mulai-desc':
+                $query->orderBy('tanggal_mulai', 'desc');
+                break;
+            case 'tanggal-mulai-asc':
+                $query->orderBy('tanggal_mulai', 'asc');
+                break;
+            case 'kode-asc':
+                $query->orderBy('kode', 'asc');
+                break;
+            case 'kode-desc':
+                $query->orderBy('kode', 'desc');
+                break;
         }
     }
 
@@ -68,7 +92,7 @@ class Kelas extends Model
 
     public function peserta()
     {
-        return $this->belongsToMany(Peserta::class, 'peserta_kelas')->withTimestamps();
+        return $this->belongsToMany(Peserta::class, 'peserta_kelas')->withTimestamps()->withPivot('aktif');
     }
 
     public function pertemuan()

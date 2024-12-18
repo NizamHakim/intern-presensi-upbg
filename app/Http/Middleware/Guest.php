@@ -27,6 +27,7 @@ class Guest
 
             switch ($role) {
                 case 2:
+                    return redirect()->route('kelas.index');
                 case 3:
                     return redirect()->route('kelas.index');
             }

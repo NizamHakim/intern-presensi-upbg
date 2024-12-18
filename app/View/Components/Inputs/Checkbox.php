@@ -8,19 +8,17 @@ use Illuminate\View\Component;
 
 class Checkbox extends Component
 {
+    public $type;
     public $inputName;
     public $value;
     public $checked;
-    public $label;
-    public $id;
     
-    public function __construct($inputName, $value, $checked, $label = null)
+    public function __construct($type, $inputName, $value, $checked)
     {
+        $this->type = $type;
         $this->inputName = $inputName;
         $this->value = $value;
         $this->checked = $checked;
-        $this->label = $label;
-        $this->id = ($label) ? strtolower(str_replace(' ', '-', $label)) : null;
     }
 
     /**

@@ -10,7 +10,7 @@
 
     <input type="hidden" name="{{ $name }}" value="{{ $selected['value'] }}">
 
-    <ul class="dropdown-options-container hidden opacity-0 absolute -bottom-1 translate-y-full w-full bg-white transition shadow-strong border rounded-md z-10 max-h-52 overflow-auto">
+    <ul class="dropdown-options-container hidden opacity-0 absolute -bottom-1 translate-y-full w-full bg-white transition shadow-strong border rounded-md z-10 max-h-40 md:max-h-52 overflow-auto">
         <li class="w-full px-3 py-2 rounded-t-md"><input type="text" class="dropdown-search w-full px-2 py-1.5 border rounded-md outline-none bg-gray-100" placeholder="Search..."></li>
         @if ($placeholder)
             <x-inputs.dropdown.option value="" class="{{ ($selected['value'] == '') ? 'selected' : '' }}">{{ $placeholder }}</x-inputs.dropdown.option>

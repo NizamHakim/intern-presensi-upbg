@@ -13,7 +13,7 @@ const tambahPengajar = pengajarSection.querySelector('.tambah-pengajar');
 tambahPengajar.addEventListener('click', function(){
     const pengajarItem = pengajarContainer.querySelector('.pengajar-item');
     const pengajarItemClone = pengajarItem.cloneNode(true);
-    pengajarItemClone.classList.remove('mr-[3.25rem]');
+    pengajarItemClone.classList.remove('md:mr-[3.25rem]');
     changeDropdownValue(pengajarItemClone.querySelector('.input-dropdown.pengajar-dropdown'), '');
     addDeletePengajarButton(pengajarItemClone);
     pengajarContainer.appendChild(pengajarItemClone);
@@ -22,7 +22,7 @@ tambahPengajar.addEventListener('click', function(){
 function addDeletePengajarButton(pengajarItem){
     const deleteButton = document.createElement('button');
     deleteButton.setAttribute('type', 'button');
-    deleteButton.setAttribute('class', 'delete-pengajar font-medium text-red-600 bg-white border size-10 rounded-full transition hover:bg-red-600 hover:text-white hover:border-red-600');
+    deleteButton.setAttribute('class', 'delete-pengajar font-medium text-red-600 bg-white border shadow-sm size-10 rounded-full transition hover:bg-red-600 hover:text-white hover:border-red-600');
     deleteButton.innerHTML = '<i class="fa-regular fa-trash-can"></i>';
     pengajarItem.appendChild(deleteButton);
 }

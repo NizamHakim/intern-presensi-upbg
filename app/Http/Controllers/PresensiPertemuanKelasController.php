@@ -76,14 +76,13 @@ class PresensiPertemuanKelasController extends Controller
     }
 
     public function destroy(Request $request){
-        $presensi = PresensiPertemuanKelas::findOrFail($request->id);
+        $presensi = PresensiPertemuanKelas::findOrFail($request['presensi-id']);
+        $pertemuan = $presensi->pertemuan;
         $presensi->delete();
 
-        session()->flash('toast', [
-            'type' => 'success',
+        return response([
+            'redirect' => route('kelas.pertemuan.detail', [$pertemuan->kelas->slug, $pertemuan->id]),
             'message' => 'Presensi berhasil dihapus'
-        ]);
-
-        return redirect()->route('kelas.pertemuan.detail', [$presensi->pertemuan->kelas->slug, $presensi->pertemuan->id]);
+        ], 200);
     }
 }

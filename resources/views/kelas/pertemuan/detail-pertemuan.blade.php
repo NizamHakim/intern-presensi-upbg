@@ -4,6 +4,17 @@
     @endpush
 
     <x-slot:title>Pertemuan Ke - {{ $pertemuan->pertemuan_ke }}</x-slot>
+    <x-slot:sidenav>
+        <x-layouts.navgroup title="Pertemuan Ke - {{ $pertemuan->pertemuan_ke }}">
+            <x-layouts.navlink href="{{ route('kelas.pertemuan.detail', ['slug' => $kelas->slug, 'id' => $pertemuan->id]) }}" routeName="kelas.pertemuan.detail">Detail Pertemuan</x-layouts.navlink>
+        </x-layouts.navgroup>
+        <x-layouts.navgroup title="{{ $kelas->kode }}">
+            <x-layouts.navlink href="{{ route('kelas.detail', ['slug' => $kelas->slug]) }}" routeName="kelas.detail">Detail Kelas</x-layouts.navlink>
+            <x-layouts.navlink href="{{ route('kelas.daftarPeserta', ['slug' => $kelas->slug]) }}" routeName="kelas.daftarPeserta">Daftar Peserta</x-layouts.navlink>
+        </x-layouts.navgroup>
+        <hr>
+    </x-slot>
+
     <div class="flex flex-col gap-6 mt-6 mb-8">
         <h1 class="font-bold text-upbg text-3xl">Detail Pertemuan</h1>
         <x-ui.breadcrumbs :breadcrumbs="$breadcrumbs"/>
@@ -45,27 +56,34 @@
             <a href="{{ route('kelas.pertemuan.edit', ['slug' => $kelas->slug, 'id' => $pertemuan->id]) }}" class="button-style text-center border-upbg text-upbg hover:bg-upbg hover:text-white"><i class="fa-regular fa-pen-to-square mr-1"></i>Edit</a>
             <button type="button" class="delete-pertemuan button-style border-red-600 text-red-600 hover:bg-red-600 hover:text-white"><i class="fa-regular fa-trash-can mr-1"></i>Delete</button>
         </div>
-        <x-ui.delete-dialog :action="route('kelas.pertemuan.destroy', ['slug' => $kelas->slug, 'id' => $pertemuan->id])" class="delete-pertemuan-dialog">
-            <x-slot:title>Hapus Pertemuan</x-slot>
-            <x-slot:message>Apakah anda yakin ingin menghapus <span class="font-bold">Pertemuan Ke - {{ $pertemuan->pertemuan_ke }}</span> dari kelas <span class="font-bold">{{ $kelas->kode }}</span> ?</x-slot>
-            <x-slot:deleteMessage>
-                <p class="text-red-600">Data pertemuan dan presensi dari pertemuan ini akan dihapus permanen!</p>
-            </x-slot>
-            <x-slot:hiddenInputs>
-                <input type="hidden" name="kelas-slug" value="{{ $kelas->slug }}">
-                <input type="hidden" name="pertemuan-id" value="{{ $pertemuan->id }}">
-            </x-slot>
-        </x-ui.delete-dialog>
+        <x-ui.modal id="delete-pertemuan-modal">
+            <form action="{{ route('kelas.pertemuan.destroy', ['slug' => $kelas->slug, 'id' => $pertemuan->id]) }}" method="POST" class="flex flex-col gap-4">
+                @csrf
+                @method('DELETE')
+                <h1 class="modal-title">Hapus Kelas</h1>
+                <hr class="w-full">
+                <p class="text-gray-700">Apakah anda yakin ingin menghapus <span class="font-semibold">Pertemuan Ke - {{ $pertemuan->pertemuan_ke }}</span> dari kelas <span class="font-semibold">{{ $kelas->kode }}</span></p>
+                <div class="danger-container flex flex-col gap-2">
+                    <p class="font-semibold"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Peringatan</p>
+                    <p>Semua data pertemuan ini akan dihapus permanen</p>
+                </div>
+                <hr class="w-full">
+                <div class="flex flex-row justify-end gap-4">
+                    <button type="button" class="cancel-button button-style border-none bg-white hover:bg-gray-100">Cancel</button>
+                    <button type="submit" class="submit-button button-style border-red-600 bg-red-600 text-white hover:bg-red-700">Delete</button>
+                </div>
+            </form>
+        </x-ui.modal>
     </section>
 
-    <section id="topik-catatan" class="flex flex-col gap-4 shadow-sm mt-6 p-6 bg-white @if ($pertemuan->presensi->isEmpty() && auth()->user()->current_role_id == 2) mb-20 @endif" data-slug="{{ $kelas->slug }}" data-id="{{ $pertemuan->id }}">
+    <section id="topik-catatan" class="flex flex-col gap-4 shadow-sm mt-6 p-6 bg-white" data-slug="{{ $kelas->slug }}" data-id="{{ $pertemuan->id }}">
         <div class="topik flex flex-col gap-2 input-group">
             <h3 class="font-semibold text-gray-700">Topik Bahasan</h3>
-            <p class="text-gray-600 break-words">{!! ($pertemuan->topik) ? $pertemuan->topik : '-' !!}</p>
+            <p class="text-gray-600 break-words text-wrap">{!! ($pertemuan->topik) ? $pertemuan->topik : '-' !!}</p>
         </div>
         <div class="catatan flex flex-col gap-2 input-group">
             <h3 class="font-semibold text-gray-700">Catatan</h3>
-            <p class="text-gray-600 break-words">{!! ($pertemuan->catatan) ? $pertemuan->catatan : '-' !!}</p>
+            <p class="text-gray-600 break-words text-wrap">{!! ($pertemuan->catatan) ? $pertemuan->catatan : '-' !!}</p>
         </div>
         <button class="edit-topik-catatan button-style text-upbg border-upbg text-center hover:text-white hover:bg-upbg">
             <i class="fa-regular fa-pen-to-square mr-1"></i>
@@ -77,7 +95,7 @@
         @if (auth()->user()->current_role_id == 3)
             <hr class="bg-gray-200 my-10">
             @if (now()->isBefore($pertemuan->waktu_selesai))
-                <div class="flex flex-col items-center shadow-strong p-8 gap-6 mb-20">
+                <div class="flex flex-col items-center shadow-strong p-8 gap-6">
                     <p class="text-gray-600">Mulai pertemuan untuk membuat daftar kehadiran</p>
                     <button @if(now()->isBefore($pertemuan->waktuMulai)) disabled @endif type="button" class="mulai-pertemuan px-6 py-2 rounded-md bg-upbg text-white font-medium transition duration-300 hover:bg-upbg-dark disabled:opacity-70 disabled:hover:bg-upbg">Mulai Pertemuan</button>
                     
@@ -98,7 +116,7 @@
                     @endif
                 </div>
             @else
-                <div class="flex flex-col items-center shadow-strong p-8 gap-6 mb-20">
+                <div class="flex flex-col items-center shadow-strong p-8 gap-6">
                     <p class="text-red-600 font-semibold">Pertemuan telah selesai</p>
                     <p class="text-gray-600">Silahkan reschedule pertemuan atau tambahkan catatan alasan pertemuan tidak terlaksana untuk admin</p>
                 </div>
@@ -117,32 +135,47 @@
                         <button type="submit" class="button-style w-full border-green-600 text-green-600 hover:text-white hover:bg-green-600"><i class="fa-regular fa-square-check mr-1"></i>Tandai Semua Hadir</button>
                     </form>
                     <x-ui.modal id="tambah-presensi-modal">
-                        <h1 class="text-xl font-semibold text-gray-700 text-center capitalize">Tambah Presensi</h1>
-                        @if ($tambahPesertaOptions->isEmpty())
-                            <div class="flex flex-col gap-4">
-                                <div class="flex flex-col justify-start p-4 bg-green-100 rounded-md text-sm">
-                                    <p class="text-green-600 font-semibold mb-2"><i class="fa-solid fa-circle-info mr-2"></i>Info</p>
-                                    <p class="text-green-600">Semua peserta sudah ditambahkan ke pertemuan ini</p>
-                                </div>
-                                <button type="button" class="cancel-button button-style border-none text-gray-700 hover:bg-gray-100">Cancel</button>
-                            </div>
-                        @else
-                            <hr class="bg-gray-200">
-                            <form action="{{ route('presensi.store') }}" class="flex flex-col gap-4">
-                                <input type="hidden" name="pertemuan-id" value="{{ $pertemuan->id }}">
-                                <x-inputs.dropdown :selected="$tambahPesertaSelected" :options="$tambahPesertaOptions" placeholder="Pilih peserta" inputName="peserta-id" label="Pilih peserta"/>
-                                <x-inputs.dropdown :selected="$statusKehadiranSelected" :options="$statusKehadiranOptions" inputName="hadir" label="Status Kehadiran"/>
-                                <div class="flex flex-col justify-start p-4 bg-green-100 rounded-md text-sm">
-                                    <p class="text-green-600 font-semibold mb-2"><i class="fa-solid fa-circle-info mr-2"></i>Info</p>
-                                    <p class="text-green-600">Jika peserta tidak ada dalam daftar, pastikan peserta sudah terdaftar di kelas ini</p>
-                                </div>
-                                <hr class="bg-gray-200 w-full my-4">
-                                <div class="flex flex-row justify-end gap-4">
+                        <div class="flex flex-col gap-4">
+                            <h1 class="modal-title">Tambah Presensi</h1>
+                            @if ($tambahPesertaOptions->isEmpty())
+                                <div class="flex flex-col gap-4">
+                                    <div class="flex flex-col justify-start p-4 bg-green-100 rounded-md text-sm">
+                                        <p class="text-green-600 font-semibold mb-2"><i class="fa-solid fa-circle-info mr-2"></i>Info</p>
+                                        <p class="text-green-600">Semua peserta sudah ditambahkan ke pertemuan ini</p>
+                                    </div>
                                     <button type="button" class="cancel-button button-style border-none text-gray-700 hover:bg-gray-100">Cancel</button>
-                                    <button type="submit" class="submit-button button-style border-green-600 bg-green-600 text-white hover:bg-green-700">Tambah</button>
                                 </div>
-                            </form>
-                        @endif
+                            @else
+                                <hr class="w-full">
+                                <form action="{{ route('presensi.store') }}" class="flex flex-col gap-4">
+                                    <input type="hidden" name="pertemuan-id" value="{{ $pertemuan->id }}">
+                                    <div class="input-group">
+                                        <p class="input-label">Pilih peserta</p>
+                                        <x-inputs.dropdown.select name="peserta-id" placeholder="Pilih peserta" class="peserta-dropdown">
+                                            @foreach ($tambahPesertaOptions as $peserta)
+                                                <x-inputs.dropdown.option :value="$peserta->id">{{ "$peserta->nama" }}</x-inputs.dropdown.option>
+                                            @endforeach
+                                        </x-inputs.dropdown.select>
+                                    </div>
+                                    <div class="input-group">
+                                        <p class="input-label">Status kehadiran</p>
+                                        <x-inputs.dropdown.select name="hadir" :selected="['text' => 'Tidak Hadir', 'value' => 0]" class="status-dropdown">
+                                            <x-inputs.dropdown.option :value="0" class="selected">Tidak Hadir</x-inputs.dropdown.option>
+                                            <x-inputs.dropdown.option :value="1">Hadir</x-inputs.dropdown.option>
+                                        </x-inputs.dropdown.select>
+                                    </div>
+                                    <div class="flex flex-col justify-start p-4 bg-green-100 rounded-md text-sm">
+                                        <p class="text-green-600 font-semibold mb-2"><i class="fa-solid fa-circle-info mr-2"></i>Info</p>
+                                        <p class="text-green-600">Jika peserta tidak ada dalam daftar, pastikan peserta sudah terdaftar di kelas ini</p>
+                                    </div>
+                                    <hr class="bg-gray-200 w-full my-4">
+                                    <div class="flex flex-row justify-end gap-4">
+                                        <button type="button" class="cancel-button button-style border-none text-gray-700 hover:bg-gray-100">Cancel</button>
+                                        <button type="submit" class="submit-button button-style border-green-600 bg-green-600 text-white hover:bg-green-700">Tambah</button>
+                                    </div>
+                                </form>
+                            @endif
+                        </div>
                     </x-ui.modal>
                 </div>
             </div>
@@ -179,16 +212,24 @@
                 @endforeach
             </div>
 
-            <x-ui.delete-dialog :action="route('presensi.destroy')" class="delete-presensi-dialog">
-                <x-slot:title>Hapus Presensi</x-slot>
-                <x-slot:message>Apakah anda yakin ingin menghapus <span class="font-bold nama-nik-user">User</span> dari daftar kehadiran?</x-slot>
-                <x-slot:deleteMessage>
-                    <p class="text-red-600">Anda dapat menambahkan kembali peserta menggunakan opsi "Tambah Presensi"</p>
-                </x-slot>
-                <x-slot:hiddenInputs>
-                    <input type="hidden" name="id" value="">
-                </x-slot>
-            </x-ui.delete-dialog>
+            <x-ui.modal id="delete-presensi-modal">
+                <form action="{{ route('presensi.destroy') }}" class="flex flex-col gap-4">
+                    <h1 class="modal-title">Hapus Presensi</h1>
+                    <input type="hidden" name="pertemuan-id" value="{{ $pertemuan->id }}">
+                    <input type="hidden" name="presensi-id">
+                    <hr class="w-full">
+                    <p class="text-gray-700">Apakah anda yakin ingin menghapus <span class="font-semibold nama-nik-user">User</span> dari daftar kehadiran?</p>
+                    <div class="danger-container flex flex-col gap-2">
+                        <p class="font-semibold"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Peringatan</p>
+                        <p>Anda dapat menambahkan kembali peserta menggunakan opsi "Tambah Presensi"</p>
+                    </div>
+                    <hr class="w-full">
+                    <div class="flex flex-row justify-end gap-4">
+                        <button type="button" class="cancel-button button-style border-none bg-white hover:bg-gray-100">Cancel</button>
+                        <button type="submit" class="submit-button button-style border-red-600 bg-red-600 text-white hover:bg-red-700">Delete</button>
+                    </div>
+                </form>
+            </x-ui.modal>
         </section>
     @endif
 

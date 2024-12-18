@@ -33,7 +33,7 @@ class Peserta extends Model
 
     public function kelas()
     {
-        return $this->belongsToMany(Kelas::class, 'peserta_kelas');
+        return $this->belongsToMany(Kelas::class, 'peserta_kelas')->withPivot('aktif');
     }
 
     public function presensi()

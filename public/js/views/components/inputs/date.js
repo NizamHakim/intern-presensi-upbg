@@ -1,13 +1,30 @@
 const inputDates = document.querySelectorAll('.input-date');
 inputDates.forEach(inputDate => {
     const input = inputDate.querySelector('input');
-    flatpickr(input, {
-        altInput: true,
-        altFormat: 'l, j F Y',
-        dateFormat: 'Y-m-d',
-        defaultDate: input.value,
-        locale: 'id',
-    });
+    if(inputDate.dataset.plugin === 'default'){
+        flatpickr(input, {
+            altInput: true,
+            altFormat: 'l, j F Y',
+            dateFormat: 'Y-m-d',
+            defaultDate: input.value,
+            disableMobile: true,
+            locale: 'id',
+        });
+    }else if(inputDate.dataset.plugin === 'month'){
+        flatpickr(input, {
+            altInput: true,
+            altFormat: 'F Y',
+            defaultDate: input.value,
+            disableMobile: true,
+            plugins: [
+                new monthSelectPlugin({
+                    shorthand: true,
+                    dateFormat: 'Y-m',
+                })
+            ],
+            locale: 'id',
+        })
+    }
 });
 
 function resetDate(inputDate){

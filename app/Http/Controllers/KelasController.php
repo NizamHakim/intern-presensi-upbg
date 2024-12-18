@@ -23,124 +23,107 @@ class KelasController extends Controller
 {
     public function index(Request $request)
     {
-        $programOptions = ProgramKelas::aktif()->get()->map->only(['text', 'value'])->prepend(['text' => 'Semua', 'value' => null]);
-        $programSelected = ($request->query('program') != null) ? ProgramKelas::where('kode', $request->query('program'))->firstOrFail() : null;
+        $programOptions = ProgramKelas::aktif()->get();
+        $tipeOptions = TipeKelas::aktif()->get();
+        $levelOptions = LevelKelas::aktif()->get();
+        $ruanganOptions = Ruangan::all();
+        $pengajarOptions = User::pengajar()->get();
 
-        $tipeOptions = TipeKelas::aktif()->get()->map->only(['text', 'value'])->prepend(['text' => 'Semua', 'value' => null]);
-        $tipeSelected = ($request->query('tipe') != null) ? TipeKelas::where('kode', $request->query('tipe'))->firstOrFail() : null;
-
-        $levelOptions = LevelKelas::aktif()->get()->map->only(['text', 'value']);
-        if($levelOptions->where('value', null)->isEmpty()){
-            $levelOptions->prepend(['text' => 'Semua', 'value' => null]);
-        }
-        $levelSelected = ($request->query('level') != null) ? LevelKelas::where('kode', $request->query('level'))->firstOrFail() : null;
-
-        $ruanganOptions = Ruangan::all()->map->only(['text', 'value'])->prepend(['text' => 'Semua', 'value' => null]);
-        $ruanganSelected = ($request->query('ruangan') != null) ? Ruangan::where('kode', $request->query('ruangan'))->firstOrFail() : null;
-        
-        $pengajarOptions = User::whereHas('roles', function($query){
-            $query->where('role_id', 3);
-        })->get()->map->only(['text', 'value'])->prepend(['text' => 'Semua', 'value' => null]);;
-        $pengajarSelected = ($request->query('pengajar') != null) ? User::whereHas('mengajarKelas', function($query) use ($request){
-            $query->where('user_id', $request->query('pengajar'));
-        })->firstOrFail() : null;
-
+        // query in Kelas.php model
         $statusOptions = collect([
-            ['text' => 'Semua', 'value' => ''],
-            ['text' => 'In Progress', 'value' => 'inprogress'],
             ['text' => 'Completed', 'value' => 'completed'],
+            ['text' => 'In Progress', 'value' => 'in-progress'],
             ['text' => 'Upcoming', 'value' => 'upcoming'],
         ]);
-        if($request->query('status') != null){
-            try{
-                $statusSelected = $statusOptions->where('value', $request->query('status'))->firstOrFail();
-            }catch(ItemNotFoundException $e){
-                abort(404);
-            }
-        }else{
-            $statusSelected = null;
-        }
 
-        $sortByOptions = collect([
-            ['text' => 'Tanggal mulai (terbaru)', 'value' => 'latest'],
-            ['text' => 'Tanggal mulai (terlama)', 'value' => 'oldest'],
+        // query in Kelas.php model
+        $sortbyOptions = collect([
+            ['text' => 'Tanggal Mulai (Terbaru)', 'value' => 'tanggal-mulai-desc'],
+            ['text' => 'Tanggal Mulai (Terlama)', 'value' => 'tanggal-mulai-asc'],
+            ['text' => 'Kode Kelas (A-Z)', 'value' => 'kode-asc'],
+            ['text' => 'Kode Kelas (Z-A)', 'value' => 'kode-desc'],
         ]);
-        if($request->query('sort-by') != null){
-            try{
-                $sortBySelected = $sortByOptions->where('value', $request->query('sort-by'))->firstOrFail();
-            }catch(ItemNotFoundException $e){
-                abort(404);
-            }
-        }else{
-            $sortBySelected = null;
-        }
 
-        $nomor = $request->query('nomor');
-        $banyakPertemuan = $request->query('banyak-pertemuan');
-        $tanggalMulai = $request->query('tanggal-mulai');
-
-        
-        $progress = PertemuanKelas::select('kelas_id', DB::raw('COUNT(id) AS progress'))
-        ->where('terlaksana', true)
-        ->groupBy('kelas_id');
-
-        $kelasList = Kelas::with(['jadwal', 'ruangan'])
-        ->joinSub($progress, 'progress', function ($join) {
+        $progress = PertemuanKelas::select('kelas_id', DB::raw('count(*) as progress'))->where('terlaksana', true)->groupBy('kelas_id');
+        $kelasList = Kelas::with(['ruangan', 'jadwal']);
+        $kelasList->joinSub($progress, 'progress', function($join){
             $join->on('kelas.id', '=', 'progress.kelas_id');
-        })->when($programSelected != null, function($query) use ($programSelected){
-            return $query->where('program_id', $programSelected->id);
-        })->when($tipeSelected != null, function($query) use ($tipeSelected){
-            return $query->where('tipe_id', $tipeSelected->id);
-        })->when($levelSelected != null, function($query) use ($levelSelected){
-            return $query->where('level_id', $levelSelected->id);
-        })->when($ruanganSelected != null, function($query) use ($ruanganSelected){
-            return $query->where('ruangan_id', $ruanganSelected->id);
-        })->when($nomor != null, function($query) use ($nomor){
-            return $query->where('nomor_kelas', $nomor);
-        })->when($banyakPertemuan != null, function($query) use ($banyakPertemuan){
-            return $query->where('banyak_pertemuan', $banyakPertemuan);
-        })->when($tanggalMulai != null, function($query) use ($tanggalMulai){
-            return $query->whereBetween('tanggal_mulai', [
-                Carbon::parse($tanggalMulai)->startOfMonth(),
-                Carbon::parse($tanggalMulai)->endOfMonth(),
-            ]);
-        })->when($pengajarSelected != null, function($query) use ($pengajarSelected){
-            return $query->whereHas('pengajar', function($query) use ($pengajarSelected){
-                return $query->where('user_id', $pengajarSelected->id);
+        });
+
+        $kelasList->when($request->query('program'), function($query) use ($request){
+            return $query->where('program_id', $request->query('program'));
+        });
+
+        $kelasList->when($request->query('tipe'), function($query) use ($request){
+            return $query->where('tipe_id', $request->query('tipe'));
+        });
+
+        $kelasList->when($request->query('nomor'), function($query) use ($request){
+            return $query->where('nomor_kelas', $request->query('nomor'));
+        });
+
+        $kelasList->when($request->query('level'), function($query) use ($request){
+            return $query->where('level_id', $request->query('level'));
+        });
+
+        $kelasList->when($request->query('banyak-pertemuan'), function($query) use ($request){
+            return $query->where('banyak_pertemuan', $request->query('banyak-pertemuan'));
+        });
+
+        $kelasList->when($request->query('tanggal-mulai'), function($query) use ($request){
+            $firstDate = Carbon::parse($request->query('tanggal-mulai'))->startOfMonth();
+            $lastDate = Carbon::parse($request->query('tanggal-mulai'))->endOfMonth();
+            return $query->whereBetween('tanggal_mulai', [$firstDate, $lastDate]);
+        });
+
+        $kelasList->when($request->query('ruangan'), function($query) use ($request){
+            return $query->where('ruangan_id', $request->query('ruangan'));
+        });
+
+        $kelasList->when($request->query('status'), function($query) use ($request){
+            return $query->status($request->query('status'));
+        });
+
+        $kelasList->when($request->query('order'), function($query) use ($request){
+            return $query->sort($request->query('order'));
+        });
+
+        $kelasList->when($request->query('pengajar'), function($query) use ($request){
+            return $query->whereHas('pengajar', function($query) use ($request){
+                $query->where('user_id', $request->query('pengajar'));
             });
-        })->when($statusSelected != null, function($query) use ($statusSelected){
-            return $query->status($statusSelected['value']);
-        })->when($sortBySelected != null, function($query) use ($sortBySelected){
-            if($sortBySelected['value'] == 'latest'){
-                return $query->orderBy('tanggal_mulai', 'desc');
-            }elseif($sortBySelected['value'] == 'oldest'){
-                return $query->orderBy('tanggal_mulai', 'asc');
-            }
-        }, function($query){
-            return $query->orderBy('tanggal_mulai', 'desc');
-        })->paginate(10)->appends(array_filter($request->query(), function($value){
-            return $value !== null;
-        }));
+        });
+
+        $kelasList->when($request->query('kode'), function($query) use ($request){
+            return $query->where('kode', 'like', '%' . $request->query('kode') . '%');
+        });
+
+        $kelasList = $kelasList->paginate(10)->appends($request->query());
+
+        $selected = [
+            'program' => ProgramKelas::find($request->query('program')),
+            'tipe' => TipeKelas::find($request->query('tipe')),
+            'nomor' => $request->query('nomor'),
+            'level' => LevelKelas::find($request->query('level')),
+            'banyak-pertemuan' => $request->query('banyak-pertemuan'),
+            'tanggal-mulai' => $request->query('tanggal-mulai'),
+            'ruangan' => Ruangan::find($request->query('ruangan')),
+            'status' => $statusOptions->where('value', $request->query('status'))->first(),
+            'sortby' => $sortbyOptions->where('value', $request->query('order'))->first(),
+            'pengajar' => User::find($request->query('pengajar')),
+            'kode' => $request->query('kode'),
+        ];
 
         return view('kelas.daftar-kelas', [
             'programOptions' => $programOptions,
-            'programSelected' => $programSelected ? $programSelected->only(['text', 'value']) : $programOptions[0],
             'tipeOptions' => $tipeOptions,
-            'tipeSelected' => $tipeSelected ? $tipeSelected->only(['text', 'value']) : $tipeOptions[0],
             'levelOptions' => $levelOptions,
-            'levelSelected' => $levelSelected ? $levelSelected->only(['text', 'value']) : $levelOptions[0],
             'ruanganOptions' => $ruanganOptions,
-            'ruanganSelected' => $ruanganSelected ? $ruanganSelected->only(['text', 'value']) : $ruanganOptions[0],
             'pengajarOptions' => $pengajarOptions,
-            'pengajarSelected' => $pengajarSelected ? $pengajarSelected->only(['text', 'value']) : $pengajarOptions[0],
             'statusOptions' => $statusOptions,
-            'statusSelected' => $statusSelected ?? $statusOptions[0],
-            'sortByOptions' => $sortByOptions,
-            'sortBySelected' => $sortBySelected ?? $sortByOptions[0],
-            'nomor' => $nomor,
-            'banyakPertemuan' => $banyakPertemuan,
-            'tanggalMulai' => $tanggalMulai,
+            'sortbyOptions' => $sortbyOptions,
             'kelasList' => $kelasList,
+            'selected' => $selected,
         ]);
     }
 
@@ -159,6 +142,39 @@ class KelasController extends Controller
             'kelas' => $kelas,
             'breadcrumbs' => $breadcrumbs,
             'ruanganOptions' => $ruanganOptions,
+        ]);
+    }
+
+    public function create()
+    {
+        $breadcrumbs = [
+            'Kelas' => route('kelas.index'),
+            'Tambah' => null,
+        ];
+
+        $programOptions = ProgramKelas::aktif()->get();
+        $tipeOptions = TipeKelas::aktif()->get();
+        $levelOptions = LevelKelas::aktif()->get();
+        $ruanganOptions = Ruangan::all();
+        $pengajarOptions = User::pengajar()->get();
+        $hariOptions = collect([
+            ['text' => 'Minggu', 'value' => 0],
+            ['text' => 'Senin', 'value' => 1],
+            ['text' => 'Selasa', 'value' => 2],
+            ['text' => 'Rabu', 'value' => 3],
+            ['text' => 'Kamis', 'value' => 4],
+            ['text' => 'Jumat', 'value' => 5],
+            ['text' => 'Sabtu', 'value' => 6],
+        ]);
+
+        return view('kelas.tambah-kelas', [
+            'breadcrumbs' => $breadcrumbs,
+            'programOptions' => $programOptions,
+            'tipeOptions' => $tipeOptions,
+            'levelOptions' => $levelOptions,
+            'ruanganOptions' => $ruanganOptions,
+            'pengajarOptions' => $pengajarOptions,
+            'hariOptions' => $hariOptions,
         ]);
     }
 
@@ -299,12 +315,10 @@ class KelasController extends Controller
         $kelas = Kelas::where('slug', $slug)->firstOrFail();
         $kelas->delete();
 
-        session()->flash('toast', [
-            'type' => 'success',
-            'message' => 'Kelas ' . $kelas->kode . ' berhasil dihapus'
-        ]);
-
-        return redirect()->route('kelas.index');
+        return response([
+            'redirect' => route('kelas.index'),
+            'message' => 'Kelas berhasil dihapus'
+        ], 200);
     }
 
     public function daftarPeserta($slug)
@@ -362,25 +376,44 @@ class KelasController extends Controller
             }
         }
 
-        session()->flash('toast', [
-            'type' => 'success',
-            'message' => 'Peserta berhasil ditambahkan',
-        ]);
+        return response([
+            'redirect' => route('kelas.daftarPeserta', ['slug' => $kelas->slug]),
+            'message' => 'Berhasil menambahkan peserta'
+        ], 200);
+    }
 
-        return response(['redirect' => route('kelas.daftarPeserta', ['slug' => $kelas->slug])], 200);
+    public function updatePeserta($slug, Request $request)
+    {
+        $kelas = Kelas::where('slug', $slug)->firstOrFail();
+        $peserta = Peserta::where('id', $request['peserta-id'])->firstOrFail();
+
+        if($request->has('aktif')){
+            $kelas->peserta()->updateExistingPivot($peserta->id, ['aktif' => 1]);
+        }else{
+            $kelas->peserta()->updateExistingPivot($peserta->id, ['aktif' => 0]);
+        }
+        
+        return response([
+            'aktif' => $request->has('aktif'),
+            'message' => 'Berhasil mengubah status peserta'
+        ], 200);
     }
 
     public function destroyPeserta($slug, Request $request)
     {
         $kelas = Kelas::where('slug', $slug)->firstOrFail();
-        $kelas->peserta()->detach($request['peserta-id']);
+        $peserta = Peserta::where('id', $request['peserta-id'])->firstOrFail();
 
-        session()->flash('toast', [
-            'type' => 'success',
-            'message' => 'Peserta berhasil dihapus dari kelas ' . $kelas->kode
-        ]);
+        $kelas->pertemuan()->whereHas('presensi', function($query) use ($peserta){
+            $query->where('peserta_id', $peserta->id);
+        })->delete();
 
-        return redirect()->route('kelas.daftarPeserta', ['slug' => $kelas->slug]);
+        $kelas->peserta()->detach($peserta->id);
+
+        return response([
+            'redirect' => route('kelas.daftarPeserta', ['slug' => $kelas->slug]),
+            'message' => 'Berhasil menghapus peserta dari kelas'
+        ], 200);
     }
 
     private function validatePeserta($request, $kelas)

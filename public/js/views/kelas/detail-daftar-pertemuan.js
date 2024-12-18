@@ -1,13 +1,41 @@
-const deleteKelas = document.querySelector('.delete-kelas');
+const detailKelasSection = document.getElementById('detail-kelas');
+const deleteKelas = detailKelasSection.querySelector('.delete-kelas');
 if(deleteKelas){
     deleteKelas.addEventListener('click', function(e){
         e.stopPropagation();
-        const deleteKelasDialog = document.querySelector('.delete-kelas-dialog');
-        openDialog(deleteKelasDialog);
+        const deleteKelasModal = document.getElementById('delete-kelas-modal');
+        const modalForm = deleteKelasModal.querySelector('form');
+        
+        openModal(deleteKelasModal, removeEventListener);
+
+        async function handleSubmit(e){
+            e.preventDefault();
+            const route = modalForm.action;
+            const submitButton = e.submitter;
+
+            playFetchingAnimation(submitButton, 'red', 'Deleting...');
+            const response = await fetchRequest(route, 'DELETE');
+            stopFetchingAnimation(submitButton);
+
+            if(response.ok){
+                const json = await response.json();
+                saveToast('success', json.message);
+                window.location.replace(json.redirect);
+            }else{
+                handleError(response, modalForm);
+            }
+        }   
+        modalForm.addEventListener('submit', handleSubmit);
+
+        function removeEventListener(){
+            modalForm.removeEventListener('submit', handleSubmit);
+        }
     });
 }
 
-const tambahPertemuan = document.querySelector('.tambah-pertemuan');
+
+const pertemuanTerlaksanaSection = document.getElementById('pertemuan-terlaksana');
+const tambahPertemuan = pertemuanTerlaksanaSection.querySelector('.tambah-pertemuan');
 tambahPertemuan.addEventListener('click', function(e){
     e.stopPropagation();
     const tambahPertemuanModal = document.getElementById('tambah-pertemuan-modal');
@@ -28,6 +56,7 @@ tambahPertemuan.addEventListener('click', function(e){
 
         if(response.ok){
             const json = await response.json();
+            saveToast('success', json.message);
             window.location.replace(json.redirect);
         }else{
             handleError(response, modalForm);

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('kelas_id')->constrained('kelas')->cascadeOnDelete();
             $table->foreignId('peserta_id')->constrained('peserta')->cascadeOnDelete();
+            $table->boolean('aktif')->default(true);
             $table->timestamps();
         });
     }
