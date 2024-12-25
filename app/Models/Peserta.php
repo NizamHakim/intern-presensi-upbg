@@ -40,4 +40,9 @@ class Peserta extends Model
     {
         return $this->hasMany(PresensiPertemuanKelas::class, 'peserta_id');
     }
+
+    public function tes()
+    {
+        return $this->belongsToMany(Tes::class, 'peserta_tes')->withPivot(['hadir', 'nilai']);
+    }
 }

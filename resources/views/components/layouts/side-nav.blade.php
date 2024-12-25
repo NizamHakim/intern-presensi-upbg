@@ -12,13 +12,21 @@
                     <x-layouts.navlink href="{{ route('kelas.index') }}" routeName="kelas.index">Daftar Kelas</x-layouts.navlink>
                 </x-layouts.navgroup>            
             @endif
-    
-            @if (auth()->user()->current_role_id == 2)
+
+            @if (auth()->user()->current_role_id == 4 || auth()->user()->current_role_id == 5)
+                <x-layouts.navgroup title="Tes">
+                    <x-layouts.navlink href="{{ route('tes.index') }}" routeName="tes.index">Daftar Tes</x-layouts.navlink>
+                </x-layouts.navgroup>
+            @endif
+                
+            @if (auth()->user()->current_role_id == 2 || auth()->user()->current_role_id == 4)
                 <x-layouts.navgroup title="User">
                     <x-layouts.navlink href="{{ route('user.index') }}" routeName="user.index">Daftar User</x-layouts.navlink>
                     <x-layouts.navlink href="{{ route('peserta.index') }}" routeName="peserta.index">Daftar Peserta</x-layouts.navlink>
                 </x-layouts.navgroup>
-    
+            @endif
+            
+            @if (auth()->user()->current_role_id == 2)
                 <x-layouts.navgroup title="Kelola Kelas">
                     <x-layouts.navlink href="{{ route('program-kelas.index') }}" routeName="program-kelas.index">Program</x-layouts.navlink>
                     <x-layouts.navlink href="{{ route('tipe-kelas.index') }}" routeName="tipe-kelas.index">Tipe</x-layouts.navlink>
@@ -26,6 +34,13 @@
                     <x-layouts.navlink href="{{ route('ruangan.index') }}" routeName="ruangan.index">Ruangan</x-layouts.navlink>
                 </x-layouts.navgroup>
             @endif
+
+            @if (auth()->user()->current_role_id == 4)
+                <x-layouts.navgroup title="Kelola Tes">
+                    <x-layouts.navlink href="{{ route('ruangan.index') }}" routeName="ruangan.index">Ruangan</x-layouts.navlink>
+                </x-layouts.navgroup>
+            @endif
+                
         </div>
     </nav>
 </div>

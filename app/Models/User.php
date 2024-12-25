@@ -72,6 +72,11 @@ class User extends Authenticatable
         $query->whereHas('roles', fn(Builder $query) => $query->where('role_id', 3));
     }
 
+    public function scopePengawas(Builder $query): void
+    {
+        $query->whereHas('roles', fn(Builder $query) => $query->where('role_id', 5));
+    }
+
     public function roles()
     {
         return $this->belongsToMany(Role::class, 'users_roles')->withTimestamps();
@@ -90,5 +95,10 @@ class User extends Authenticatable
     public function mengajarPertemuan()
     {
         return $this->hasMany(PertemuanKelas::class, 'pengajar_id');
+    }
+
+    public function mengawasiTes()
+    {
+        return $this->belongsToMany(Tes::class, 'pengawas_tes')->withTimestamps();
     }
 }

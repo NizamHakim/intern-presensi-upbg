@@ -33,6 +33,10 @@ class AuthController extends Controller
                     return redirect()->intended(route('kelas.index'));
                 case(3):
                     return redirect()->intended(route('kelas.index'));
+                case(4):
+                    return redirect()->intended(route('tes.index'));
+                case(5):
+                    return redirect()->intended(route('tes.index'));
             };
         }
 

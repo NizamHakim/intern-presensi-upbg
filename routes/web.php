@@ -8,13 +8,18 @@ use App\Http\Controllers\PesertaController;
 use App\Http\Controllers\PresensiPertemuanKelasController;
 use App\Http\Controllers\ProgramKelasController;
 use App\Http\Controllers\RuanganController;
+use App\Http\Controllers\TesController;
 use App\Http\Controllers\TipeKelasController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\Authenticated;
 use App\Http\Middleware\Guest;
 use App\Http\Middleware\HandleGetQuery;
 use App\Models\ProgramKelas;
+use Illuminate\Container\Attributes\Log;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
+use function Illuminate\Log\log;
 
 Route::get('/', function () {
     return view('welcome');
@@ -57,6 +62,15 @@ Route::middleware(Authenticated::class)->group(function(){
     Route::patch('/kelas/{slug}/pertemuan/{id}/presensi/{presensiId}', [PresensiPertemuanKelasController::class, 'updatePresensi'])->name('presensi.updatePresensi');
     Route::put('/kelas/{slug}/pertemuan/{id}/presensi-all', [PresensiPertemuanKelasController::class, 'updatePresensiAll'])->name('presensi.updatePresensiAll');
 
+    Route::get('/tes', [TesController::class, 'index'])->name('tes.index');
+    Route::get('/tes/create', [TesController::class, 'create'])->name('tes.create');
+    Route::post('/tes', [TesController::class, 'store'])->name('tes.store');
+    Route::get('/tes/{slug}', [TesController::class, 'detail'])->name('tes.detail');
+    Route::get('/tes/{slug}/edit', [TesController::class, 'edit'])->name('tes.edit');
+    Route::put('/tes/{slug}', [TesController::class, 'update'])->name('tes.update');
+    Route::delete('/tes/{slug}', [TesController::class, 'destroy'])->name('tes.destroy');
+    Route::get('/tes/{slug}/kelola-peserta', [TesController::class, 'kelolaPeserta'])->name('tes.kelolaPeserta');
+
     Route::get('/user', [UserController::class, 'index'])->middleware(HandleGetQuery::class)->name('user.index');
     Route::get('/user/create', [UserController::class, 'create'])->name('user.create');
     Route::post('/user', [UserController::class, 'store'])->name('user.store');
@@ -87,10 +101,10 @@ Route::middleware(Authenticated::class)->group(function(){
 });
 
 Route::get('/component-testing', function(){
-    $programOptions = ProgramKelas::aktif()->get();
-    $programSelected = ProgramKelas::aktif()->first();
-    return view('component-testing', [
-        'programOptions' => $programOptions,
-        'programSelected' => $programSelected,
-    ]);
+    if(request()->ajax()){
+        return view('dummy', [
+            'name' => request('name'),
+        ]);
+    }
+    return view('component-testing');   
 });

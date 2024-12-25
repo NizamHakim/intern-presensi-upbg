@@ -36,4 +36,9 @@ class Ruangan extends Model
     {
         return $this->hasMany(PertemuanKelas::class);
     }
+
+    public function tes()
+    {
+        return $this->hasMany(Tes::class);
+    }
 }

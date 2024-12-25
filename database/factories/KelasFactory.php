@@ -47,7 +47,7 @@ class KelasFactory extends Factory
             'slug' => $slug,
             'program_id' => $program->id,
             'tipe_id' => $tipe->id,
-            'level_id' => $level->id,
+            'level_id' => $level ? $level->id : null,
             'ruangan_id' => $ruangan->id,
             'nomor_kelas' => $nomorKelas,
             'banyak_pertemuan' => $banyakPertemuan,

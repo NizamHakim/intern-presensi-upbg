@@ -2,9 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\Tes;
 use App\Models\Role;
-use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\User;
 use App\Models\Kelas;
 use App\Models\Peserta;
 use App\Models\JadwalKelas;
@@ -26,6 +27,7 @@ class DatabaseSeeder extends Seeder
             LevelKelasSeeder::class,
             RuanganSeeder::class,
             PesertaSeeder::class,
+            TipeTesSeeder::class,
         ]);
 
         $nizam = User::where('nik', '5025211209')->first();
@@ -58,5 +60,19 @@ class DatabaseSeeder extends Seeder
             $kelas->peserta()->attach($peserta->random(30));
             PertemuanKelasGenerator::generate($kelas);
         }
+
+        $tesList = Tes::factory()->count(20)->create();
+
+        $peserta->each(function($peserta) use ($tesList){
+            $peserta->tes()->attach($tesList->random(5));
+        });
+
+        $stafPengawas = User::whereHas('roles', function($query){
+            return $query->where('role_id', 5);
+        })->get();
+
+        $stafPengawas->each(function($stafPengawas) use ($tesList){
+            $stafPengawas->mengawasiTes()->attach($tesList->random(5));
+        });
     }
 }

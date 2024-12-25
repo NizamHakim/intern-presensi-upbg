@@ -23,7 +23,7 @@
                         <p class="error">{{ $message }}</p>
                     @enderror
                 </div>
-                <button type="submit" class="text-sm bg-upbg py-2 rounded-sm-md button-upbg-solid"><i class="fa-solid fa-arrow-right-to-bracket"></i> Login</button>
+                <button type="submit" class="button-style button-upbg-solid"><i class="fa-solid fa-arrow-right-to-bracket"></i> Login</button>
             </form>
         </div>
     </div>

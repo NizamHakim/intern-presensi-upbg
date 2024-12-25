@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('kode')->unique();
             $table->string('slug')->unique();
-            $table->foreignId('program_id')->constrained('program_kelas')->cascadeOnDelete();
-            $table->foreignId('tipe_id')->constrained('tipe_kelas')->cascadeOnDelete();
-            $table->foreignId('level_id')->constrained('level_kelas')->cascadeOnDelete();
+            $table->foreignId('program_id')->nullable()->constrained('program_kelas')->cascadeOnDelete();
+            $table->foreignId('tipe_id')->nullable()->constrained('tipe_kelas')->cascadeOnDelete();
+            $table->foreignId('level_id')->nullable()->constrained('level_kelas')->cascadeOnDelete();
             $table->foreignId('ruangan_id')->constrained('ruangan')->cascadeOnDelete();
             $table->string('nomor_kelas');
             $table->integer('banyak_pertemuan');
