@@ -80,10 +80,10 @@ Route::middleware(Authenticated::class)->group(function(){
     Route::get('/peserta', [PesertaController::class, 'index'])->middleware(HandleGetQuery::class)->name('peserta.index');
 
     Route::get('/program-kelas', [ProgramKelasController::class, 'index'])->name('program-kelas.index');
-    Route::get('/program-kelas/create', [ProgramKelasController::class, 'create'])->name('program-kelas.create');
     Route::post('/program-kelas', [ProgramKelasController::class, 'store'])->name('program-kelas.store');
-    Route::put('/program-kelas/{id}', [ProgramKelasController::class, 'update'])->name('program-kelas.update');
+    Route::put('/program-kelas/update', [ProgramKelasController::class, 'update'])->name('program-kelas.update');
     Route::delete('/program-kelas', [ProgramKelasController::class, 'destroy'])->name('program-kelas.destroy');
+    Route::patch('/program-kelas/restore', [ProgramKelasController::class, 'restore'])->name('program-kelas.restore');
 
     Route::get('/tipe-kelas', [TipeKelasController::class, 'index'])->name('tipe-kelas.index');
     Route::get('/tipe-kelas/create', [TipeKelasController::class, 'create'])->name('tipe-kelas.create');

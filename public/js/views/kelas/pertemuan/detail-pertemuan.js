@@ -123,7 +123,7 @@ function startEditing(editTopikCatatan){
     buttonContainer.setAttribute('class', 'button-container flex flex-row justify-end gap-4');
 
     const cancelButton = document.createElement('button');
-    cancelButton.setAttribute('class', 'button-style border-none text-gray-700 bg-white hover:bg-gray-100');
+    cancelButton.setAttribute('class', 'btn btn-white border-none shadow-none');
     cancelButton.textContent = 'Cancel';
     cancelButton.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -132,7 +132,7 @@ function startEditing(editTopikCatatan){
     buttonContainer.appendChild(cancelButton);
 
     const simpanButton = document.createElement('button');
-    simpanButton.setAttribute('class', 'button-style border-upbg text-white bg-upbg hover:bg-upbg-dark');
+    simpanButton.setAttribute('class', 'btn btn-upbg-solid');
     simpanButton.textContent = 'Simpan';
     simpanButton.addEventListener('click', async (e) => {
         e.stopPropagation();
@@ -220,6 +220,17 @@ function updateText(json, topikText, catatanText){
 
 const daftarPresensi = document.getElementById('daftar-presensi'); 
 if(daftarPresensi) {
+    document.addEventListener('click', (e) => {
+        if(e.target.closest('.presensi-container .menu')){
+            e.stopPropagation();
+            const menu = e.target.closest('.presensi-container .menu');
+            const dialog = menu.parentElement.querySelector('.dialog');
+            if(!dialog.classList.contains('open')){
+              openDialog(dialog);
+            }
+        }
+    });
+
     const tambahPresensi = daftarPresensi.querySelector('.tambah-presensi');
     tambahPresensi.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -271,7 +282,7 @@ if(daftarPresensi) {
 
         if(response.ok){
             const json = await response.json();
-            const hadirButtons = document.querySelectorAll('.button-hadir');
+            const hadirButtons = document.querySelectorAll('.btn-hadir');
             hadirButtons.forEach(button => {
                 button.classList.add('active');
                 button.nextElementSibling.classList.remove('active');
@@ -300,9 +311,52 @@ if(daftarPresensi) {
         }
     });
 
+    presensiContainer.addEventListener('click', async (e) => {
+      if(e.target.closest('.delete-presensi')){
+          e.stopPropagation();
+          const presensiItem = e.target.closest('.presensi-item');
+          showDeletePresensiModal(presensiItem);
+      }
+    });
+
+    function showDeletePresensiModal(presensiItem){
+      const deletePresensiModal = document.getElementById('delete-presensi-modal');
+      const modalForm = deletePresensiModal.querySelector('form');
+
+      const nama = presensiItem.querySelector('.nama-peserta').textContent;
+      const nik = presensiItem.querySelector('.nik-peserta').textContent;
+      const namaNikPeserta = deletePresensiModal.querySelector('.nama-nik-peserta');
+      namaNikPeserta.textContent = `${nama} - ${nik}`;
+
+      openModal(deletePresensiModal, removeEventListener);
+
+      async function handleSubmit(e){
+          e.preventDefault();
+          const route = modalForm.action;
+          const submitButton = e.submitter;
+
+          playFetchingAnimation(submitButton, 'red', 'Deleting...');
+          const response = await fetchRequest(route, 'DELETE')
+          stopFetchingAnimation(submitButton);
+
+          if(response.ok){
+              const json = await response.json();
+              saveToast('success', json.message);
+              window.location.replace(json.redirect);
+          }else{
+              handleError(response, modalForm);
+          }
+      }
+      modalForm.addEventListener('submit', handleSubmit);
+
+      function removeEventListener(){
+          modalForm.removeEventListener('submit', handleSubmit);
+      }
+    }
+
     function togglePresensiButton(form, hadir){
-        const hadirButton = form.querySelector('.button-hadir');
-        const buttonAlfa = form.querySelector('.button-alfa');
+        const hadirButton = form.querySelector('.btn-hadir');
+        const buttonAlfa = form.querySelector('.btn-alfa');
         if(hadir == 1){
             hadirButton.classList.add('active');
             buttonAlfa.classList.remove('active');

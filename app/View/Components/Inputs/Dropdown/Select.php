@@ -9,16 +9,19 @@ class Select extends Component
 {
     public $name;
     public $placeholder;
-    public $selected;
+    public $text;
+    public $value;
 
     public function __construct($name, $placeholder = null, $selected = null)
     {
         $this->name = $name;
         $this->placeholder = $placeholder;
         if($selected == null){
-            $this->selected = ['text' => $placeholder, 'value' => null];
+            $this->text = $placeholder;
+            $this->value = '';
         }else{
-            $this->selected = $selected;
+            $this->text = $selected['text'];
+            $this->value = $selected['value'];
         }
     }
 

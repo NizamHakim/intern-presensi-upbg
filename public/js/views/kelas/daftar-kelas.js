@@ -1,39 +1,40 @@
 const filterKelasSection = document.getElementById('filter-kelas');
-
-const openFilterMobile = filterKelasSection.querySelector('.open-filter-mobile');
-openFilterMobile.addEventListener('click', function(){
-    const filterContainer = filterKelasSection.querySelector('.filter-container');
-    filterContainer.classList.add('open');
-
-    const closeFilterMobile = filterContainer.querySelector('.close-filter');
-    function handleFilterClose(){
-        filterContainer.classList.remove('open');
-        closeFilterMobile.removeEventListener('click', handleFilterClose);
-    }
-    closeFilterMobile.addEventListener('click', handleFilterClose);
-});
-
 const openFilter = filterKelasSection.querySelector('.open-filter');
-openFilter.addEventListener('click', function(){
-    const filterCloseSubmit = filterKelasSection.querySelector('.filter-close-submit');
-    const filterContainer = filterKelasSection.querySelector('.filter-container');
 
-    if(openFilter.classList.contains('open')){
-        filterContainer.classList.remove('sm:overflow-visible');
-        filterContainer.classList.remove('open');
-        openFilter.classList.remove('open');
-        filterCloseSubmit.classList.remove('sm:hidden');
-    }else{
-        filterCloseSubmit.classList.add('sm:hidden');
-        openFilter.classList.add('open');
-        filterContainer.classList.add('open');
-        function addOverflow(){
-            filterContainer.classList.add('sm:overflow-visible');
-            filterContainer.removeEventListener('transitionend', addOverflow);
-        }
-        filterContainer.addEventListener('transitionend', addOverflow)
+openFilter.addEventListener('click', handleFilterOpen);
+function handleFilterOpen(){
+    const submitOutFilter = filterKelasSection.querySelector('.submit-out-filter');
+    const filterContainer = filterKelasSection.querySelector('.filter-container');
+    const closeFilter = filterKelasSection.querySelector('.close-filter');
+
+    submitOutFilter.classList.add('hidden');
+    openFilter.classList.add('open');
+    filterContainer.classList.add('open');
+    function addOverflow(){
+        filterContainer.classList.add('sm:overflow-visible');
+        filterContainer.removeEventListener('transitionend', addOverflow);
     }
-});
+    filterContainer.addEventListener('transitionend', addOverflow)
+
+    openFilter.removeEventListener('click', handleFilterOpen);
+    openFilter.addEventListener('click', handleFilterClose);
+    closeFilter.addEventListener('click', handleFilterClose);
+}
+
+function handleFilterClose(){
+    const submitOutFilter = filterKelasSection.querySelector('.submit-out-filter');
+    const filterContainer = filterKelasSection.querySelector('.filter-container');
+    const closeFilter = filterKelasSection.querySelector('.close-filter');
+
+    filterContainer.classList.remove('sm:overflow-visible');
+    filterContainer.classList.remove('open');
+    openFilter.classList.remove('open');
+    submitOutFilter.classList.remove('hidden');
+
+    openFilter.removeEventListener('click', handleFilterClose);
+    closeFilter.removeEventListener('click', handleFilterClose);
+    openFilter.addEventListener('click', handleFilterOpen);
+}
 
 const kodeKelasInputs = filterKelasSection.querySelectorAll('[name="kode"]');
 kodeKelasInputs.forEach(input => {
@@ -54,7 +55,7 @@ resetFilter.addEventListener('click', function(){
             changeDropdownValue(field, '');
         }else if(field.classList.contains('input-date')){
             changeDateValue(field, '');
-        }else if(field.classList.contains('input-number')){
+        }else if(field.type == 'number'){
             field.value = '';
         }
     });
@@ -63,7 +64,7 @@ resetFilter.addEventListener('click', function(){
 const filterForm = document.querySelector('.filter-form');
 filterForm.addEventListener('submit', function(e){
     e.preventDefault();
-    const formData = new FormData(filterForm);
+    const formData = new FormData(e.target);
     const data = Object.fromEntries(formData.entries());
     const url = new URL(e.target.action);
     for(const key in data){

@@ -19,6 +19,6 @@ class PengajarDynamic extends Component
 
     public function render(): View|Closure|string
     {
-        return view('components.kelas.pengajar-dynamic');
+        return view('kelas.partials.pengajar-dynamic');
     }
 }

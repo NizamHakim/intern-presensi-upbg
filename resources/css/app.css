@@ -1,146 +1,155 @@
 @tailwind base;
 
-@tailwind components;
+@layer base{
+    input[type="number"]{
+        @apply [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-full;
+    }
 
-.page-title{
-    @apply font-bold text-upbg text-2xl sm:text-3xl;
-}
+    input[type="checkbox"]{
+        @apply appearance-none size-4 border border-gray-200 shadow-sm rounded-sm-md cursor-pointer;
+    }
 
-.error{
-    @apply text-red-600 text-sm mt-1 font-medium;
-}
-
-.input-number{
-    @apply [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-full;
-}
-
-.scrollbar{
-    scrollbar-gutter: stable;
-}
- 
-.scrollbar::-webkit-scrollbar {
-    width: 10px;
-}
-  
-.scrollbar::-webkit-scrollbar-track {
-    @apply bg-white;
-}
-   
-.scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-gray-300 rounded-md;
-}
-  
-.scrollbar::-webkit-scrollbar-thumb:hover {
-    @apply bg-gray-400;
-}
-
-.button-hadir, .button-alfa{
-    @apply border rounded-full size-9 hover:bg-gray-100 bg-white;
-}
-
-.button-hadir.active{
-    @apply border-green-600 bg-green-600 text-white font-semibold;
-}
-
-.button-alfa.active{
-    @apply border-red-600 bg-red-600 text-white font-semibold;
-}
-@layer components{
-    .button-style{
-        @apply px-4 py-1.5 rounded-sm-md border font-medium transition text-xs md:text-sm;
+    .scrollbar{
+      scrollbar-gutter: stable;
     }
     
-    .button-style.button-green-solid{
+    .scrollbar::-webkit-scrollbar {
+        width: 10px;
+    }
+      
+    .scrollbar::-webkit-scrollbar-track {
+        @apply bg-white;
+    }
+      
+    .scrollbar::-webkit-scrollbar-thumb {
+        @apply bg-gray-300 rounded-md;
+    }
+      
+    .scrollbar::-webkit-scrollbar-thumb:hover {
+        @apply bg-gray-400;
+    }
+}
+
+@tailwind components;
+
+@layer components{
+    .btn{
+        @apply px-4 py-1.5 rounded-sm-md border font-medium transition text-xs shadow-sm text-center;
+    }
+
+    .btn-rounded{
+        @apply size-9 rounded-full border font-medium transition text-xs shadow-sm;
+    }
+
+    .btn-white{
+        @apply bg-white hover:bg-gray-100;
+    }
+    
+    .btn-green-solid{
         @apply bg-green-600 border-green-600 hover:bg-green-700 hover:border-green-700 text-white;
     }
     
-    .button-style.button-green-outline{
+    .btn-green-outline{
         @apply bg-white border-green-600 text-green-600 hover:bg-green-600 hover:text-white;
     }
     
-    .button-style.button-red-solid{
+    .btn-red-solid{
         @apply bg-red-600 border-red-600 hover:bg-red-700 hover:border-red-700 text-white;
     }
     
-    .button-style.button-red-outline{
+    .btn-red-outline{
         @apply bg-white border-red-600 text-red-600 hover:bg-red-600 hover:text-white;
     }
     
-    .button-style.button-upbg-solid{
+    .btn-upbg-solid{
         @apply bg-upbg border-upbg hover:bg-upbg-dark hover:border-upbg-dark text-white;
     }
     
-    .button-style.button-upbg-outline{
+    .btn-upbg-outline{
         @apply bg-white border-upbg text-upbg hover:bg-upbg hover:text-white;
     }
     
-    .button-style.button-loading {
+    .btn-loading {
         @apply flex flex-row justify-center items-center bg-white cursor-progress;
     }
-}
 
-.input-label{
-    @apply text-gray-700 font-medium mb-1.5;
-}
+    .page-title{
+        @apply font-bold text-upbg text-2xl sm:text-3xl;
+    }
 
-.modal-title{
-    @apply text-xl font-semibold text-gray-700 text-center capitalize;
-}
+    .input-label{
+        @apply text-gray-700 font-medium mb-1.5;
+    }
 
-.danger-container{
-    @apply rounded-md bg-red-100 p-3 text-red-600;
-}
+    .input-outline{
+        @apply outline outline-1.5 outline-offset-0 outline-transparent transition-all focus:outline-upbg-light;
+    }
 
-.info-container{
-    @apply rounded-md bg-blue-100 p-3 text-upbg;
-}
+    .input-appearance{
+        @apply px-2 py-2 bg-gray-200 rounded-sm-md hover:bg-gray-300;
+    }
 
-.dropdown-button.open{
-    @apply outline-upbg-light;
-}
+    .error{
+        @apply text-red-600 text-sm mt-1 font-medium;
+    }
+    
+    .modal-title{
+      @apply text-xl font-semibold text-gray-700 text-center capitalize;
+    }
 
-.dropdown-button.open .dropdown-icon{
-    @apply rotate-180;
-}
+    .danger-container{
+      @apply rounded-md bg-red-100 p-3 text-red-600;
+    }
+    
+    .info-container{
+        @apply rounded-md bg-blue-100 p-3 text-upbg;
+    }
 
-.dropdown-text.isnull{
-    @apply text-gray-400;
-}
-
-.dropdown-options-container.open{
-    @apply opacity-100;
-}
-
-.dropdown-option.selected{
-    @apply border-upbg;
-}
-
-.filter-container.open{
-    @apply translate-x-0 sm:max-h-[470px] sm:py-4;
-}
-
-.open-filter.open i{
-    @apply rotate-180;
+    .success-container{
+        @apply rounded-md bg-green-100 p-3 text-green-600;
+    }
 }
 
 @tailwind utilities;
 
-.topbar-active{
-    @apply text-upbg-dark font-bold;
-}
-
-[x-cloak] { display: none !important; }
-
-.detail-kelas-navlink.active{
-    @apply text-upbg-dark font-bold;
-}
-
 @layer utilities{
-    .input-text-style{
-        @apply text-gray-600 bg-white p-0 border-none pointer-events-none truncate h-fit placeholder:text-transparent;
+    .open-filter.open i{
+        @apply rotate-180;
+    }
+
+    .filter-container.open{
+        @apply translate-x-0 sm:max-h-[470px] sm:py-4;
+    }
+
+    .input-dropdown.open .dropdown-button{
+        @apply outline-upbg-light;
+    }
+
+    .input-dropdown.open .dropdown-icon{
+        @apply rotate-180;
+    }
+
+    .input-dropdown.open .dropdown-options-container{
+        @apply opacity-100;
+    }
+
+    .input-dropdown.is-null .dropdown-text{
+        @apply text-gray-400 font-normal;
     }
     
-    .input-style{
-        @apply border bg-gray-200 font-medium px-3 py-2 h-10 outline outline-transparent outline-1.5 outline-offset-0 transition-all focus:outline-upbg-light rounded-md read-only:outline-none read-only:focus:outline-none pointer-events-auto placeholder:text-gray-400;
+    .dropdown-option.selected{
+        @apply border-upbg;
+    }
+
+    .dialog.open{
+        @apply opacity-100;
+    }
+
+    .btn-hadir.active{
+        @apply bg-green-600 border-green-600 text-white font-semibold hover:bg-green-600;
+    }
+
+    .btn-alfa.active{
+        @apply bg-red-600 border-red-600 text-white font-semibold hover:bg-red-600;
     }
 }

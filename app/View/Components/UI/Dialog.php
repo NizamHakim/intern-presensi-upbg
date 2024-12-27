@@ -6,15 +6,15 @@ use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class AddEditPesertaModal extends Component
+class Dialog extends Component
 {
     public function __construct()
     {
-
+        //
     }
 
     public function render(): View|Closure|string
     {
-        return view('components.ui.add-edit-peserta-modal');
+        return view('components.ui.dialog');
     }
 }

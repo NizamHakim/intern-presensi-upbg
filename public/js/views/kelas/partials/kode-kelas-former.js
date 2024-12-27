@@ -2,7 +2,7 @@ const kodeKelasSection = document.getElementById('kode-kelas-section');
 
 const kodeFormers = kodeKelasSection.querySelectorAll('.kode-former');
 kodeFormers.forEach(former => {
-    if(former.querySelector('.input-number')){
+    if(former.querySelector('input[type="number"]')){
         former.addEventListener('input', updateKodeKelas);
     }else{
         former.addEventListener('change', updateKodeKelas);

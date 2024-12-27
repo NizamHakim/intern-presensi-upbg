@@ -86,6 +86,12 @@ export default {
             screens: {
                 "2xl": "1550px",
             },
+            padding: {
+                1.25: "0.3125rem",
+            },
+            gridTemplateColumns:{
+              16: "repeat(16, minmax(0, 1fr))",
+            }
         },
     },
     plugins: [],

@@ -525,14 +525,14 @@ class KelasController extends Controller
         $kelas = Kelas::where('slug', $slug)->firstOrFail();
         $peserta = Peserta::where('id', $request['peserta-id'])->firstOrFail();
 
-        if($request->has('aktif')){
+        if($request->has('status-peserta')){
             $kelas->peserta()->updateExistingPivot($peserta->id, ['aktif' => 1]);
         }else{
             $kelas->peserta()->updateExistingPivot($peserta->id, ['aktif' => 0]);
         }
         
         return response([
-            'aktif' => $request->has('aktif'),
+            'aktif' => $request->has('status-peserta'),
             'message' => 'Berhasil mengubah status peserta'
         ], 200);
     }

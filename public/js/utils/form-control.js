@@ -80,7 +80,7 @@ function playFetchingAnimation(element, style, message){
     element.classList.add('hidden');
 
     const loading = document.createElement('button');
-    loading.setAttribute('class', 'button-loading button-style ' + colors[style]);
+    loading.setAttribute('class', 'button-loading btn ' + colors[style]);
     loading.setAttribute('disabled', 'true');
     loading.innerHTML = createLoadingAnimation(message, style);
     element.insertAdjacentElement('afterend', loading);

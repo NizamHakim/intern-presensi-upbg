@@ -19,6 +19,6 @@ class JadwalDynamic extends Component
 
     public function render(): View|Closure|string
     {
-        return view('components.kelas.jadwal-dynamic');
+        return view('kelas.partials.jadwal-dynamic');
     }
 }

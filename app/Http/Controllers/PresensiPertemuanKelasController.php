@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Kelas;
+use App\Models\PertemuanKelas;
 use Illuminate\Http\Request;
 use App\Models\PresensiPertemuanKelas;
 use Illuminate\Support\Facades\Validator;
@@ -74,13 +75,12 @@ class PresensiPertemuanKelasController extends Controller
         ], 200);
     }
 
-    public function destroy(Request $request){
+    public function destroy($slug, $id, Request $request){
         $presensi = PresensiPertemuanKelas::findOrFail($request['presensi-id']);
-        $pertemuan = $presensi->pertemuan;
         $presensi->delete();
 
         return response([
-            'redirect' => route('kelas.pertemuan.detail', [$pertemuan->kelas->slug, $pertemuan->id]),
+            'redirect' => route('kelas.pertemuan.detail', ['slug' => $slug, 'id' => $id]),
             'message' => 'Presensi berhasil dihapus'
         ], 200);
     }

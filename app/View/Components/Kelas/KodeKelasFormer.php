@@ -25,6 +25,6 @@ class KodeKelasFormer extends Component
 
     public function render(): View|Closure|string
     {
-        return view('components.kelas.kode-kelas-former');
+        return view('kelas.partials.kode-kelas-former');
     }
 }

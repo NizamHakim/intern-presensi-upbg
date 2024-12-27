@@ -1,38 +1,46 @@
 const daftarPeserta = document.getElementById('daftar-peserta');
-const pesertaContainer = daftarPeserta.querySelector('.peserta-container');
+daftarPeserta.addEventListener('click', (e) => {
+  if(e.target.closest('.edit-peserta')){
+    e.stopPropagation();
+    const pesertaItem = e.target.closest('.peserta-item');
+    showDetailPesertaModal(pesertaItem);
+  }else if(e.target.closest('.delete-peserta')){
+    e.stopPropagation();
+    const pesertaItem = e.target.closest('.peserta-item');
+    showDeletePesertaModal(pesertaItem);
+  }
+});
 
-pesertaContainer.addEventListener('click', (e) => {
-    if(e.target.closest('.detail-peserta') || e.target.closest('.edit-peserta')){
-        e.stopPropagation();
-        const pesertaItem = e.target.closest('.peserta-item');
-        showDetailPesertaModal(pesertaItem);
-    }else if(e.target.closest('.delete-peserta')){
-        e.stopPropagation();
-        const pesertaItem = e.target.closest('.peserta-item');
-        showDeletePesertaModal(pesertaItem);
+document.addEventListener('click', (e) => {
+  if(e.target.closest('#daftar-peserta .menu')){
+    e.stopPropagation();
+    const menu = e.target.closest('#daftar-peserta .menu');
+    const dialog = menu.parentElement.querySelector('.dialog');
+    if(!dialog.classList.contains('open')){
+      openDialog(dialog);
     }
+  }
 })
 
 function showDetailPesertaModal(pesertaItem){
     const namaPeserta = pesertaItem.querySelector('.nama-peserta').textContent;
     const nikPeserta = pesertaItem.querySelector('.nik-peserta').textContent;
     const tanggalBergabungPeserta = pesertaItem.querySelector('.tanggal-bergabung-peserta').textContent;
-    const aktifPeserta = pesertaItem.querySelector('.aktif-peserta').textContent;
+    const statusPeserta = pesertaItem.querySelector('.status-peserta').textContent;
     const pesertaId = pesertaItem.dataset.pesertaId;
     
     const detailPesertaModal = document.getElementById('detail-peserta-modal');
     const modalNamaPeserta = detailPesertaModal.querySelector('.nama-peserta');
     const modalNikPeserta = detailPesertaModal.querySelector('.nik-peserta');
     const modalTanggalBergabungPeserta = detailPesertaModal.querySelector('.tanggal-bergabung-peserta');
-    const modalAktifPeserta = detailPesertaModal.querySelector('[name="aktif"]');
-    const modalAktifLabel = detailPesertaModal.querySelector('.label-aktif');
+    const modalStatusPeserta = detailPesertaModal.querySelector('.status-peserta');
     const inputPesertaId = detailPesertaModal.querySelector('[name="peserta-id"]');
 
     modalNamaPeserta.textContent = namaPeserta;
     modalNikPeserta.textContent = nikPeserta;
     modalTanggalBergabungPeserta.textContent = tanggalBergabungPeserta;
-    modalAktifPeserta.checked = (aktifPeserta == 'Aktif') ? true : false;
-    modalAktifLabel.textContent = aktifPeserta;
+    modalStatusPeserta.querySelector('.checkbox-label').textContent = statusPeserta;
+    modalStatusPeserta.querySelector('input').checked = (statusPeserta === 'Aktif') ? true : false;
     inputPesertaId.value = pesertaId;
     
     const closeCallback = openModal(detailPesertaModal, removeEventListeners);
@@ -45,7 +53,7 @@ function showDetailPesertaModal(pesertaItem){
 
         const formData = new FormData(modalForm);
         const data = Object.fromEntries(formData.entries());
-        playFetchingAnimation(submitButton, 'green', 'Updating...');
+        playFetchingAnimation(submitButton, 'blue', 'Updating...');
         const response = await fetchRequest(route, 'PATCH', data);
         stopFetchingAnimation(submitButton);
 
@@ -61,22 +69,13 @@ function showDetailPesertaModal(pesertaItem){
     modalForm.addEventListener('submit', handleSubmit);
 
     function handleAktifChange(e){
-        modalAktifLabel.textContent = (e.target.checked) ? 'Aktif' : 'Tidak Aktif';
+      modalStatusPeserta.querySelector('.checkbox-label').textContent = (e.target.checked) ? 'Aktif' : 'Tidak Aktif';
     }
-    modalAktifPeserta.addEventListener('change', handleAktifChange);
-
-    const deletePesertaButton = detailPesertaModal.querySelector('.delete-peserta');
-    function handleDeletePeserta(e){
-        e.stopPropagation();
-        closeModal(detailPesertaModal, closeCallback);
-        showDeletePesertaModal(pesertaItem);
-    }
-    deletePesertaButton.addEventListener('click', handleDeletePeserta);
+    modalStatusPeserta.addEventListener('change', handleAktifChange);
 
     function removeEventListeners(){
         modalForm.removeEventListener('submit', handleSubmit);
-        modalAktifPeserta.removeEventListener('change', handleAktifChange);
-        deletePesertaButton.removeEventListener('click', handleDeletePeserta);
+        modalStatusPeserta.removeEventListener('change', handleAktifChange);
     }
 }
 
@@ -123,14 +122,14 @@ function showDeletePesertaModal(pesertaItem){
 }
 
 function updateAktifText(pesertaItem, aktif){
-    const aktifPeserta = pesertaItem.querySelector('.aktif-peserta');
-    if(aktif){
-        aktifPeserta.textContent = 'Aktif';
-        aktifPeserta.classList.remove('bg-red-300', 'text-red-800')
-        aktifPeserta.classList.add('bg-green-300', 'text-green-800');
-    }else{
-        aktifPeserta.textContent = 'Tidak Aktif';
-        aktifPeserta.classList.remove('bg-green-300', 'text-green-800');
-        aktifPeserta.classList.add('bg-red-300', 'text-red-800');
-    }
+  const statusPeserta = pesertaItem.querySelector('.status-peserta');
+  if(aktif){
+    statusPeserta.textContent = 'Aktif';
+    statusPeserta.classList.remove('bg-red-300', 'text-red-800')
+    statusPeserta.classList.add('bg-green-300', 'text-green-800');
+  }else{
+    statusPeserta.textContent = 'Tidak Aktif';
+    statusPeserta.classList.remove('bg-green-300', 'text-green-800');
+    statusPeserta.classList.add('bg-red-300', 'text-red-800');
+  }
 }

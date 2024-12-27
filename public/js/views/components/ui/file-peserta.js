@@ -32,17 +32,40 @@ function stopParsingAnimation(element){
 }
 
 const pesertaContainer = document.querySelector('.peserta-container');
-pesertaContainer.addEventListener('click', (e) => {
-    if(e.target.closest('.delete-peserta')){
-        e.stopPropagation();
-        const pesertaItem = e.target.closest('.peserta-item');
-        pesertaItem.remove();
-        togglePesertaItemPlaceholder();
-    }else if(e.target.closest('.edit-peserta')){
-        e.stopPropagation();
-        const pesertaItem = e.target.closest('.peserta-item');
-        showEditPesertaModal(pesertaItem);
+
+document.addEventListener('click', (e) => {
+  if(e.target.closest('.peserta-container .delete-peserta')){
+    e.stopPropagation();
+    const pesertaItem = e.target.closest('.peserta-item');
+    pesertaItem.remove();
+    togglePesertaItemPlaceholder();
+  }else if(e.target.closest('.peserta-container .edit-peserta')){
+    e.stopPropagation();
+    const pesertaItem = e.target.closest('.peserta-item');
+    showEditPesertaModal(pesertaItem);
+  }else if(e.target.closest('.peserta-container .menu')){
+    e.stopPropagation();
+    const menu = e.target.closest('.peserta-container .menu');
+    const dialog = menu.parentElement.querySelector('.dialog');
+    if(!dialog.classList.contains('open')){
+      openDialog(dialog);
     }
+  }
+});
+pesertaContainer.addEventListener('change', function(e){
+  if(e.target.matches('[name="nama-peserta"]')){
+    e.stopPropagation();
+    const pesertaItem = e.target.closest('.peserta-item');
+    pesertaItem.querySelector('.mobile-view .nama').textContent = e.target.value;
+  }else if(e.target.matches('[name="nik-peserta"]')){
+    e.stopPropagation();
+    const pesertaItem = e.target.closest('.peserta-item');
+    pesertaItem.querySelector('.mobile-view .nik').textContent = e.target.value;
+  }else if(e.target.matches('[name="occupation-peserta"]')){
+    e.stopPropagation();
+    const pesertaItem = e.target.closest('.peserta-item');
+    pesertaItem.querySelector('.mobile-view .occupation').textContent = e.target.value;
+  }
 });
 
 const tambahPeserta = document.querySelector('.tambah-peserta');
@@ -58,8 +81,8 @@ tambahPeserta.addEventListener('click', (e) => {
 function showAddPesertaModal(){
     const addEditPesertaModal = document.getElementById('add-edit-peserta-modal');
     const submitButton = addEditPesertaModal.querySelector('.submit-button');
-    submitButton.classList.remove('button-upbg-solid');
-    submitButton.classList.add('button-green-solid');
+    submitButton.classList.remove('btn-upbg-solid');
+    submitButton.classList.add('btn-green-solid');
     submitButton.textContent = 'Tambah';
 
     const modalForm = addEditPesertaModal.querySelector('form');
@@ -86,27 +109,36 @@ function showAddPesertaModal(){
 
 function appendPeserta(nik = '', nama = '', occupation = ''){
     const pesertaItem = document.createElement('div');
-    pesertaItem.setAttribute('class', 'peserta-item flex flex-row gap-3 relative border shadow-sm rounded-md md:border-none md:shadow-none');
+    pesertaItem.setAttribute('class', 'peserta-item flex min-w-0 items-center rounded-sm-md border py-2 shadow-sm md:border-none md:p-0 md:shadow-none');
     pesertaItem.innerHTML = `
-        <div class="input-container flex-1 flex flex-col gap-2 flex-wrap p-3 md:p-0 md:flex-row">
-            <div class="input-group flex flex-col flex-1">
-                <label class="font-medium text-gray-700 md:hidden">NIK / NRP :</label>
-                <input type="text" name="nik-peserta" placeholder="NIK / NRP" class="min-w-0 input-text-style max-w-[calc(100%-72px)] md:max-w-none md:input-style" value="${nik}">
-            </div>
-            <div class="input-group flex flex-col flex-1">
-                <label class="font-medium text-gray-700 md:hidden">Nama :</label>
-                <input type="text" name="nama-peserta" placeholder="Nama" class="min-w-0 input-text-style md:input-style" value="${nama}">
-            </div>
-            <div class="input-group flex flex-col flex-1">
-                <label class="font-medium text-gray-700 md:hidden">Departemen / Occupation :</label>
-                <input type="text" name="occupation-peserta" placeholder="Departemen / Occupation" class="min-w-0 input-text-style md:input-style" value="${occupation}">
-            </div>
+      <div class="mobile-view ml-3 flex w-full min-w-0 items-center gap-2 md:hidden">
+        <div class="grid grid-cols-1 gap-y-1">
+          <p class="nama truncate font-semibold">${nama}</p>
+          <p class="nik truncate">${nik}</p>
+          <p class="occupation truncate">${occupation}</p>
         </div>
-        <div class="flex flex-row gap-2 absolute top-2 right-2 md:static">
-            <button type="button" class="edit-peserta font-medium text-upbg bg-white size-8 rounded-sm-md transition hover:bg-upbg hover:text-white hover:border-upbg md:hidden"><i class="fa-regular fa-pen-to-square"></i></button>
-            <button type="button" class="delete-peserta font-medium text-red-600 bg-white size-8 rounded-sm-md transition hover:bg-red-600 hover:text-white hover:border-red-600 md:size-10 md:rounded-full md:border md:shadow-sm"><i class="fa-regular fa-trash-can"></i></button>
+        <div class="relative ml-auto">
+          <button type="button" class="menu px-3"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+          <div class="dialog absolute right-1 top-full z-10 hidden min-w-14 divide-y rounded-sm-md border bg-white text-sm font-medium opacity-0 transition duration-75 shadow-md">
+            <button type="button" class="edit-peserta w-full px-2 py-1.5 text-left">Edit</button>
+            <button type="button" class="delete-peserta w-full px-2 py-1.5 text-left text-red-600">Delete</button>
+          </div>
         </div>
-    `
+      </div>
+      <div class="desktop-view hidden w-full grid-cols-3 grid-flow-col gap-x-2 md:grid">
+        <div class="input-group">
+          <input type="text" name="nik-peserta" placeholder="NIK / NRP" class="input-appearance input-outline w-full" value="${nik}">
+        </div>
+        <div class="input-group">
+          <input type="text" name="nama-peserta" placeholder="Nama" class="input-appearance input-outline w-full" value="${nama}">
+        </div>
+        <div class="input-group">
+          <input type="text" name="occupation-peserta" placeholder="Departemen / Occupation" class="input-appearance input-outline w-full" value="${occupation}">
+        </div>
+        <button type="button" class="delete-peserta btn-rounded btn-white text-red-600"><i class="fa-regular fa-trash-can"></i></button>
+      </div>
+    `;
+
     pesertaContainer.appendChild(pesertaItem);
     togglePesertaItemPlaceholder();
 }
@@ -114,17 +146,19 @@ function appendPeserta(nik = '', nama = '', occupation = ''){
 function showEditPesertaModal(pesertaItem){
     const addEditPesertaModal = document.getElementById('add-edit-peserta-modal');
     const submitButton = addEditPesertaModal.querySelector('.submit-button');
-    submitButton.classList.remove('button-green-solid');
-    submitButton.classList.add('button-upbg-solid');
+    submitButton.classList.remove('btn-green-solid');
+    submitButton.classList.add('btn-upbg-solid');
     submitButton.textContent = 'Simpan';
 
-    const modalForm = addEditPesertaModal.querySelector('form');
     const pesertaNik = pesertaItem.querySelector('[name="nik-peserta"]');
     const pesertaNama = pesertaItem.querySelector('[name="nama-peserta"]');
     const pesertaOccupation = pesertaItem.querySelector('[name="occupation-peserta"]');
+    
+    const modalForm = addEditPesertaModal.querySelector('form');
     const modalNik = modalForm.querySelector('[name="nik-peserta"]');
     const modalNama = modalForm.querySelector('[name="nama-peserta"]');
     const modalOccupation = modalForm.querySelector('[name="occupation-peserta"]');
+
     modalNik.value = pesertaNik.value;
     modalNama.value = pesertaNama.value;
     modalOccupation.value = pesertaOccupation.value;
@@ -136,6 +170,10 @@ function showEditPesertaModal(pesertaItem){
         pesertaNik.value = modalNik.value;
         pesertaNama.value = modalNama.value;
         pesertaOccupation.value = modalOccupation.value;
+        const event = new Event("change", { bubbles: true });
+        pesertaNik.dispatchEvent(event);
+        pesertaNama.dispatchEvent(event);
+        pesertaOccupation.dispatchEvent(event);
         clearErrors(pesertaItem);
         closeModal(addEditPesertaModal, closeCallback);
     }
