@@ -1,69 +1,60 @@
 <x-layouts.user-layout>
-    @push('head')
-        <meta name="csrf-token" content="{{ csrf_token() }}">
-    @endpush
-    <x-slot:title>Tambah Program</x-slot>
-    
-    <div class="flex flex-col gap-4 mt-6 mb-8">
-        <div class="flex flex-row justify-between items-center">
-            <h1 class="font-bold text-upbg text-[2rem]">Tambah User</h1>
-        </div>
-        <x-ui.breadcrumbs :breadcrumbs="$breadcrumbs"/>
-    </div>
+  <x-slot:title>Tambah User</x-slot>
+  <div class="mb-8 mt-6 flex flex-col gap-6">
+    <h1 class="page-title">Tambah User</h1>
+    <x-ui.breadcrumbs :breadcrumbs="$breadcrumbs" />
+  </div>
 
-    <form id="form-tambah" action="{{ route('user.store') }}" method="POST" class="flex flex-col gap-6 mb-16" enctype="multipart/form-data">
-        @csrf
-        @method('POST')
-        <div class="flex flex-col self-center">
-            <label for="foto-user" class="relative border-2 size-44 cursor-pointer rounded-full shadow-md">
-                <div class="size-44 cursor-pointer rounded-full overflow-hidden">
-                    <img src="{{ asset('images/defaultProfilePicture.png') }}" class="image-preview rounded-full">
-                </div>
-                <div class="absolute flex flex-row justify-center items-center bottom-1 right-1 size-10 rounded-full bg-upbg">
-                    <i class="fa-solid fa-camera text-white"></i>
-                </div>
-            </label>
-            <input id="foto-user" type="file" accept="image/png, image/jpeg, image/jpg" class="input-image hidden" name="foto-user">
-            <p class="text-center text-sm mt-2 text-gray-600">(opsional)</p>
-            <x-inputs.cropper-image/>
+  <section id="tambah-user" class="mt-6 flex min-w-0 flex-col bg-white p-6 shadow-sm">
+    <form action="{{ route('user.store') }}" class="tambah-user-form">
+      <div class="input-group mt-4 flex flex-col">
+        <p class="input-label">NIK / NIP</p>
+        <input type="number" name="nik" class="input-appearance input-outline" placeholder="NIK / NIP">
+      </div>
+      <div class="input-group mt-4 flex flex-col">
+        <p class="input-label">Nama Lengkap</p>
+        <input type="text" name="nama" class="input-appearance input-outline" placeholder="Nama lengkap">
+      </div>
+      <div class="input-group mt-4 flex flex-col">
+        <p class="input-label">Nama Panggilan</p>
+        <input type="text" name="nama-panggilan" class="input-appearance input-outline" placeholder="Nama panggilan">
+      </div>
+      <div class="input-group mt-4 flex flex-col">
+        <p class="input-label">Nomor HP</p>
+        <input type="text" name="nomor-hp" class="input-appearance input-outline" placeholder="Nomor HP">
+      </div>
+      <hr class="my-5">
+      <div class="input-group flex flex-col">
+        <p class="input-label">Email</p>
+        <input type="email" name="email" class="input-appearance input-outline" placeholder="Email">
+      </div>
+      <div class="mt-4 grid grid-flow-row grid-cols-1 items-start gap-x-2 gap-y-4 sm:grid-cols-2 sm:gap-y-0">
+        <div class="input-group flex flex-col">
+          <p class="input-label">Password</p>
+          <input type="password" name="password" class="input-appearance input-outline input-readonly" placeholder="Password">
         </div>
-        <div class="flex flex-col gap-1">
-            <label for="nik-user" class="font-medium text-gray-600">NIK / NIP</label>
-            <input id="nik-user" type="text" name="nik-user" placeholder="NIK / NIP" class="px-3 h-10 rounded-md border border-gray-200 text-gray-600 font-medium placeholder:text-gray-400 outline outline-transparent outline-1.5 outline-offset-0 transition-all focus:outline-upbg-light">
+        <div class="input-group flex flex-col">
+          <p class="input-label">Konfirmasi Password</p>
+          <input type="password" name="konfirmasi-password" class="input-appearance input-outline input-readonly" placeholder="Konfirmasi Password">
         </div>
-        <div class="flex flex-col gap-1">
-            <label for="nama-user" class="font-medium text-gray-600">Nama</label>
-            <input id="nama-user" type="text" name="nama-user" placeholder="Nama" class="px-3 h-10 rounded-md border border-gray-200 text-gray-600 font-medium placeholder:text-gray-400 outline outline-transparent outline-1.5 outline-offset-0 transition-all focus:outline-upbg-light">
-        </div>
-        <div class="flex flex-col gap-1">
-            <label for="email-user" class="font-medium text-gray-600">Email</label>
-            <input id="email-user" type="text" name="email-user" placeholder="Email" class="px-3 h-10 rounded-md border border-gray-200 text-gray-600 font-medium placeholder:text-gray-400 outline outline-transparent outline-1.5 outline-offset-0 transition-all focus:outline-upbg-light">
-        </div>
-        <div class="flex flex-row gap-4 w-full">
-            <div class="flex flex-col gap-1 w-full">
-                <label for="password-user" class="font-medium text-gray-600">Password</label>
-                <input id="password-user" type="password" name="password-user" placeholder="Password" class="px-3 h-10 rounded-md border border-gray-200 text-gray-600 font-medium placeholder:text-gray-400 outline outline-transparent outline-1.5 outline-offset-0 transition-all focus:outline-upbg-light">
-            </div>
-            <div class="flex flex-col gap-1 w-full">
-                <label for="password-confirm-user" class="font-medium text-gray-600">Konfirmasi Password</label>
-                <input id="password-confirm-user" type="password" name="password-confirm-user" placeholder="Konfirmasi Password" class="px-3 h-10 rounded-md border border-gray-200 text-gray-600 font-medium placeholder:text-gray-400 outline outline-transparent outline-1.5 outline-offset-0 transition-all focus:outline-upbg-light">
-            </div>
-        </div>
-        <div class="flex flex-col gap-4">
-            <label class="font-medium text-gray-600">Role(s)</label>
-            @foreach ($roleOptions as $role)
-                <x-inputs.checkbox inputName="role[]" value="{{ $role->id }}" :checked="false" label="{{ $role->nama }}" class="checked:bg-upbg checked:border-upbg-upbg"/>
-            @endforeach
-        </div>
-        <hr class="bg-gray-200 my-5">
-        <div class="flex flex-row justify-end items-center gap-4">
-            <a href="{{ route('user.index') }}" class="relative text-center text-gray-600 font-medium px-8 py-2 bg-gray-100 hover:bg-gray-200 rounded-md transition duration-300">Cancel</a>
-            <button type="submit" class="bg-green-600 shadow-md transition duration-300 hover:bg-green-700 text-base px-8 py-2 font-medium text-white rounded-md">Tambah</button>
-        </div>
+        <x-inputs.checkbox type="blue" inputName="toggle-password-nik" value="1" class="sm:mt-4 sm:w-fit">Gunakan NIK / NIP sebagai password</x-inputs.checkbox>
+      </div>
+      <hr class="my-5">
+      <p class="input-label mb-2">Role</p>
+      <div class="input-group flex flex-col gap-2 sm:flex-row">
+        @foreach ($roleOptions as $role)
+          <x-inputs.checkbox type="blue" inputName="role" class="sm:w-fit" :value="$role->id">{{ $role->nama }}</x-inputs.checkbox>
+        @endforeach
+      </div>
+      <hr class="my-5">
+      <div class="flex flex-row justify-end gap-2">
+        <a href="{{ route('user.index') }}" class="btn btn-white border-none shadow-none">Cancel</a>
+        <button type="submit" class="btn btn-green-solid">Tambah</button>
+      </div>
     </form>
+  </section>
 
-    @push('script')
-        <script src="{{ asset('js/utils/form-control.js') }}"></script>
-        <script src="{{ asset('js/views/user/tambah-user.js') }}"></script>
-    @endpush
+  @push('script')
+    <script src="{{ asset('js/views/user/tambah-user.js') }}"></script>
+  @endpush
 </x-layouts.user-layout>

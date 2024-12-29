@@ -17,20 +17,6 @@ class Peserta extends Model
         'occupation',
     ];
 
-    protected function text(): Attribute
-    {
-        return Attribute::make(
-            get: fn(mixed $value, array $attributes) => $attributes['nama'] . ' (' . $attributes['nik'] . ')'
-        );
-    }
-
-    protected function value(): Attribute
-    {
-        return Attribute::make(
-            get: fn(mixed $value, array $attributes) => $attributes['id']
-        );
-    }
-
     public function kelas()
     {
         return $this->belongsToMany(Kelas::class, 'peserta_kelas')->withPivot('aktif');

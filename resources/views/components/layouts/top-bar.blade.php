@@ -1,77 +1,60 @@
-<nav class="sticky top-0 w-full h-14 flex flex-row justify-center z-10 bg-white shadow-sm">
-    <div class="flex flex-row justify-between w-full max-w-7xl h-full py-1 px-6">
-        @auth
-            <div class="flex flex-row gap-6 w-fit">
-                <button class="open-sidenav rounded-full lg:hidden">
-                    <div class="relative w-4 h-0.75 bg-upbg rounded-full before:absolute before:left-0 before:top-2 before:rounded-full before:w-2 before:h-0.75 before:bg-upbg after:absolute after:left-0 after:bottom-2 after:rounded-full after:w-6 after:h-0.75 after:bg-upbg"></div>
-                </button>
-                <a href="{{ route('kelas.index') }}" class="lg:hidden">
-                    <img src={{ asset('images/logoGLC.png') }} alt="Logo UPBG" class="h-full">
-                </a>
+<nav class="sticky top-0 z-10 flex h-14 w-full flex-row justify-center bg-white shadow-sm">
+  @auth
+    <div class="flex h-14 max-w-7xl flex-1 items-center justify-between px-6 py-1 lg:justify-end">
+      <button class="open-sidenav size-6 lg:hidden">
+        <div class="relative h-0.75 w-4 bg-upbg before:absolute before:left-0 before:top-2 before:h-0.75 before:w-2 before:rounded-full before:bg-upbg after:absolute after:bottom-2 after:left-0 after:h-0.75 after:w-6 after:rounded-full after:bg-upbg"></div>
+      </button>
+      <a href="/" class="translate-x-2 lg:hidden"><img src={{ asset('images/logoGLC.png') }} alt="Logo UPBG" class="h-12 w-auto"></a>
+      <div class="relative flex h-14 items-center">
+        <div class="hidden lg:mr-4 lg:flex lg:flex-col lg:items-end lg:gap-1">
+          <p class="text-sm font-medium leading-none text-upbg">{{ auth()->user()->nama_panggilan }}</p>
+          <p class="text-sm font-medium leading-none text-gray-600">{{ auth()->user()->currentRole->nama }}</p>
+        </div>
+        <button type="button" class="toggle-profile-menu flex size-12 items-center justify-center rounded-full transition hover:bg-gray-200">
+          <img src="{{ auth()->user()->profile_picture }}" class="size-11 rounded-full">
+        </button>
+        <div class="profile-menu absolute right-0 top-full hidden w-72 -translate-y-1 flex-col divide-y rounded-md border bg-white opacity-0 shadow-lg transition-all">
+          <a href="#" class="flex items-center gap-4 rounded-t-md p-3 transition hover:bg-gray-100">
+            <img src="{{ auth()->user()->profile_picture }}" class="size-12 rounded-full">
+            <div class="flex flex-1 flex-col justify-center truncate">
+              <p class="truncate text-sm font-semibold text-upbg">{{ auth()->user()->nama }}</p>
+              <p class="truncate text-sm text-gray-400">{{ auth()->user()->email }}</p>
             </div>
-            <div x-data="{ showDropdown: false, showRoles: false }" x-on:click.outside="showDropdown = false; showRoles = false" class="flex flex-row ml-auto h-full items-center relative">
-                <button x-on:click="showDropdown = !showDropdown; if (!showDropdown) showRoles = false" class="size-11 rounded-full transition hover:bg-gray-200">
-                    <img src="https://placehold.co/400" class="size-11 rounded-full">
-                </button>
-                <ul x-cloak x-show="showDropdown" class="absolute -bottom-2 right-0 translate-y-full bg-white border shadow-strong w-72 rounded-md">
-                    <li class="w-full hover:bg-gray-100">
-                        <a href="#" class="flex flex-row p-3 items-center gap-2 w-full">
-                            <img src="https://placehold.co/400" class="size-14 rounded-full">
-                            <div class="flex-1 flex flex-col justify-center overflow-hidden">
-                                <span class="text-sm font-semibold truncate text-upbg">{{ auth()->user()->name }}</span>
-                                <span class="text-sm text-gray-400 truncate">{{ auth()->user()->email }}</span>
-                            </div>
-                        </a>
-                    </li>
-                    <li><hr></li>
-                    <li class="w-full text-sm">
-                        <form action="#" method="POST">
-                            @csrf
-                            <button type="button" x-on:click="showRoles = !showRoles" class="hover:bg-gray-100 flex flex-row p-3 items-center gap-3 w-full">
-                                <i class="fa-solid fa-repeat"></i>
-                                <span>Role : {{ auth()->user()->currentRole->nama }}</span>
-                                <i :class="showRoles ? 'rotate-180' : ''" class="fa-solid fa-angle-down ml-auto transition duration-300"></i>
-                            </button>
-                            <ul 
-                                x-show="showRoles"
-                                x-transition:enter="transition ease-out duration-300"
-                                x-transition:enter-start="max-h-0"
-                                x-transition:enter-end="max-h-96"
-                                x-transition:leave="transition ease-in duration-300"
-                                x-transition:leave-start="max-h-96"
-                                x-transition:leave-end="max-h-0"
-                                class="overflow-hidden transition-all duration-300 shadow-inner-2">
-                                @foreach (auth()->user()->roles as $role)
-                                    <li class="w-full hover:bg-gray-100 text-sm">
-                                        <form action="{{ route('auth.switchRole') }}" method="POST">
-                                            @csrf
-                                            @method('PATCH')
-                                            <input type="hidden" name="role_id" value="{{ $role->id }}">
-                                            <button type="submit" class="w-full p-3 text-left border-l-4 @if($role->id == auth()->user()->current_role_id) border-upbg @else border-transparent @endif" value="{{ $role->id }}">{{ $role->nama }}</button>
-                                        </form>
-                                    </li>                                
-                                @endforeach
-                            </ul>
-                        </form>
-                    </li>
-                    <li class="w-full hover:bg-gray-100">
-                        <form action="{{ route('auth.handleLogoutRequest') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="flex flex-row p-3 items-center gap-3 font-medium text-sm w-full text-red-600">
-                                <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                                <span>Logout</span>
-                            </button>
-                        </form>
-                    </li>
-                </ul>
-            </div>
-        @else
-            <img src="{{ asset('images/logoGLC.png') }}" alt="Logo UPBG" class="h-full">
-            <ul class="nav-menu-container flex flex-row items-center gap-3 text-upbg text-base font-medium">
-                <li class=""><a href="#">Jadwal</a></li>
-                <li class="text-lg select-none">|</li>
-                <li class="{{ request()->routeIs('auth.loginPage') ? 'topbar-active' : '' }}"><a href="{{ route('auth.loginPage') }}">Login</a></li>
-            </ul>
-        @endauth
+          </a>
+          <button type="button" class="switch-role-toggle flex items-center justify-between bg-white px-4 py-3 text-sm font-medium text-gray-600 hover:bg-gray-100">
+            <span><i class="fa-solid fa-repeat mr-2"></i>Role : {{ auth()->user()->currentRole->nama }}</span>
+            <i class="fa-solid fa-chevron-down transform text-xs transition"></i>
+          </button>
+          <form action="{{ route('auth.switchRole') }}" method="POST" class="switch-role-dropdown hidden max-h-0 flex-1 flex-col overflow-y-hidden text-sm font-medium text-gray-600 shadow-inner-2 transition-all">
+            @csrf
+            @method('PATCH')
+            @foreach (auth()->user()->roles as $role)
+              <button type="submit" class="px-4 py-3 text-left hover:bg-gray-100" name="role-id" value="{{ $role->id }}">{{ $role->nama }}</button>
+            @endforeach
+          </form>
+          <form action="{{ route('auth.handleLogoutRequest') }}" method="POST" class="flex flex-1 flex-col">
+            @csrf
+            <button type="submit" class="flex items-center justify-between rounded-b-md bg-white px-4 py-3 text-sm font-medium text-red-600 hover:bg-gray-100">
+              <span><i class="fa-solid fa-arrow-right-from-bracket mr-2"></i>Logout</span>
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
+  @else
+    <div class="flex h-14 max-w-7xl flex-1 items-center justify-between px-6 py-1">
+      <img src="{{ asset('images/logoGLC.png') }}" alt="Logo UPBG" class="h-12 w-auto">
+      <div class="flex items-center gap-2">
+        <a href="#" class="font-semibold tracking-wider text-upbg transition hover:text-upbg-light">Jadwal</a>
+        <span class="select-none text-xl text-upbg">|</span>
+        <a href="{{ route('auth.loginPage') }}" class="font-semibold tracking-wider text-upbg transition hover:text-upbg-light">Login</a>
+      </div>
+    </div>
+  @endauth
 </nav>
+
+@auth
+  @pushOnce('script')
+    <script src="{{ asset('js/views/components/layouts/top-bar.js') }}"></script>
+  @endPushOnce
+@endauth

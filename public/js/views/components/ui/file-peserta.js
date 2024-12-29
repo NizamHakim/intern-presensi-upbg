@@ -119,7 +119,7 @@ function appendPeserta(nik = '', nama = '', occupation = ''){
         </div>
         <div class="relative ml-auto">
           <button type="button" class="menu px-3"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-          <div class="dialog absolute right-1 top-full z-10 hidden min-w-14 divide-y rounded-sm-md border bg-white text-sm font-medium opacity-0 transition duration-75 shadow-md">
+          <div class="dialog absolute right-1 top-full z-10 hidden min-w-24 divide-y rounded-sm-md border bg-white text-sm font-medium opacity-0 transition duration-75 shadow-md">
             <button type="button" class="edit-peserta w-full px-2 py-1.5 text-left">Edit</button>
             <button type="button" class="delete-peserta w-full px-2 py-1.5 text-left text-red-600">Delete</button>
           </div>

@@ -22,20 +22,6 @@ class ProgramKelas extends Model
         $query->where('aktif', 1);
     }
 
-    protected function text(): Attribute
-    {
-        return Attribute::make(
-            get: fn(mixed $value, array $attributes) => $attributes['nama'] . ' (' . $attributes['kode'] .  ')'
-        );
-    }
-
-    protected function value(): Attribute
-    {
-        return Attribute::make(
-            get: fn(mixed $value, array $attributes) => strtolower($attributes['kode'])
-        );
-    }
-
     public function kelas()
     {
         return $this->hasMany(Kelas::class);

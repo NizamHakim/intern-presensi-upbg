@@ -1,0 +1,1 @@
+<li data-name="{{ $name }}" data-placeholder="{{ $placeholder }}" {{ $attributes->merge(['class' => 'categorical-search-option px-2 py-2 cursor-pointer hover:bg-gray-200 border-l-4 truncate last:rounded-b-md border-transparent ']) }} {{ $attributes }}>{{ $slot }}</li>

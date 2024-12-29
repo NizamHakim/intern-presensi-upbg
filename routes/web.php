@@ -13,17 +13,31 @@ use App\Http\Controllers\TipeKelasController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\Authenticated;
 use App\Http\Middleware\Guest;
-use App\Http\Middleware\HandleGetQuery;
 use App\Models\ProgramKelas;
 use Illuminate\Container\Attributes\Log;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 use function Illuminate\Log\log;
 
 Route::get('/', function () {
-    return view('welcome');
-});
+    if(!Auth::check()){
+        return redirect()->route('auth.loginPage');
+    }
+    switch(Auth::user()->current_role_id){
+        case 1:
+            return redirect()->route('kelas.index');
+        case 2:
+            return redirect()->route('kelas.index');
+        case 3:
+            return redirect()->route('kelas.index');
+        case 4:
+            return redirect()->route('tes.index');
+        case 5:
+            return redirect()->route('tes.index');
+    }
+})->name('home');
 
 // Guest
 Route::middleware(Guest::class)->group(function(){
@@ -71,13 +85,16 @@ Route::middleware(Authenticated::class)->group(function(){
     Route::delete('/tes/{slug}', [TesController::class, 'destroy'])->name('tes.destroy');
     Route::get('/tes/{slug}/kelola-peserta', [TesController::class, 'kelolaPeserta'])->name('tes.kelolaPeserta');
 
-    Route::get('/user', [UserController::class, 'index'])->middleware(HandleGetQuery::class)->name('user.index');
+    Route::get('/user', [UserController::class, 'index'])->name('user.index');
     Route::get('/user/create', [UserController::class, 'create'])->name('user.create');
     Route::post('/user', [UserController::class, 'store'])->name('user.store');
     Route::get('/user/{id}', [UserController::class, 'detail'])->name('user.detail');
     Route::patch('/user/{id}', [UserController::class, 'updateRole'])->name('user.updateRole');
 
-    Route::get('/peserta', [PesertaController::class, 'index'])->middleware(HandleGetQuery::class)->name('peserta.index');
+    Route::get('/peserta', [PesertaController::class, 'index'])->name('peserta.index');
+    Route::get('/peserta/{id}', [PesertaController::class, 'detail'])->name('peserta.detail');
+    Route::put('/peserta/{id}', [PesertaController::class, 'update'])->name('peserta.update');
+    Route::delete('/peserta/{id}', [PesertaController::class, 'destroy'])->name('peserta.destroy');
 
     Route::get('/program-kelas', [ProgramKelasController::class, 'index'])->name('program-kelas.index');
     Route::post('/program-kelas', [ProgramKelasController::class, 'store'])->name('program-kelas.store');
@@ -86,18 +103,22 @@ Route::middleware(Authenticated::class)->group(function(){
     Route::patch('/program-kelas/restore', [ProgramKelasController::class, 'restore'])->name('program-kelas.restore');
 
     Route::get('/tipe-kelas', [TipeKelasController::class, 'index'])->name('tipe-kelas.index');
-    Route::get('/tipe-kelas/create', [TipeKelasController::class, 'create'])->name('tipe-kelas.create');
     Route::post('/tipe-kelas', [TipeKelasController::class, 'store'])->name('tipe-kelas.store');
-    Route::put('/tipe-kelas/{id}', [TipeKelasController::class, 'update'])->name('tipe-kelas.update');
+    Route::put('/tipe-kelas/update', [TipeKelasController::class, 'update'])->name('tipe-kelas.update');
     Route::delete('/tipe-kelas', [TipeKelasController::class, 'destroy'])->name('tipe-kelas.destroy');
+    Route::patch('/tipe-kelas/restore', [TipeKelasController::class, 'restore'])->name('tipe-kelas.restore');
 
     Route::get('/level-kelas', [LevelKelasController::class, 'index'])->name('level-kelas.index');
-    Route::get('/level-kelas/create', [LevelKelasController::class, 'create'])->name('level-kelas.create');
     Route::post('/level-kelas', [LevelKelasController::class, 'store'])->name('level-kelas.store');
-    Route::put('/level-kelas/{id}', [LevelKelasController::class, 'update'])->name('level-kelas.update');
+    Route::put('/level-kelas/update', [LevelKelasController::class, 'update'])->name('level-kelas.update');
     Route::delete('/level-kelas', [LevelKelasController::class, 'destroy'])->name('level-kelas.destroy');
+    Route::patch('/level-kelas/restore', [LevelKelasController::class, 'restore'])->name('level-kelas.restore');
 
     Route::get('/ruangan', [RuanganController::class, 'index'])->name('ruangan.index');
+    Route::post('/ruangan', [RuanganController::class, 'store'])->name('ruangan.store');
+    Route::put('/ruangan/update', [RuanganController::class, 'update'])->name('ruangan.update');
+    Route::delete('/ruangan', [RuanganController::class, 'destroy'])->name('ruangan.destroy');
+    Route::patch('/ruangan/restore', [RuanganController::class, 'restore'])->name('ruangan.restore');
 });
 
 Route::get('/component-testing', function(){

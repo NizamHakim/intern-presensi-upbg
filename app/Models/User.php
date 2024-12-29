@@ -12,17 +12,12 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, SoftDeletes;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'nik',
         'nama',
+        'nama_panggilan',
         'email',
         'no_hp',
         'password',
@@ -30,21 +25,11 @@ class User extends Authenticatable
         'current_role_id',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -53,17 +38,12 @@ class User extends Authenticatable
         ];
     }
 
-    protected function text(): Attribute
+    protected function profilePicture(): Attribute
     {
         return Attribute::make(
-            get: fn(mixed $value, array $attributes) => $attributes['nama'] . ' (' . $attributes['nik'] . ')'
-        );
-    }
-
-    protected function value(): Attribute
-    {
-        return Attribute::make(
-            get: fn(mixed $value, array $attributes) => $attributes['id']
+            get: function (mixed $value, array $attributes) {
+                return $value ? asset('storage/' . $value) : 'https://eu.ui-avatars.com/api/?bold=true&color=0866b7&name=' . urlencode($attributes['nama']);
+            },
         );
     }
 

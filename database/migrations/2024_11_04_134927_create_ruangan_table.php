@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('kode');
             $table->integer('kapasitas');
+            $table->boolean('status');
             $table->timestamps();
             $table->softDeletes();
         });

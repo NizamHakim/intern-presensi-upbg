@@ -104,16 +104,16 @@
     </form>
   </section>
 
-  <section id="daftar-kelas" class="flex flex-col">
+  <section id="daftar-kelas" class="flex flex-col lg:shadow-sm">
     <div class="hidden border-b bg-white p-4 lg:grid lg:grid-cols-6 lg:gap-x-4 xl:grid-cols-7">
-      <p class="col-span-2 font-semibold tracking-wide text-gray-600">Kode Kelas</p>
-      <p class="col-span-2 font-semibold tracking-wide text-gray-600">Jadwal</p>
-      <p class="col-span-1 font-semibold tracking-wide text-gray-600">Ruangan</p>
-      <p class="col-span-1 font-semibold tracking-wide text-gray-600 xl:col-span-2">Progress</p>
+      <p class="col-span-2 font-semibold">Kode Kelas</p>
+      <p class="col-span-2 font-semibold">Jadwal</p>
+      <p class="col-span-1 font-semibold">Ruangan</p>
+      <p class="col-span-1 font-semibold xl:col-span-2">Progress</p>
     </div>
     <div class="kelas-container flex flex-col gap-3 lg:gap-0 lg:divide-y">
       @foreach ($kelasList as $kelas)
-        <div class="kelas-item grid grid-cols-1 gap-y-3 rounded-sm-md bg-white p-4 shadow-sm lg:grid-cols-6 lg:gap-x-4 lg:gap-y-0 lg:rounded-none xl:grid-cols-7">
+        <div class="kelas-item grid grid-cols-1 gap-y-3 rounded-sm-md bg-white p-4 shadow-sm lg:grid-cols-6 lg:gap-x-4 lg:gap-y-0 lg:rounded-none lg:shadow-none xl:grid-cols-7">
           <div class="flex flex-row items-center lg:col-span-2">
             <a href="{{ route('kelas.detail', ['slug' => $kelas->slug]) }}" class="truncate font-semibold text-upbg underline decoration-transparent transition hover:decoration-upbg">{{ $kelas->kode }}</a>
           </div>
@@ -128,7 +128,7 @@
             <p class="text-gray-700"><i class="fa-regular fa-building mr-2"></i>{{ $kelas->ruangan->kode }}</p>
           </div>
           <div class="flex flex-col items-end justify-center gap-1 lg:col-span-1 xl:col-span-2">
-            <span class="font-medium text-gray-700">{{ $kelas->progress . '/' . $kelas->banyak_pertemuan }}Pertemuan</span>
+            <span class="font-medium text-gray-700">{{ $kelas->progress . '/' . $kelas->banyak_pertemuan }} Pertemuan</span>
             <div class="h-1.5 w-full rounded border bg-slate-200 shadow-inner">
               @php
                 $progress = ($kelas->progress / $kelas->banyak_pertemuan) * 100;
@@ -140,8 +140,8 @@
         </div>
       @endforeach
     </div>
-    {{ $kelasList->onEachSide(2)->links() }}
   </section>
+  {{ $kelasList->onEachSide(2)->links() }}
 
   @pushOnce('script')
     <script src="{{ asset('js/views/kelas/daftar-kelas.js') }}"></script>

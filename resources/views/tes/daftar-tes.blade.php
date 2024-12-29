@@ -1,13 +1,13 @@
 <x-layouts.user-layout>
-    <x-slot:title>Daftar Tes</x-slot>
-    <div class="flex flex-row gap-2 justify-between items-center mt-6 mb-8">
-        <h1 class="page-title">Daftar Tes</h1>
-        @if (auth()->user()->current_role_id == 4)
-            <a href="{{ route('tes.create') }}" class="button-style text-center button-green-solid"><i class="fa-solid fa-plus mr-1"></i>Tambah Tes</a>
-        @endif
-    </div>
+  <x-slot:title>Daftar Tes</x-slot>
+  <div class="mb-8 mt-6 flex flex-row items-center justify-between gap-2">
+    <h1 class="page-title">Daftar Tes</h1>
+    @if (auth()->user()->current_role_id == 4)
+      <a href="{{ route('tes.create') }}" class="btn btn-green-solid"><i class="fa-solid fa-plus mr-2"></i>Tambah Tes</a>
+    @endif
+  </div>
 
-    {{-- <section id="filter-kelas" class="mb-4">
+  {{-- <section id="filter-kelas" class="mb-4">
         <form action="{{ route('kelas.index') }}" method="GET" class="filter-form flex flex-col gap-2">
             <div class="flex flex-row gap-2">
                 <button type="button" class="open-filter hidden px-4 py-2 bg-white rounded-sm-md shadow-sm font-medium transition text-xs sm:flow-root md:text-sm">Filter<i class="fa-solid fa-chevron-down transition-transform text-xs ml-2"></i></button>
@@ -104,37 +104,36 @@
         </form>
     </section> --}}
 
-    <section id="daftar-tes" class="flex flex-col lg:divide-y">
-        <div class="hidden bg-white p-4 lg:grid lg:grid-cols-3 lg:gap-x-4">
-            <p class="col-span-1 text-gray-600 font-semibold tracking-wide">Kode Kelas</p>
-            <p class="col-span-1 text-gray-600 font-semibold tracking-wide">Jadwal</p>
-            <p class="col-span-1 text-gray-600 font-semibold tracking-wide">Ruangan</p>
+  <section id="daftar-tes" class="flex flex-col lg:divide-y">
+    <div class="hidden bg-white p-4 lg:grid lg:grid-cols-3 lg:gap-x-4">
+      <p class="col-span-1 font-semibold tracking-wide text-gray-600">Kode Kelas</p>
+      <p class="col-span-1 font-semibold tracking-wide text-gray-600">Jadwal</p>
+      <p class="col-span-1 font-semibold tracking-wide text-gray-600">Ruangan</p>
+    </div>
+    <div class="tes-container flex flex-col gap-3 lg:gap-0 lg:divide-y">
+      @foreach ($tesList as $tes)
+        <div class="tes-item grid grid-cols-1 gap-y-3 rounded-sm-md bg-white p-4 shadow-sm lg:grid-cols-3 lg:gap-x-4 lg:gap-y-0 lg:rounded-none">
+          <div class="flex flex-row items-center lg:col-span-1">
+            <a href="{{ route('tes.detail', ['slug' => $tes->slug]) }}" class="truncate font-semibold text-upbg underline decoration-transparent transition hover:decoration-upbg">{{ $tes->kode }}</a>
+          </div>
+          <div class="flex flex-col justify-center lg:col-span-1">
+            <div class="flex flex-col gap-2 text-gray-700">
+              <p><i class="fa-solid fa-calendar-days mr-2"></i>{{ $tes->tanggal->isoFormat('dddd, D MMMM YYYY') }}</p>
+              <p><i class="fa-regular fa-clock mr-2"></i>{{ $tes->waktu_mulai->isoFormat('HH:mm') }} - {{ $tes->waktu_selesai->isoFormat('HH:mm') }}</p>
+            </div>
+          </div>
+          <div class="flex flex-col justify-center lg:col-span-1">
+            <p class="text-gray-700"><i class="fa-regular fa-building mr-2"></i>{{ $tes->ruangan->kode }}</p>
+          </div>
         </div>
-        <div class="tes-container flex flex-col gap-3 lg:gap-0 lg:divide-y">
-            @foreach ($tesList as $tes)
-                <div class="tes-item grid grid-cols-1 gap-y-3 bg-white p-4 shadow-sm rounded-sm-md lg:grid-cols-3 lg:gap-y-0 lg:rounded-none lg:gap-x-4">
-                    <div class="flex flex-row items-center lg:col-span-1">
-                        <a href="{{ route('tes.detail', ['slug' => $tes->slug]) }}" class="font-semibold text-upbg truncate underline decoration-transparent transition hover:decoration-upbg">{{ $tes->kode }}</a>
-                    </div>
-                    <div class="flex flex-col justify-center lg:col-span-1">
-                        <div class="flex flex-col gap-2 text-gray-700">
-                            <p><i class="fa-solid fa-calendar-days mr-2"></i>{{ $tes->tanggal->isoFormat('dddd, D MMMM YYYY') }}</p>
-                            <p><i class="fa-regular fa-clock mr-2"></i>{{ $tes->waktu_mulai->isoFormat("HH:mm") }} - {{ $tes->waktu_selesai->isoFormat("HH:mm") }}</p>
-                        </div>
-                    </div>
-                    <div class="flex flex-col justify-center lg:col-span-1">
-                        <p class="text-gray-700"><i class="fa-regular fa-building mr-2"></i>{{ $tes->ruangan->kode }}</p>
-                    </div>
-                </div>
-            @endforeach
-        </div>
-    </section>
+      @endforeach
+    </div>
+  </section>
 
-    <section>
-        {{-- {{ $kelasList->onEachSide(2)->links() }} --}}
-    </section>
+  <section>
+    {{-- {{ $kelasList->onEachSide(2)->links() }} --}}
+  </section>
 
-    @pushOnce('script')
-        
-    @endPushOnce
+  @pushOnce('script')
+  @endPushOnce
 </x-layouts.user-layout>

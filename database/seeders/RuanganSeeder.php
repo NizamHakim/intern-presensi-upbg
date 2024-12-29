@@ -8,14 +8,11 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class RuanganSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        Ruangan::create(['kode' => 'Online', 'Kapasitas' => null]);
-        Ruangan::create(['kode' => 'UPBG-101', 'Kapasitas' => 30]);
-        Ruangan::create(['kode' => 'UPBG-102', 'Kapasitas' => 30]);
-        Ruangan::create(['kode' => 'UPBG-103', 'Kapasitas' => 30]);
+        Ruangan::create(['kode' => 'Online', 'kapasitas' => 1, 'status' => true]);
+        Ruangan::create(['kode' => 'UPBG-101', 'kapasitas' => 30, 'status' => true]);
+        Ruangan::create(['kode' => 'UPBG-102', 'kapasitas' => 30, 'status' => true]);
+        Ruangan::create(['kode' => 'UPBG-103', 'kapasitas' => 30, 'status' => true]);
     }
 }

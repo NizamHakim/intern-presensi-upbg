@@ -10,7 +10,7 @@ class AuthController extends Controller
 {
     public function loginPage()
     {
-        return view('public.login');
+        return view('guest.login');
     }
 
     public function handleLoginRequest(Request $request)
@@ -26,18 +26,7 @@ class AuthController extends Controller
 
         if(Auth::attempt($credentials)){
             $request->session()->regenerate();
-            $user = Auth::user();
-
-            switch($user->current_role_id){
-                case(2):
-                    return redirect()->intended(route('kelas.index'));
-                case(3):
-                    return redirect()->intended(route('kelas.index'));
-                case(4):
-                    return redirect()->intended(route('tes.index'));
-                case(5):
-                    return redirect()->intended(route('tes.index'));
-            };
+            return redirect()->intended(route('home'));
         }
 
         return back()->withErrors([
@@ -47,9 +36,9 @@ class AuthController extends Controller
 
     public function switchRole(Request $request)
     {
-        User::findOrFail(Auth::id())->update(['current_role_id' => $request['role_id']]);
+        User::findOrFail(Auth::id())->update(['current_role_id' => $request['role-id']]);
 
-        return redirect()->back();
+        return redirect()->route('home');
     }
 
     public function handleLogoutRequest()

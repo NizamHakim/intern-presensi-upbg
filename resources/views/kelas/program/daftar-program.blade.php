@@ -2,29 +2,29 @@
   <x-slot:title>Daftar Program</x-slot>
   <div class="mb-8 mt-6 flex flex-row items-center justify-between gap-4">
     <h1 class="page-title">Daftar Program</h1>
-    <button type="button" class="tambah-program btn btn-green-solid"><i class="fa-solid fa-plus mr-2"></i>Tambah Program</button>
+    <button type="button" class="tambah-program btn btn-green-solid text-nowrap"><i class="fa-solid fa-plus mr-2"></i>Tambah Program</button>
   </div>
 
   <section id="daftar-program" class="mt-6 divide-y bg-white shadow-sm">
     <div class="grid grid-cols-12 items-center gap-x-4 py-4">
-      <p class="col-span-1 pl-2 text-center font-semibold">No</p>
-      <p class="col-span-4 font-semibold">Program</p>
+      <p class="col-span-2 pl-2 text-center font-semibold sm:col-span-1">No</p>
+      <p class="col-span-5 font-semibold sm:col-span-4">Program</p>
       <p class="col-span-3 font-semibold">Kode</p>
-      <p class="col-span-3 text-center font-semibold">Status</p>
+      <p class="hidden text-center font-semibold sm:col-span-3 sm:block">Status</p>
     </div>
     @foreach ($programList as $program)
       <div class="program-item grid grid-cols-12 items-center gap-x-4 py-5" data-program-id="{{ $program->id }}">
-        <div class="col-span-1 pl-2 text-center font-medium">{{ $loop->iteration }}.</div>
-        <div class="nama-program col-span-4">{{ $program->nama }}</div>
+        <div class="col-span-2 pl-2 text-center font-medium sm:col-span-1">{{ $loop->iteration + ($programList->currentPage() - 1) * $programList->perPage() }}</div>
+        <div class="nama-program col-span-5 sm:col-span-4">{{ $program->nama }}</div>
         <div class="kode-program col-span-3">{{ $program->kode }}</div>
-        <div class="col-span-3 flex justify-center">
+        <div class="hidden sm:col-span-3 sm:flex sm:justify-center">
           @if ($program->aktif)
             <p class="status-program w-fit rounded-full bg-green-300 px-2 text-sm font-semibold text-green-800">Aktif</p>
           @else
             <p class="status-program w-fit rounded-full bg-red-300 px-2 text-sm font-semibold text-red-800">Tidak Aktif</p>
           @endif
         </div>
-        <div class="relative col-span-1 text-center">
+        <div class="relative col-span-2 text-center sm:col-span-1">
           <button type="button" class="btn-rounded btn-white menu border-none shadow-none"><i class="fa-solid fa-ellipsis-vertical"></i></button>
           <x-ui.dialog class="right-1/2 top-full mt-1 translate-x-4">
             <button type="button" class="edit-program w-full px-2 py-1.5 text-left hover:bg-gray-100">Edit</button>
@@ -33,8 +33,8 @@
         </div>
       </div>
     @endforeach
-    {{ $programList->onEachSide(2)->links() }}
   </section>
+  {{ $programList->onEachSide(2)->links() }}
 
   <x-ui.modal id="edit-program-modal">
     <form action="{{ route('program-kelas.update') }}" class="flex flex-col gap-3">

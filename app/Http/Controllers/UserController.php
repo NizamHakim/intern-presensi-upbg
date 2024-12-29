@@ -6,53 +6,44 @@ use App\Helpers\RouteGraph;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
     public function index(Request $request)
-    {
+    { 
         $usersList = User::query();
 
-        $roleOptions = Role::all()->map->only(['text', 'value'])->prepend(['text' => 'Semua', 'value' => null]);
-        $roleSelected = ($request->query('role') != null) ? Role::findOrFail($request->query('role')) : null;
-
-        $usersList->when($roleSelected != null, function($query) use ($roleSelected){
-            return $query->whereHas('roles', function($query) use ($roleSelected){
-                $query->where('role_id', $roleSelected->id);
-            });
-        });
-
-        $searchOptions = collect([
-            ['text' => 'Nama', 'value' => 'nama'],
-            ['text' => 'NIK / NIP', 'value' => 'nik-nip'],
+        $categoricalSearchOptions = collect([
+          ['text' => 'Nama', 'name' => 'nama', 'placeholder' => 'Cari nama user'],
+          ['text' => 'NIK / NIP', 'name' => 'nik', 'placeholder' => 'Cari NIK atau NIP user']
         ]);
 
-        if($request->query('nama')){
-            $arraySearch = explode(' ', $request->query('nama'));
-            foreach($arraySearch as $search){
-                $usersList->where('nama', 'like', '%'.$search.'%');
-            }
-            $searchSelected = $searchOptions->where('value', 'nama')->first();
-            $searchValue = $request->query('nama');
-        }elseif($request->query('nik-nip')){
-            $usersList->where('nik', 'like', '%'.$request->query('nik-nip').'%');
-            $searchSelected = $searchOptions->where('value', 'nik-nip')->first();
-            $searchValue = $request->query('nik-nip');
-        }else{
-            $searchSelected = $searchOptions->first();
-            $searchValue = '';
+        $selected = [];
+
+        $usersList->when($request->query('nama'), function($query) use ($request, $categoricalSearchOptions, &$selected){
+          $selected['categorical'] = $categoricalSearchOptions->where('name', 'nama')->first();
+          $selected['search'] = $request->query('nama');
+          return $query->where('nama', 'like', '%'.$request->query('nama').'%');
+        });
+
+        $usersList->when($request->query('nik'), function($query) use ($request, $categoricalSearchOptions, &$selected){
+          $selected['categorical'] = $categoricalSearchOptions->where('name', 'nik')->first();
+          $selected['search'] = $request->query('nik');
+          return $query->where('nik', 'like', '%'.$request->query('nik').'%');
+        });
+
+        if(!isset($selected['categorical'])){
+          $selected['categorical'] = $categoricalSearchOptions->first();
         }
 
-        $usersList = $usersList->paginate(10)->appends($request->query());
+        $usersList = $usersList->paginate(10)->appends($request->all());
 
         return view('user.daftar-user', [
-            'roleOptions' => $roleOptions,
-            'roleSelected' => $roleSelected ? $roleSelected->only(['text', 'value']) : $roleOptions[0],
-            'searchOptions' => $searchOptions,
-            'searchSelected' => $searchSelected,
-            'searchValue' => $searchValue,
             'usersList' => $usersList,
+            'categoricalSearchOptions' => $categoricalSearchOptions,
+            'selected' => $selected,
         ]);
     }
 
@@ -73,31 +64,37 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'foto-user' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'nik-user' => 'required|numeric|unique:users,nik',
-            'nama-user' => 'required|string',
-            'email-user' => 'required|email|unique:users,email',
-            'password-user' => 'required|string|min:8',
-            'password-confirm-user' => 'required|same:password-user',
+            'nik' => 'required|numeric|unique:users,nik',
+            'nama' => 'required|string',
+            'nama-panggilan' => 'required|string',
+            'no-hp' => 'nullable|numeric',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:8',
+            'konfirmasi-password' => 'required|same:password',
             'role' => 'nullable|array',
-            'role.*' => 'exists:roles,id|in:2,3',
+            'role.*' => 'exists:roles,id',
+            'foto-user' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ], [
-            'foto-user.image' => 'Foto tidak valid',
+            'nik.required' => 'NIK / NIP tidak boleh kosong',
+            'nik.numeric' => 'NIK / NIP harus berupa angka',
+            'nik.unique' => 'NIK / NIP sudah terdaftar',
+            'nama.required' => 'Nama tidak boleh kosong',
+            'nama.string' => 'Nama harus berupa string',
+            'nama-panggilan.required' => 'Nama panggilan tidak boleh kosong',
+            'nama-panggilan.string' => 'Nama panggilan harus berupa string',
+            'no-hp.numeric' => 'Nomor HP harus berupa angka',
+            'email.required' => 'Email tidak boleh kosong',
+            'email.email' => 'Email tidak valid',
+            'email.unique' => 'Email sudah terdaftar',
+            'password.required' => 'Password tidak boleh kosong',
+            'password.string' => 'Password harus berupa string',
+            'password.min' => 'Password minimal 8 karakter',
+            'konfirmasi-password.required' => 'Konfirmasi password tidak boleh kosong',
+            'konfirmasi-password.same' => 'Konfirmasi password tidak sama dengan password',
+            'role.*.exists' => 'Role tidak valid',
+            'foto-user.image' => 'Foto harus berupa gambar',
             'foto-user.mimes' => 'Foto harus berformat jpeg, jpg, atau png',
             'foto-user.max' => 'Foto maksimal 2MB',
-            'nik-user.required' => 'NIK/NIP tidak boleh kosong',
-            'nik-user.numeric' => 'NIK/NIP tidak boleh mengandung huruf',
-            'nik-user.unique' => 'NIK/NIP sudah terdaftar',
-            'nama-user.required' => 'Nama tidak boleh kosong',
-            'email-user.required' => 'Email tidak boleh kosong',
-            'email-user.email' => 'Email tidak valid',
-            'email-user.unique' => 'Email sudah terdaftar',
-            'password-user.required' => 'Password tidak boleh kosong',
-            'password-user.min' => 'Password minimal 8 karakter',
-            'password-confirm-user.required' => 'Konfirmasi password tidak boleh kosong',
-            'password-confirm-user.same' => 'Konfirmasi password salah',
-            'role.*.exists' => 'Role tidak valid',
-            'role.*.in' => 'Unauthorized role assignment',
         ]);
 
         if ($validator->fails()) {
@@ -105,13 +102,15 @@ class UserController extends Controller
         }
 
         $user = User::create([
-            'nik' => $request['nik-user'],
-            'nama' => $request['nama-user'],
-            'email' => $request['email-user'],
-            'password' => bcrypt($request['password-user'])
+            'nik' => $request['nik'],
+            'nama' => $request['nama'],
+            'nama_panggilan' => $request['nama-panggilan'],
+            'no_hp' => $request->has('no-hp') ? $request['no-hp'] : null,
+            'email' => $request['email'],
+            'password' => bcrypt($request['password']),
         ]);
 
-        if(isset($request['role'])){
+        if($request->has('role')){
             $user->roles()->attach($request['role']);
             $user->current_role_id = $request['role'][0];
         }
@@ -127,18 +126,23 @@ class UserController extends Controller
 
         $user->save();
 
-        session()->flash('toast', [
-            'type' => 'success',
-            'message' => 'User ' . $request['nama-user'] . ' berhasil ditambahkan'
-        ]);
-
-        return response(['redirect' => route('user.index')], 201);
+        return response([
+          'message' => 'User ' . $user->nama . ' berhasil ditambahkan',
+          'redirect' => route('user.index'),
+        ], 201);
     }
 
     public function detail($id)
     {
         $user = User::findOrFail($id);
-        $roleOptions = Role::where('id', 2)->orWhere('id', 3)->get();
+        $user->load('mengajarKelas', 'mengawasiTes', 'roles');
+
+        if(Auth::user()->current_role_id == 2){
+          $roleOptions = Role::where('id', 2)->orWhere('id', 3)->get();
+        }else if(Auth::user()->current_role_id == 4){
+          $roleOptions = Role::where('id', 4)->orWhere('id', 5)->get();
+        }
+        
         $breadcrumbs = [
             'User' => route('user.index'),
             $user->nama => route('user.detail', $user->id)
@@ -156,32 +160,21 @@ class UserController extends Controller
         $user = User::findOrFail($id);
 
         $validator = Validator::make($request->all(), [
-            'role' => 'required|exists:roles,id|in:2,3',
-            'checked' => 'required|boolean',
+            'role' => 'nullable|array',
+            'role.*' => 'exists:roles,id',
+        ], [
+            'role.*.exists' => 'Role tidak valid',
         ]);
 
         if ($validator->fails()) {
             return response($validator->errors(), 422);
         }
 
-        if($request['checked']){
-            $user->roles()->attach($request['role']);
-            if($user->current_role_id == null){
-                $user->current_role_id = $request['role'];
-            }
-        }else{
-            $user->roles()->detach($request['role']);
-            if($user->current_role_id == $request['role']){
-                if($user->roles->count() > 0){
-                    $user->current_role_id = $user->roles->first()->id;
-                }else{
-                    $user->current_role_id = null;
-                }
-            }
-        }
+        $user->roles()->sync($request['role']);
 
-        $user->save();
-
-        return response(['message' => 'Berhasil mengubah role'], 200);
+        return response([
+          'message' => 'Role user ' . $user->nama . ' berhasil diupdate',
+          'roles' => $user->roles->pluck('id'),
+        ], 200);
     }
 }

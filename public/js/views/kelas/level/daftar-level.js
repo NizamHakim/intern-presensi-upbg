@@ -1,186 +1,171 @@
 document.addEventListener('click', (e) => {
-    if(e.target.matches('.edit-level')){
-        e.stopPropagation();
-        const row = e.target.closest('tr');
-        const clone = startEditing(row);
-        row.replaceWith(clone);
-        clone.querySelector('[name="nama-level"]').focus();
-    }else if(e.target.matches('.delete-level')){
-        e.stopPropagation();
-        const row = e.target.closest('tr');
-        showDeleteDialog(row);
-    }
+  if(e.target.closest('#daftar-level .menu')){
+      e.stopPropagation();
+      const menu = e.target.closest('#daftar-level .menu');
+      const dialog = menu.parentElement.querySelector('.dialog');
+      if(!dialog.classList.contains('open')){
+          openDialog(dialog);
+      }
+  }else if(e.target.closest('#daftar-level .edit-level')){
+      e.stopPropagation();
+      const levelItem = e.target.closest('.level-item');
+      showEditLevelModal(levelItem);
+  }else if(e.target.closest('#daftar-level .delete-level')){
+      e.stopPropagation();
+      const levelItem = e.target.closest('.level-item');
+      showDeleteLevelModal(levelItem);
+  }
 });
 
-function startEditing(row){
-    const clone = row.cloneNode(true);
-    const namaLevel = clone.querySelector('.nama-level');
-    const kodeLevel = clone.querySelector('.kode-level');
-    const statusLevel = clone.querySelector('.status-level');
-    const editButton = clone.querySelector('.edit-level');
-    const deleteButton = clone.querySelector('.delete-level');
+function showEditLevelModal(levelItem){
+  const levelId = levelItem.dataset.levelId;
+  const namaLevel = levelItem.querySelector('.nama-level').textContent;
+  const kodeLevel = levelItem.querySelector('.kode-level').textContent;
+  const statusLevel = levelItem.querySelector('.status-level').textContent;
 
-    const namaLevelInput = document.createElement('input');
-    namaLevelInput.setAttribute('type', 'text');
-    namaLevelInput.setAttribute('value', namaLevel.textContent);
-    namaLevelInput.setAttribute('class', 'px-3 h-10 rounded-md border border-gray-200 text-gray-600 font-medium placeholder:text-gray-400 outline outline-transparent outline-1.5 outline-offset-0 transition-all focus:outline-upbg-light');
-    namaLevelInput.setAttribute('placeholder', 'Nama Level');
-    namaLevelInput.setAttribute('name', 'nama-level');
-    namaLevel.replaceWith(namaLevelInput);
+  const editLevelModal = document.getElementById('edit-level-modal');
+  const modalForm = editLevelModal.querySelector('form');
+  modalForm.querySelector('input[name="level-id"]').value = levelId;
+  modalForm.querySelector('input[name="nama-level"]').value = namaLevel;
+  modalForm.querySelector('input[name="kode-level"]').value = kodeLevel;
+  const modalStatusLevel = modalForm.querySelector('.status-level');
+  modalStatusLevel.querySelector('.checkbox-label').textContent = statusLevel;
+  modalStatusLevel.querySelector('input').checked = (statusLevel === 'Aktif') ? true : false;
 
-    const kodeLevelInput = document.createElement('input');
-    kodeLevelInput.setAttribute('type', 'text');
-    kodeLevelInput.setAttribute('value', (kodeLevel.textContent != '-') ? kodeLevel.textContent : '');
-    kodeLevelInput.setAttribute('class', 'px-3 h-10 rounded-md border border-gray-200 text-gray-600 font-medium placeholder:text-gray-400 outline outline-transparent outline-1.5 outline-offset-0 transition-all focus:outline-upbg-light');
-    kodeLevelInput.setAttribute('placeholder', 'Kode Level');
-    kodeLevelInput.setAttribute('name', 'kode-level');
-    kodeLevel.replaceWith(kodeLevelInput);
-    
-    const statusLevelCheckbox = createCheckboxWithIcon('status-level', true, statusLevel.textContent === 'Aktif');
-    statusLevel.replaceWith(statusLevelCheckbox);
+  const closeCallback = openModal(editLevelModal, removeEventListeners);
 
-    const cancelButton = document.createElement('button');
-    cancelButton.setAttribute('type', 'button');
-    cancelButton.setAttribute('class', 'cancel-button px-3 py-2 text-gray-400 font-semibold');
-    cancelButton.textContent = 'Cancel';
-    deleteButton.replaceWith(cancelButton);
+  async function handleSubmit(e){
+    e.preventDefault();
+    const route = modalForm.getAttribute('action');
+    const submitButton = e.submitter;
+    clearErrors(modalForm);
 
-    function handleCancel(e){
-        e.stopPropagation();
-        stopEditing(clone, row, () => {
-            cancelButton.removeEventListener('click', handleCancel);
-            document.removeEventListener('click', handleClickOutside);
-        });
-    }
-    cancelButton.addEventListener('click', handleCancel);
-
-    function handleClickOutside(e){
-        if(!clone.contains(e.target)){
-            stopEditing(clone, row, () => {
-                cancelButton.removeEventListener('click', handleCancel);
-                document.removeEventListener('click', handleClickOutside);
-            });
-        }
-    }
-    document.addEventListener('click', handleClickOutside);
-
-    const saveButton = document.createElement('button');
-    saveButton.setAttribute('type', 'button');
-    saveButton.setAttribute('class', 'px-3 py-2 text-green-600 font-semibold');
-    saveButton.textContent = 'Save';
-    saveButton.value = row.getAttribute('data-level-id');
-    editButton.replaceWith(saveButton);
-
-    function handleSave(e){
-        e.stopPropagation();
-        saveInput(saveButton.value, clone, row, handleClickOutside);
-    }
-    saveButton.addEventListener('click', handleSave);
-
-    return clone;
-}
-
-function stopEditing(clone, row, callback){
-    clone.replaceWith(row);
-    callback();
-}
-
-async function saveInput(id, clone, row, handleClickOutside){
-    clone.querySelectorAll('.error').forEach(error => error.remove());
-    playFetchingAnimation(clone);
-    document.removeEventListener('click', handleClickOutside); // temporarily remove click outside
-
-    const response = await fetchSubmit(id, clone);
-    stopFetchingAnimation(clone);
+    const formData = new FormData(modalForm);
+    const data = Object.fromEntries(formData.entries());
+    playFetchingAnimation(submitButton, 'blue', 'Updating...');
+    const response = await fetchRequest(route, 'PUT', data);
+    stopFetchingAnimation(submitButton);
 
     if(response.ok){
-        const json = await response.json();
-        const newRow = updateRow(row, json);
-        clone.replaceWith(newRow);
-        createToast('success', 'Level berhasil diubah');
+      const updatedLevel = await response.json();
+      updateLevel(levelItem, updatedLevel);
+      closeModal(editLevelModal, closeCallback);
     }else{
-        if(response.status === 422){
-            const errors = await response.json();
-            for(const key in errors){
-                const input = clone.querySelector(`[name="${key}"]`);
-                const errorSpan = createErrorSpan(errors[key][0]);
-                input.parentNode.appendChild(errorSpan);
-            }
-        }else{
-            createToast('error', 'Terjadi kesalahan. Silahkan coba lagi.');
-        }
-        document.addEventListener('click', handleClickOutside); // if error, add back click outside
+      handleError(response, modalForm);
     }
+  }
+  modalForm.addEventListener('submit', handleSubmit);
+
+  function handleStatusChange(e){
+    modalStatusLevel.querySelector('.checkbox-label').textContent = (e.target.checked) ? 'Aktif' : 'Tidak Aktif';
+  }
+  modalStatusLevel.addEventListener('change', handleStatusChange);
+
+  function removeEventListeners(){
+    modalForm.removeEventListener('submit', handleSubmit);
+    modalStatusLevel.removeEventListener('change', handleStatusChange);
+  }
 }
 
-function fetchSubmit(id, clone){
-    const inputNamaLevel = clone.querySelector('[name="nama-level"]');
-    const inputKodeLevel = clone.querySelector('[name="kode-level"]');
-    const inputStatusLevel = clone.querySelector('[name="status-level"]');
-
-    return fetch(`/level-kelas/${id}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-            'X-Requested-With': 'XMLHttpRequest',
-        },
-        body: JSON.stringify({
-            "nama-level": inputNamaLevel.value,
-            "kode-level": inputKodeLevel.value,
-            "status-level": inputStatusLevel.checked,
-        }),
-    });
+function updateLevel(levelItem, updatedLevel){
+  levelItem.querySelector('.nama-level').textContent = updatedLevel.nama;
+  levelItem.querySelector('.kode-level').textContent = updatedLevel.kode;
+  if(updatedLevel.aktif){
+    levelItem.querySelector('.status-level').classList.remove('bg-red-300', 'text-red-800');
+    levelItem.querySelector('.status-level').classList.add('bg-green-300', 'text-green-800');
+    levelItem.querySelector('.status-level').textContent = 'Aktif';
+  }else{
+    levelItem.querySelector('.status-level').classList.remove('bg-green-300', 'text-green-800');
+    levelItem.querySelector('.status-level').classList.add('bg-red-300', 'text-red-800');
+    levelItem.querySelector('.status-level').textContent = 'Tidak Aktif';
+  }
 }
 
-function updateRow(row, json){
-    const namaLevel = row.querySelector('.nama-level');
-    const kodeLevel = row.querySelector('.kode-level');
-    const statusLevel = row.querySelector('.status-level');
+function showDeleteLevelModal(levelItem){
+  const levelId = levelItem.dataset.levelId;
+  const namaLevel = levelItem.querySelector('.nama-level').textContent;
+  const kodeLevel = levelItem.querySelector('.kode-level').textContent;
 
-    row.setAttribute('data-level-id', json.id);
-    namaLevel.textContent = json.nama;
-    kodeLevel.textContent = json.kode ? json.kode : '-';
-    statusLevel.textContent = json.aktif ? 'Aktif' : 'Tidak aktif';
-    if(json.aktif){
-        statusLevel.classList.add('bg-green-300', 'text-green-800');
-        statusLevel.classList.remove('bg-red-300', 'text-red-800');
+  const deleteLevelModal = document.getElementById('delete-level-modal');
+  const namaKodeLevel = deleteLevelModal.querySelector('.nama-kode-level');
+  const inputLevelId = deleteLevelModal.querySelector('[name="level-id"]');
+  const forceDelete = deleteLevelModal.querySelector('[name="force-delete"]');
+
+  namaKodeLevel.textContent = `${namaLevel} - ${kodeLevel}`;
+  inputLevelId.value = levelId;
+  forceDelete.checked = false;
+
+  openModal(deleteLevelModal, removeEventListeners);
+
+  const modalForm = deleteLevelModal.querySelector('form');
+  async function handleSubmit(e){
+    e.preventDefault();
+    const route = modalForm.getAttribute('action');
+    const submitButton = e.submitter;
+
+    const formData = new FormData(modalForm);
+    const data = Object.fromEntries(formData.entries());
+    playFetchingAnimation(submitButton, 'red', 'Deleting...');
+    const response = await fetchRequest(route, 'DELETE', data);
+    stopFetchingAnimation(submitButton);
+
+    if(response.ok){
+      const json = await response.json();
+      saveToast('success', json.message);
+      window.location.replace(json.redirect);
     }else{
-        statusLevel.classList.add('bg-red-300', 'text-red-800');
-        statusLevel.classList.remove('bg-green-300', 'text-green-800');
+      handleError(response, modalForm);
     }
+  }
+  modalForm.addEventListener('submit', handleSubmit);
 
-    return row;
+  function removeEventListeners(){
+    modalForm.removeEventListener('submit', handleSubmit);
+  }
 }
 
-function playFetchingAnimation(clone){
-    const buttonContainer = clone.querySelector('.button-container');
-    const loading = document.createElement('div');
-    loading.setAttribute('class', 'loading flex flex-row items-center justify-center font-semibold');
-    loading.innerHTML = createLoadingAnimation('Updating...');
-    buttonContainer.parentNode.appendChild(loading);
-    buttonContainer.classList.add('hidden');
-}
+const tambahLevel = document.querySelector('.tambah-level');
+tambahLevel.addEventListener('click', (e) => {
+  e.stopPropagation();
+  const tambahLevelModal = document.getElementById('add-level-modal');
+  const modalForm = tambahLevelModal.querySelector('form');
+  modalForm.querySelector('input[name="nama-level"]').value = '';
+  modalForm.querySelector('input[name="kode-level"]').value = '';
+  const modalStatusLevel = modalForm.querySelector('.status-level');
+  modalStatusLevel.querySelector('.checkbox-label').textContent = 'Aktif';
+  modalStatusLevel.querySelector('input').checked = true;
 
-function stopFetchingAnimation(clone){
-    const buttonContainer = clone.querySelector('.button-container');
-    const loading = clone.querySelector('.loading');
-    loading.remove();
-    buttonContainer.classList.remove('hidden');
-}
+  openModal(tambahLevelModal, removeEventListeners);
 
-function showDeleteDialog(row){
-    const id = row.getAttribute('data-level-id');
-    const namaLevel = row.querySelector('.nama-level').textContent;
-    const kodeLevel = (row.querySelector('.kode-level').textContent != '-') ? row.querySelector('.kode-level').textContent : '';
+  async function handleSubmit(e){
+    e.preventDefault();
+    const route = modalForm.getAttribute('action');
+    const submitButton = e.submitter;
+    clearErrors(modalForm);
 
-    const deleteDialogContent = document.getElementById('delete-dialog-content');
-    const namaKodeLevel = deleteDialogContent.querySelector('.nama-kode-level')
-    namaKodeLevel.textContent = `${namaLevel}`
-    namaKodeLevel.textContent += (kodeLevel) ? ` - ${kodeLevel}` : '';
+    const formData = new FormData(modalForm);
+    const data = Object.fromEntries(formData.entries());
+    playFetchingAnimation(submitButton, 'green', 'Validating...');
+    const response = await fetchRequest(route, 'POST', data);
+    stopFetchingAnimation(submitButton);
 
-    const levelId = deleteDialogContent.querySelector('[name="level-id"]');
-    levelId.value = id;
+    if(response.ok){
+      const json = await response.json();
+      saveToast('success', json.message);
+      window.location.replace(json.redirect);
+    }else{
+      handleError(response, modalForm);
+    }
+  }
+  modalForm.addEventListener('submit', handleSubmit);
 
-    openDialog();
-}
+  function handleStatusChange(e){
+    modalStatusLevel.querySelector('.checkbox-label').textContent = (e.target.checked) ? 'Aktif' : 'Tidak Aktif';
+  }
+  modalStatusLevel.addEventListener('change', handleStatusChange);
+
+  function removeEventListeners(){
+    modalForm.removeEventListener('submit', handleSubmit);
+    modalStatusLevel.removeEventListener('change', handleStatusChange);
+  }
+});

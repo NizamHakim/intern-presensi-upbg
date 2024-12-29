@@ -6,7 +6,7 @@
   <div class="mb-2 flex flex-row items-center gap-6">
     <label id="excel-csv-label" for="excel-csv" class="btn btn-white cursor-pointer text-nowrap"><i class="fa-solid fa-file mr-2"></i>Pilih file</label>
     <input id="excel-csv" name="input-excel-csv" type="file" class="hidden" accept=".xlsx,.csv">
-    <div class="panduan-penggunaan flex cursor-pointer flex-row items-center gap-2 text-upbg">
+    <div class="panduan-penggunaan flex cursor-pointer flex-row items-center gap-2 text-upbg transition hover:text-upbg-light">
       <i class="fa-solid fa-circle-info text-base"></i>
       <span class="text-xs">Panduan penggunaan</span>
     </div>
@@ -25,12 +25,10 @@
   <div class="flex flex-col gap-4">
     <h1 class="modal-title">Panduan Penggunaan</h1>
     <hr class="w-full">
-    <ul class="list-inside list-disc">
+    <ul class="list-outside list-disc pl-4">
       <li>Dapat menggunakan file dengan extension .xlsx atau .csv</li>
       <li>File harus memiliki header dengan nama <span class="font-semibold text-upbg">NIK/NRP</span>, <span class="font-semibold text-upbg">Nama</span>, dan <span class="font-semibold text-upbg">Dept./Occupation</span></li>
     </ul>
-
-    <p class="font-medium">Contoh file</p>
 
     <div class="grid grid-cols-1 divide-y border">
       <div class="grid grid-cols-3 divide-x">

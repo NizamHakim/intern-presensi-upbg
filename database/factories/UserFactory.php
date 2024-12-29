@@ -23,9 +23,12 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $nama = $this->faker->name();
+        $nama_panggilan = explode(' ', $nama)[0];
         return [
             'nik' => fake()->unique()->numerify('##########'),
-            'nama' => fake()->name(),
+            'nama' => $nama,
+            'nama_panggilan' => $nama_panggilan,
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'no_hp' => fake()->numerify('08##########'),

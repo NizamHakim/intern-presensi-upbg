@@ -8,20 +8,6 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 class Role extends Model
 {
     protected $fillable = ['nama'];
-
-    protected function text(): Attribute
-    {
-        return Attribute::make(
-            get: fn(mixed $value, array $attributes) => $attributes['nama']
-        );
-    }
-
-    protected function value(): Attribute
-    {
-        return Attribute::make(
-            get: fn(mixed $value, array $attributes) => $attributes['id']
-        );
-    }
     
     public function users()
     {

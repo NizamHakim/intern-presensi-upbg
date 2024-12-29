@@ -89,6 +89,10 @@
         @apply px-2 py-2 bg-gray-200 rounded-sm-md hover:bg-gray-300;
     }
 
+    .input-readonly{
+        @apply read-only:outline-none read-only:hover:bg-gray-200 read-only:cursor-not-allowed;
+    }
+
     .error{
         @apply text-red-600 text-sm mt-1 font-medium;
     }
@@ -107,6 +111,46 @@
 
     .success-container{
         @apply rounded-md bg-green-100 p-3 text-green-600;
+    }
+
+    .checkbox{
+        @apply px-4 py-1.5 rounded-sm-md border font-medium transition text-xs shadow-sm text-center;
+    }
+
+    .checkbox-upbg{
+        @apply has-[:checked]:bg-upbg has-[:checked]:border-upbg has-[:checked]:text-white text-upbg;
+    }
+
+    .checkbox-upbg .checkmark{
+        @apply text-upbg;
+    }
+
+    .checkbox-green{
+        @apply has-[:checked]:bg-green-600 has-[:checked]:border-green-600 has-[:checked]:text-white text-green-600;
+    }
+
+    .checkbox-green .checkmark{
+        @apply text-green-600;
+    }
+
+    .checkbox-red{
+        @apply has-[:checked]:bg-red-600 has-[:checked]:border-red-600 has-[:checked]:text-white text-red-600;
+    }
+
+    .checkbox-red .checkmark{
+        @apply text-red-600;
+    }
+
+    .toast{
+      @apply fixed transition transform border-l-4 translate-y-2 duration-300 opacity-0 flex-row gap-4 items-center p-4 rounded-md bg-white shadow-lg z-10 after:absolute after:h-1 after:bottom-0 after:left-0 left-4 right-4 bottom-10 sm:left-auto sm:max-w-md;
+    }
+
+    .toast.toast-success{
+      @apply after:bg-green-600 border-green-600 after:animate-[toast-progress_2.5s_linear];
+    }
+
+    .toast.toast-error{
+      @apply after:bg-red-600 border-red-600;
     }
 }
 
@@ -151,5 +195,37 @@
 
     .btn-alfa.active{
         @apply bg-red-600 border-red-600 text-white font-semibold hover:bg-red-600;
+    }
+
+    .categorical-search.focused{
+      @apply outline-upbg-light;
+    }
+
+    .categorical-search.open .categorical-search-icon{
+      @apply rotate-180;
+    }
+
+    .categorical-search.open .categorical-search-options-container{
+      @apply opacity-100;
+    }
+
+    .categorical-search-option.selected{
+      @apply border-upbg;
+    }
+
+    .toast.show{
+      @apply translate-y-0 opacity-100;
+    }
+
+    .profile-menu.open{
+      @apply opacity-100 translate-y-1;
+    }
+
+    .switch-role-toggle.open i{
+      @apply rotate-180;
+    }
+
+    .switch-role-dropdown.open{
+      @apply max-h-96;
     }
 }

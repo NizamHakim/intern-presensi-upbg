@@ -1,47 +1,94 @@
 <x-layouts.user-layout>
-    @push('head')
-        <meta name="csrf-token" content="{{ csrf_token() }}">
-    @endpush
-    <x-slot:title>Tambah Program</x-slot>
-    
-    <div class="flex flex-col gap-4 mt-6 mb-8">
-        <div class="flex flex-row justify-between items-center">
-            <h1 class="font-bold text-upbg text-[2rem]">Detail User</h1>
-        </div>
-        <x-ui.breadcrumbs :breadcrumbs="$breadcrumbs"/>
-    </div>
+  <x-slot:title>{{ $user->nama }}</x-slot>
+  <div class="mb-8 mt-6 flex flex-col gap-6">
+    <h1 class="page-title">Detail User</h1>
+    <x-ui.breadcrumbs :breadcrumbs="$breadcrumbs" />
+  </div>
 
-    <div class="flex flex-col p-8 gap-4 shadow-strong" data-user-id="{{ $user->id }}">
-        <div class="size-40 border-2 shadow-md rounded-full overflow-hidden self-center">
-            <img src="{{ ($user->profile_picture) ? asset('storage/' . $user->profile_picture) : asset('images/defaultProfilePicture.png') }}" class="rounded-full">
+  <section id="detail-user" class="bg-white p-6 shadow-sm md:p-12">
+    <div class="flex flex-col gap-8 md:flex-row md:gap-20">
+      <img src="{{ $user->profile_picture }}" class="size-44 self-center rounded-sm-md shadow-sm md:size-52 md:self-start">
+      <div class="flex w-full flex-col">
+        <div class="grid grid-cols-1 gap-y-3 md:grid-cols-2">
+          <div class="flex flex-col gap-1 md:col-span-1 md:col-start-1">
+            <p class="font-medium">NIK / NIP</p>
+            <p class="text-wrap">{{ $user->nik }}</p>
+          </div>
+          <div class="flex flex-col gap-1 md:row-span-1 md:row-start-2">
+            <p class="font-medium">Nama Lengkap</p>
+            <p class="text-wrap">{{ $user->nama }}</p>
+          </div>
+          <div class="flex flex-col gap-1">
+            <p class="font-medium">No. HP</p>
+            <a href="{{ 'http://wa.me/62' . substr($user->no_hp, 1) }}" target="_blank" class="w-fit text-wrap text-upbg underline decoration-transparent transition hover:text-upbg-light hover:decoration-upbg-light">{{ $user->no_hp }}</a>
+          </div>
+          <div class="flex flex-col gap-1">
+            <p class="font-medium">Email</p>
+            <a href="mailto:{{ $user->email }}" class="w-fit text-wrap text-upbg underline decoration-transparent transition hover:text-upbg-light hover:decoration-upbg-light">{{ $user->email }}</a>
+          </div>
         </div>
-        <div class="flex flex-col gap-1">
-            <p class="font-semibold text-gray-800 text-sm">Nama</p>
-            <p class="text-base text-gray-600 font-medium">{{ $user->nama }}</p>
-        </div>
-        <div class="flex flex-col gap-1">
-            <p class="font-semibold text-gray-800 text-sm">NIK / NIP</p>
-            <p class="text-base text-gray-600 font-medium">{{ $user->nik }}</p>
-        </div>
-        <div class="flex flex-col gap-1">
-            <p class="font-semibold text-gray-800 text-sm">Email</p>
-            <a href="mailto:{{ $user->email }}" class="text-upbg underline decoration-transparent transition hover:decoration-upbg font-medium">{{ $user->email }}</a>
-        </div>
-        <div class="flex flex-col gap-1">
-            <p class="font-semibold text-gray-800 text-sm">No. HP / Whatsapp</p>
-            <a href="{{ 'http://wa.me/62' . substr($user->no_hp, 1) }}" target="_blank" class="text-upbg underline decoration-transparent transition hover:decoration-upbg font-medium">{{ $user->no_hp }}</a>
-        </div>
-        <div class="flex flex-col">
-            <p class="font-semibold text-gray-800 text-sm">Roles</p>
-            <div class="flex flex-col gap-4 mt-3">
-                @foreach ($roleOptions as $role)
-                   <x-inputs.checkbox inputName="role" :value="$role->id" :checked="$user->roles->contains('id', $role->id)" :label="$role->nama" class="checked:bg-upbg checked:border-upbg"/> 
-                @endforeach
+        <hr class="my-5 w-full">
+        <form action="{{ route('user.updateRole', ['id' => $user->id]) }}" class="update-role-form">
+          <p class="mb-3 font-medium">Role</p>
+          <div class="role-container flex flex-col gap-3 sm:flex-row">
+            @foreach ($roleOptions as $role)
+              <x-inputs.checkbox type="blue" inputName="role" class="sm:w-fit" :value="$role->id" :checked="$user->roles->contains('id', $role->id)">
+                {{ $role->nama }}
+              </x-inputs.checkbox>
+            @endforeach
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section id="history-kelas" class="mt-8 flex flex-col bg-white p-6 shadow-sm">
+    <x-inputs.date inputName="tanggal" placeholder="Semua" plugin="month" />
+    <h1 class="mb-2 mt-4 font-semibold">Histori Kelas</h1>
+    <div class="grid grid-cols-1 divide-y border">
+      <div class="grid grid-cols-12 divide-x">
+        <p class="col-span-2 px-2 py-2 text-center font-medium sm:col-span-1">No</p>
+        <p class="col-span-10 px-4 py-2 font-medium sm:col-span-11">Kode Kelas</p>
+      </div>
+      @if ($user->mengajarKelas->isEmpty())
+        <p class="py-4 text-center font-medium">Tidak ada data yang cocok</p>
+      @else
+        @foreach ($user->mengajarKelas as $kelas)
+          <div class="grid grid-cols-12 divide-x">
+            <p class="col-span-2 truncate px-2 py-2 text-center sm:col-span-1">{{ $loop->iteration }}</p>
+            <div class="col-span-10 truncate px-4 py-2 sm:col-span-11">
+              <a href="{{ route('kelas.detail', ['slug' => $kelas->slug]) }}" class="text-upbg underline decoration-transparent transition hover:text-upbg-light hover:decoration-upbg-light">{{ $kelas->kode }}</a>
             </div>
-        </div>
+          </div>
+        @endforeach
+      @endif
     </div>
+  </section>
 
-    @push('script')
-        <script src="{{ asset('js/views/user/detail-user.js') }}"></script>
-    @endpush
+  <section id="history-tes" class="mt-8 flex flex-col bg-white p-6 shadow-sm">
+    <x-inputs.date inputName="tanggal" placeholder="Semua" plugin="month" />
+    <h1 class="mb-2 mt-4 font-semibold">Histori Tes</h1>
+    <div class="grid grid-cols-1 divide-y border">
+      <div class="grid grid-cols-12 divide-x">
+        <p class="col-span-2 px-2 py-2 text-center font-medium sm:col-span-1">No</p>
+        <p class="col-span-10 px-4 py-2 font-medium sm:col-span-11">Kode Tes</p>
+      </div>
+      @if ($user->mengawasiTes->isEmpty())
+        <p class="py-4 text-center font-medium">Tidak ada data yang cocok</p>
+      @else
+        @foreach ($user->mengawasiTes as $tes)
+          <div class="grid grid-cols-12 divide-x">
+            <p class="col-span-2 truncate px-2 py-2 text-center sm:col-span-1">{{ $loop->iteration }}</p>
+            <div class="col-span-10 truncate px-4 py-2 sm:col-span-11">
+              <a href="{{ route('kelas.detail', ['slug' => $tes->slug]) }}" class="text-upbg underline decoration-transparent transition hover:text-upbg-light hover:decoration-upbg-light">{{ $tes->kode }}</a>
+            </div>
+          </div>
+        @endforeach
+      @endif
+    </div>
+  </section>
+
+  @pushOnce('script')
+    <script src="{{ asset('js/views/user/detail-user.js') }}"></script>
+  @endPushOnce
 </x-layouts.user-layout>

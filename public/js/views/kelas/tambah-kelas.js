@@ -21,7 +21,6 @@ tambahKelasForm.addEventListener('submit', async function(e){
     data['hari'] = formData.getAll('hari');
     data['waktu-mulai'] = formData.getAll('waktu-mulai');
     data['waktu-selesai'] = formData.getAll('waktu-selesai');
-    console.log(data);
     
     playFetchingAnimation(submitButton, 'green', 'Validating...');
     const response = await fetchRequest(route, 'POST', data);

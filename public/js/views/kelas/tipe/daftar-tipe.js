@@ -1,186 +1,171 @@
 document.addEventListener('click', (e) => {
-    if(e.target.matches('.edit-tipe')){
-        e.stopPropagation();
-        const row = e.target.closest('tr');
-        const clone = startEditing(row);
-        row.replaceWith(clone);
-        clone.querySelector('[name="nama-tipe"]').focus();
-    }else if(e.target.matches('.delete-tipe')){
-        e.stopPropagation();
-        const row = e.target.closest('tr');
-        showDeleteDialog(row);
-    }
+  if(e.target.closest('#daftar-tipe .menu')){
+      e.stopPropagation();
+      const menu = e.target.closest('#daftar-tipe .menu');
+      const dialog = menu.parentElement.querySelector('.dialog');
+      if(!dialog.classList.contains('open')){
+          openDialog(dialog);
+      }
+  }else if(e.target.closest('#daftar-tipe .edit-tipe')){
+      e.stopPropagation();
+      const tipeItem = e.target.closest('.tipe-item');
+      showEditTipeModal(tipeItem);
+  }else if(e.target.closest('#daftar-tipe .delete-tipe')){
+      e.stopPropagation();
+      const tipeItem = e.target.closest('.tipe-item');
+      showDeleteTipeModal(tipeItem);
+  }
 });
 
-function startEditing(row){
-    const clone = row.cloneNode(true);
-    const namaTipe = clone.querySelector('.nama-tipe');
-    const kodeTipe = clone.querySelector('.kode-tipe');
-    const statusTipe = clone.querySelector('.status-tipe');
-    const editButton = clone.querySelector('.edit-tipe');
-    const deleteButton = clone.querySelector('.delete-tipe');
+function showEditTipeModal(tipeItem){
+  const tipeId = tipeItem.dataset.tipeId;
+  const namaTipe = tipeItem.querySelector('.nama-tipe').textContent;
+  const kodeTipe = tipeItem.querySelector('.kode-tipe').textContent;
+  const statusTipe = tipeItem.querySelector('.status-tipe').textContent;
 
-    const namaTipeInput = document.createElement('input');
-    namaTipeInput.setAttribute('type', 'text');
-    namaTipeInput.setAttribute('value', namaTipe.textContent);
-    namaTipeInput.setAttribute('class', 'px-3 h-10 rounded-md border border-gray-200 text-gray-600 font-medium placeholder:text-gray-400 outline outline-transparent outline-1.5 outline-offset-0 transition-all focus:outline-upbg-light');
-    namaTipeInput.setAttribute('placeholder', 'Nama Tipe');
-    namaTipeInput.setAttribute('name', 'nama-tipe');
-    namaTipe.replaceWith(namaTipeInput);
+  const editTipeModal = document.getElementById('edit-tipe-modal');
+  const modalForm = editTipeModal.querySelector('form');
+  modalForm.querySelector('input[name="tipe-id"]').value = tipeId;
+  modalForm.querySelector('input[name="nama-tipe"]').value = namaTipe;
+  modalForm.querySelector('input[name="kode-tipe"]').value = kodeTipe;
+  const modalStatusTipe = modalForm.querySelector('.status-tipe');
+  modalStatusTipe.querySelector('.checkbox-label').textContent = statusTipe;
+  modalStatusTipe.querySelector('input').checked = (statusTipe === 'Aktif') ? true : false;
 
-    const kodeTipeInput = document.createElement('input');
-    kodeTipeInput.setAttribute('type', 'text');
-    kodeTipeInput.setAttribute('value', (kodeTipe.textContent != '-') ? kodeTipe.textContent : '');
-    kodeTipeInput.setAttribute('class', 'px-3 h-10 rounded-md border border-gray-200 text-gray-600 font-medium placeholder:text-gray-400 outline outline-transparent outline-1.5 outline-offset-0 transition-all focus:outline-upbg-light');
-    kodeTipeInput.setAttribute('placeholder', 'Kode Tipe');
-    kodeTipeInput.setAttribute('name', 'kode-tipe');
-    kodeTipe.replaceWith(kodeTipeInput);
-    
-    const statusTipeCheckbox = createCheckboxWithIcon('status-tipe', true, statusTipe.textContent === 'Aktif');
-    statusTipe.replaceWith(statusTipeCheckbox);
+  const closeCallback = openModal(editTipeModal, removeEventListeners);
 
-    const cancelButton = document.createElement('button');
-    cancelButton.setAttribute('type', 'button');
-    cancelButton.setAttribute('class', 'cancel-button px-3 py-2 text-gray-400 font-semibold');
-    cancelButton.textContent = 'Cancel';
-    deleteButton.replaceWith(cancelButton);
+  async function handleSubmit(e){
+    e.preventDefault();
+    const route = modalForm.getAttribute('action');
+    const submitButton = e.submitter;
+    clearErrors(modalForm);
 
-    function handleCancel(e){
-        e.stopPropagation();
-        stopEditing(clone, row, () => {
-            cancelButton.removeEventListener('click', handleCancel);
-            document.removeEventListener('click', handleClickOutside);
-        });
-    }
-    cancelButton.addEventListener('click', handleCancel);
-
-    function handleClickOutside(e){
-        if(!clone.contains(e.target)){
-            stopEditing(clone, row, () => {
-                cancelButton.removeEventListener('click', handleCancel);
-                document.removeEventListener('click', handleClickOutside);
-            });
-        }
-    }
-    document.addEventListener('click', handleClickOutside);
-
-    const saveButton = document.createElement('button');
-    saveButton.setAttribute('type', 'button');
-    saveButton.setAttribute('class', 'px-3 py-2 text-green-600 font-semibold');
-    saveButton.textContent = 'Save';
-    saveButton.value = row.getAttribute('data-tipe-id');
-    editButton.replaceWith(saveButton);
-
-    function handleSave(e){
-        e.stopPropagation();
-        saveInput(saveButton.value, clone, row, handleClickOutside);
-    }
-    saveButton.addEventListener('click', handleSave);
-
-    return clone;
-}
-
-function stopEditing(clone, row, callback){
-    clone.replaceWith(row);
-    callback();
-}
-
-async function saveInput(id, clone, row, handleClickOutside){
-    clone.querySelectorAll('.error').forEach(error => error.remove());
-    playFetchingAnimation(clone);
-    document.removeEventListener('click', handleClickOutside); // temporarily remove click outside
-
-    const response = await fetchSubmit(id, clone);
-    stopFetchingAnimation(clone);
+    const formData = new FormData(modalForm);
+    const data = Object.fromEntries(formData.entries());
+    playFetchingAnimation(submitButton, 'blue', 'Updating...');
+    const response = await fetchRequest(route, 'PUT', data);
+    stopFetchingAnimation(submitButton);
 
     if(response.ok){
-        const json = await response.json();
-        const newRow = updateRow(row, json);
-        clone.replaceWith(newRow);
-        createToast('success', 'Tipe berhasil diubah');
+      const updatedTipe = await response.json();
+      updateTipe(tipeItem, updatedTipe);
+      closeModal(editTipeModal, closeCallback);
     }else{
-        if(response.status === 422){
-            const errors = await response.json();
-            for(const key in errors){
-                const input = clone.querySelector(`[name="${key}"]`);
-                const errorSpan = createErrorSpan(errors[key][0]);
-                input.parentNode.appendChild(errorSpan);
-            }
-        }else{
-            createToast('error', 'Terjadi kesalahan. Silahkan coba lagi.');
-        }
-        document.addEventListener('click', handleClickOutside); // if error, add back click outside
+      handleError(response, modalForm);
     }
+  }
+  modalForm.addEventListener('submit', handleSubmit);
+
+  function handleStatusChange(e){
+    modalStatusTipe.querySelector('.checkbox-label').textContent = (e.target.checked) ? 'Aktif' : 'Tidak Aktif';
+  }
+  modalStatusTipe.addEventListener('change', handleStatusChange);
+
+  function removeEventListeners(){
+    modalForm.removeEventListener('submit', handleSubmit);
+    modalStatusTipe.removeEventListener('change', handleStatusChange);
+  }
 }
 
-function fetchSubmit(id, clone){
-    const inputNamaTipe = clone.querySelector('[name="nama-tipe"]');
-    const inputKodeTipe = clone.querySelector('[name="kode-tipe"]');
-    const inputStatusTipe = clone.querySelector('[name="status-tipe"]');
-
-    return fetch(`/tipe-kelas/${id}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-            'X-Requested-With': 'XMLHttpRequest',
-        },
-        body: JSON.stringify({
-            "nama-tipe": inputNamaTipe.value,
-            "kode-tipe": inputKodeTipe.value,
-            "status-tipe": inputStatusTipe.checked,
-        }),
-    });
+function updateTipe(tipeItem, updatedTipe){
+  tipeItem.querySelector('.nama-tipe').textContent = updatedTipe.nama;
+  tipeItem.querySelector('.kode-tipe').textContent = updatedTipe.kode;
+  if(updatedTipe.aktif){
+    tipeItem.querySelector('.status-tipe').classList.remove('bg-red-300', 'text-red-800');
+    tipeItem.querySelector('.status-tipe').classList.add('bg-green-300', 'text-green-800');
+    tipeItem.querySelector('.status-tipe').textContent = 'Aktif';
+  }else{
+    tipeItem.querySelector('.status-tipe').classList.remove('bg-green-300', 'text-green-800');
+    tipeItem.querySelector('.status-tipe').classList.add('bg-red-300', 'text-red-800');
+    tipeItem.querySelector('.status-tipe').textContent = 'Tidak Aktif';
+  }
 }
 
-function updateRow(row, json){
-    const namaTipe = row.querySelector('.nama-tipe');
-    const kodeTipe = row.querySelector('.kode-tipe');
-    const statusTipe = row.querySelector('.status-tipe');
+function showDeleteTipeModal(tipeItem){
+  const tipeId = tipeItem.dataset.tipeId;
+  const namaTipe = tipeItem.querySelector('.nama-tipe').textContent;
+  const kodeTipe = tipeItem.querySelector('.kode-tipe').textContent;
 
-    row.setAttribute('data-tipe-id', json.id);
-    namaTipe.textContent = json.nama;
-    kodeTipe.textContent = json.kode ? json.kode : '-';
-    statusTipe.textContent = json.aktif ? 'Aktif' : 'Tidak aktif';
-    if(json.aktif){
-        statusTipe.classList.add('bg-green-300', 'text-green-800');
-        statusTipe.classList.remove('bg-red-300', 'text-red-800');
+  const deleteTipeModal = document.getElementById('delete-tipe-modal');
+  const namaKodeTipe = deleteTipeModal.querySelector('.nama-kode-tipe');
+  const inputTipeId = deleteTipeModal.querySelector('[name="tipe-id"]');
+  const forceDelete = deleteTipeModal.querySelector('[name="force-delete"]');
+
+  namaKodeTipe.textContent = `${namaTipe} - ${kodeTipe}`;
+  inputTipeId.value = tipeId;
+  forceDelete.checked = false;
+
+  openModal(deleteTipeModal, removeEventListeners);
+
+  const modalForm = deleteTipeModal.querySelector('form');
+  async function handleSubmit(e){
+    e.preventDefault();
+    const route = modalForm.getAttribute('action');
+    const submitButton = e.submitter;
+
+    const formData = new FormData(modalForm);
+    const data = Object.fromEntries(formData.entries());
+    playFetchingAnimation(submitButton, 'red', 'Deleting...');
+    const response = await fetchRequest(route, 'DELETE', data);
+    stopFetchingAnimation(submitButton);
+
+    if(response.ok){
+      const json = await response.json();
+      saveToast('success', json.message);
+      window.location.replace(json.redirect);
     }else{
-        statusTipe.classList.add('bg-red-300', 'text-red-800');
-        statusTipe.classList.remove('bg-green-300', 'text-green-800');
+      handleError(response, modalForm);
     }
+  }
+  modalForm.addEventListener('submit', handleSubmit);
 
-    return row;
+  function removeEventListeners(){
+    modalForm.removeEventListener('submit', handleSubmit);
+  }
 }
 
-function playFetchingAnimation(clone){
-    const buttonContainer = clone.querySelector('.button-container');
-    const loading = document.createElement('div');
-    loading.setAttribute('class', 'loading flex flex-row items-center justify-center font-semibold');
-    loading.innerHTML = createLoadingAnimation('Updating...');
-    buttonContainer.parentNode.appendChild(loading);
-    buttonContainer.classList.add('hidden');
-}
+const tambahTipe = document.querySelector('.tambah-tipe');
+tambahTipe.addEventListener('click', (e) => {
+  e.stopPropagation();
+  const tambahTipeModal = document.getElementById('add-tipe-modal');
+  const modalForm = tambahTipeModal.querySelector('form');
+  modalForm.querySelector('input[name="nama-tipe"]').value = '';
+  modalForm.querySelector('input[name="kode-tipe"]').value = '';
+  const modalStatusTipe = modalForm.querySelector('.status-tipe');
+  modalStatusTipe.querySelector('.checkbox-label').textContent = 'Aktif';
+  modalStatusTipe.querySelector('input').checked = true;
 
-function stopFetchingAnimation(clone){
-    const buttonContainer = clone.querySelector('.button-container');
-    const loading = clone.querySelector('.loading');
-    loading.remove();
-    buttonContainer.classList.remove('hidden');
-}
+  openModal(tambahTipeModal, removeEventListeners);
 
-function showDeleteDialog(row){
-    const id = row.getAttribute('data-tipe-id');
-    const namaTipe = row.querySelector('.nama-tipe').textContent;
-    const kodeTipe = (row.querySelector('.kode-tipe').textContent != '-') ? row.querySelector('.kode-tipe').textContent : '';
+  async function handleSubmit(e){
+    e.preventDefault();
+    const route = modalForm.getAttribute('action');
+    const submitButton = e.submitter;
+    clearErrors(modalForm);
 
-    const deleteDialogContent = document.getElementById('delete-dialog-content');
-    const namaKodeTipe = deleteDialogContent.querySelector('.nama-kode-tipe')
-    namaKodeTipe.textContent = `${namaTipe}`;
-    namaKodeTipe.textContent += (kodeTipe) ? ` - ${kodeTipe}` : '';
+    const formData = new FormData(modalForm);
+    const data = Object.fromEntries(formData.entries());
+    playFetchingAnimation(submitButton, 'green', 'Validating...');
+    const response = await fetchRequest(route, 'POST', data);
+    stopFetchingAnimation(submitButton);
 
-    const tipeId = deleteDialogContent.querySelector('[name="tipe-id"]');
-    tipeId.value = id;
+    if(response.ok){
+      const json = await response.json();
+      saveToast('success', json.message);
+      window.location.replace(json.redirect);
+    }else{
+      handleError(response, modalForm);
+    }
+  }
+  modalForm.addEventListener('submit', handleSubmit);
 
-    openDialog();
-}
+  function handleStatusChange(e){
+    modalStatusTipe.querySelector('.checkbox-label').textContent = (e.target.checked) ? 'Aktif' : 'Tidak Aktif';
+  }
+  modalStatusTipe.addEventListener('change', handleStatusChange);
+
+  function removeEventListeners(){
+    modalForm.removeEventListener('submit', handleSubmit);
+    modalStatusTipe.removeEventListener('change', handleStatusChange);
+  }
+});

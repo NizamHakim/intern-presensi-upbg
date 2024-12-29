@@ -3,42 +3,36 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Ruangan extends Model
 {
-    protected $table = "ruangan";
-    protected $fillable = [
-        'kode',
-        'kapasitas',
-    ];
+  use SoftDeletes;
+  protected $table = "ruangan";
+  protected $fillable = [
+      'kode',
+      'kapasitas',
+      'status'
+  ];
 
-    protected function text(): Attribute
-    {
-        return Attribute::make(
-            get: fn(mixed $value, array $attributes) => $attributes['kode']
-        );
-    }
+  public function scopeAktif(Builder $query): void
+  {
+      $query->where('status', 1);
+  }
 
-    protected function value(): Attribute
-    {
-        return Attribute::make(
-            get: fn(mixed $value, array $attributes) => strtolower($attributes['kode'])
-        );
-    }
+  public function kelas()
+  {
+      return $this->hasMany(Kelas::class);
+  }
 
-    public function kelas()
-    {
-        return $this->hasMany(Kelas::class);
-    }
+  public function pertemuan()
+  {
+      return $this->hasMany(PertemuanKelas::class);
+  }
 
-    public function pertemuan()
-    {
-        return $this->hasMany(PertemuanKelas::class);
-    }
-
-    public function tes()
-    {
-        return $this->hasMany(Tes::class);
-    }
+  public function tes()
+  {
+      return $this->hasMany(Tes::class);
+  }
 }

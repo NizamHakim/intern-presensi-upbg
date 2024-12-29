@@ -1,7 +1,7 @@
 <div data-default-text="{{ $text }}" data-default-value="{{ $value }}" @if ($placeholder) data-placeholder="{{ $placeholder }}" @endif {{ $attributes->merge(['class' => 'w-full relative input-dropdown ' . ($value == '' ? 'is-null' : '')]) }}>
 
   <button type="button" class="dropdown-button input-appearance input-outline relative flex w-full min-w-0 items-center justify-start rounded-sm-md focus:outline-transparent">
-    <span class="dropdown-text truncate text-gray-600">{{ $text }}</span>
+    <span class="dropdown-text truncate pr-4 text-gray-600">{{ $text }}</span>
     <i class="fa-solid fa-chevron-down dropdown-icon absolute right-3 top-1/2 -translate-y-1/2 transform text-xs text-gray-600 transition"></i>
   </button>
 
