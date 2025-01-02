@@ -33,6 +33,11 @@ class Ruangan extends Model
 
   public function tes()
   {
-      return $this->hasMany(Tes::class);
+      return $this->belongsToMany(Tes::class, 'ruangan_test')->withTimestamps();
+  }
+
+  public function pesertaTes()
+  {
+      return $this->hasMany(PesertaTes::class);
   }
 }

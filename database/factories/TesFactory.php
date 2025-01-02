@@ -15,7 +15,6 @@ class TesFactory extends Factory
     public function definition(): array
     {
         $tipe = TipeTes::inRandomOrder()->first();
-        $ruangan = Ruangan::inRandomOrder()->first();
         $nomor = strval(fake()->numberBetween(1, 99));
         $tanggal = now()->addDays(fake()->numberBetween(0, 1));
         $waktuMulai = fake()->time('H:i:s', 'now');
@@ -28,7 +27,6 @@ class TesFactory extends Factory
             'kode' => $kode,
             'slug' => $slug,
             'tipe_id' => $tipe->id,
-            'ruangan_id' => $ruangan->id,
             'nomor' => $nomor,
             'tanggal' => $tanggal,
             'waktu_mulai' => $waktuMulai,

@@ -45,9 +45,15 @@
     <div class="flex h-14 max-w-7xl flex-1 items-center justify-between px-6 py-1">
       <img src="{{ asset('images/logoGLC.png') }}" alt="Logo UPBG" class="h-12 w-auto">
       <div class="flex items-center gap-2">
-        <a href="#" class="font-semibold tracking-wider text-upbg transition hover:text-upbg-light">Jadwal</a>
+        @php
+          $active = request()->routeIs('jadwal.index') ? 'font-semibold' : 'font-normal';
+        @endphp
+        <a href="{{ route('jadwal.index') }}" class="{{ $active }} tracking-wider text-upbg transition hover:text-upbg-light">Jadwal</a>
         <span class="select-none text-xl text-upbg">|</span>
-        <a href="{{ route('auth.loginPage') }}" class="font-semibold tracking-wider text-upbg transition hover:text-upbg-light">Login</a>
+        @php
+          $active = request()->routeIs('auth.loginPage') ? 'font-semibold' : 'font-normal';
+        @endphp
+        <a href="{{ route('auth.loginPage') }}" class="{{ $active }} tracking-wider text-upbg transition hover:text-upbg-light">Login</a>
       </div>
     </div>
   @endauth

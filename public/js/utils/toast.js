@@ -38,7 +38,7 @@ function createToast(type, message){
 
     switch (type) {
         case 'success':
-            newToast.classList.add('success');
+            newToast.classList.add('toast-success');
             newToast.innerHTML = `
                 <i class="fa-solid fa-circle-check text-green-600 text-3xl mx-1"></i>
                 <div class="flex flex-col flex-1">
@@ -53,7 +53,7 @@ function createToast(type, message){
             `;
             break;
         case 'error':
-            newToast.classList.add('error');
+            newToast.classList.add('toast-error');
             newToast.innerHTML = `
                 <i class="fa-solid fa-circle-xmark text-red-600 text-3xl mx-1"></i>
                 <div class="flex flex-col flex-1">

@@ -21,6 +21,6 @@ class KodeTesFormer extends Component
 
     public function render(): View|Closure|string
     {
-        return view('components.tes.kode-tes-former');
+        return view('tes.partials.kode-tes-former');
     }
 }

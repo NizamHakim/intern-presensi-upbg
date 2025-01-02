@@ -91,7 +91,13 @@ export default {
             },
             gridTemplateColumns:{
               16: "repeat(16, minmax(0, 1fr))",
-            }
+            },
+            gridTemplateRows:{
+              35: "repeat(35, minmax(30px, 1fr))",
+            },
+            gridRow: {
+              "span-35": "span 35 / span 35",
+            },
         },
     },
     plugins: [],

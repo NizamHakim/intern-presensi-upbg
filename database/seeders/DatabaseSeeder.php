@@ -8,6 +8,7 @@ use App\Models\Role;
 use App\Models\User;
 use App\Models\Kelas;
 use App\Models\Peserta;
+use App\Models\Ruangan;
 use App\Models\JadwalKelas;
 use Illuminate\Database\Seeder;
 use Database\Seeders\TipeKelasSeeder;
@@ -63,16 +64,20 @@ class DatabaseSeeder extends Seeder
 
         $tesList = Tes::factory()->count(20)->create();
 
-        $peserta->each(function($peserta) use ($tesList){
-            $peserta->tes()->attach($tesList->random(5));
-        });
-
         $stafPengawas = User::whereHas('roles', function($query){
             return $query->where('role_id', 5);
         })->get();
 
-        $stafPengawas->each(function($stafPengawas) use ($tesList){
-            $stafPengawas->mengawasiTes()->attach($tesList->random(5));
-        });
+        $ruangan = Ruangan::where('id', '!=', 1)->get();
+
+        foreach($tesList as $tes){
+            $n = rand(1, 3);
+            $tes->ruangan()->attach($ruangan->random($n));
+            $m = rand(1, 3);
+            $tes->pengawas()->attach($stafPengawas->random($m));
+            for($i = 0; $i < $n; $i++){
+              $tes->peserta()->attach($peserta->random(10), ['ruangan_id' => $tes->ruangan->random()->id]);
+            }
+        }
     }
 }

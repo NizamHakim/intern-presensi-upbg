@@ -105,7 +105,7 @@
           <div class="grid grid-cols-12 divide-x">
             <p class="col-span-2 truncate px-2 py-2 text-center sm:col-span-1">{{ $loop->iteration }}</p>
             <div class="col-span-10 truncate px-4 py-2 sm:col-span-11">
-              <a href="{{ route('kelas.detail', ['slug' => $tes->slug]) }}" class="text-upbg underline decoration-transparent transition hover:text-upbg-light hover:decoration-upbg-light">{{ $tes->kode }}</a>
+              <a href="{{ route('tes.detail', ['slug' => $tes->slug]) }}" class="text-upbg underline decoration-transparent transition hover:text-upbg-light hover:decoration-upbg-light">{{ $tes->kode }}</a>
             </div>
           </div>
         @endforeach

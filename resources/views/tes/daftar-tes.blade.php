@@ -7,106 +7,86 @@
     @endif
   </div>
 
-  {{-- <section id="filter-kelas" class="mb-4">
-        <form action="{{ route('kelas.index') }}" method="GET" class="filter-form flex flex-col gap-2">
-            <div class="flex flex-row gap-2">
-                <button type="button" class="open-filter hidden px-4 py-2 bg-white rounded-sm-md shadow-sm font-medium transition text-xs sm:flow-root md:text-sm">Filter<i class="fa-solid fa-chevron-down transition-transform text-xs ml-2"></i></button>
-                <input type="search" name="kode" value="{{ $selected['kode'] }}" placeholder="Cari kode kelas" class="flex-1 shadow-sm px-2 py-2 rounded-sm-md outline outline-transparent outline-1.5 outline-offset-0 transition-all focus:outline-upbg-light">
-                <button type="submit" class="filter-close-submit button-style button-upbg-solid shadow-sm"><i class="fa-solid fa-magnifying-glass mr-2"></i>Search</button>
+  <section id="filter-tes" class="mb-4">
+    <form action="{{ route('tes.index') }}" method="GET" class="filter-form flex flex-col gap-2">
+      <div class="grid grid-cols-[1fr_fit-content(150px)] sm:grid-cols-[fit-content(150px)_1fr_fit-content(150px)]">
+        <button type="button" class="open-filter btn col-span-full row-span-1 row-start-2 mt-2 border-none bg-white text-sm sm:col-auto sm:row-auto sm:mr-2 sm:mt-0 sm:flow-root">Filter<i class="fa-solid fa-chevron-down ml-2 text-xs transition-transform before:hidden sm:before:inline"></i><i class="fa-solid fa-chevron-right ml-2 text-xs sm:before:hidden"></i></button>
+        <input type="search" name="kode" value="{{ $selected['kode'] }}" placeholder="Cari kode tes" class="input-outline flex-1 rounded-sm-md px-2 py-2 shadow-sm">
+        <button type="submit" class="submit-out-filter btn btn-upbg-solid ml-2 text-xs sm:text-sm"><i class="fa-solid fa-magnifying-glass mr-2"></i>Search</button>
+      </div>
+
+      <div class="filter-container fixed inset-0 z-[100] flex -translate-x-full flex-col overflow-y-scroll bg-white px-4 pb-28 pt-4 transition-all sm:static sm:z-0 sm:max-h-0 sm:translate-x-0 sm:overflow-hidden sm:py-0">
+        <div class="mb-8 flex flex-row items-center justify-between text-xl font-semibold text-gray-700 sm:hidden">
+          <p>Filter Tes</p>
+          <button type="button" class="close-filter btn-rounded btn-white border-none text-xl"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <div class="grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:gap-x-4 lg:grid-cols-3 xl:grid-cols-4">
+          <div class="input-group">
+            <p class="input-label">Tipe Tes</p>
+            <x-inputs.dropdown.select name="tipe" placeholder="Semua" class="tipe-dropdown filter-field" :selected="$selected['tipe'] ? ['text' => $selected['tipe']->nama . ' (' . $selected['tipe']->kode . ')', 'value' => $selected['tipe']->id] : null">
+              @foreach ($tipeOptions as $tipe)
+                <x-inputs.dropdown.option :value="$tipe->id" class="{{ $selected['tipe'] && $selected['tipe']->id == $tipe->id ? 'selected' : '' }}">{{ "$tipe->nama ($tipe->kode)" }}</x-inputs.dropdown.option>
+              @endforeach
+            </x-inputs.dropdown.select>
+          </div>
+          <div class="input-group">
+            <p class="input-label">Nomor Tes</p>
+            <input type="number" name="nomor" value="{{ $selected['nomor'] }}" class="input-appearance input-outline filter-field" placeholder="Semua">
+          </div>
+          <div class="input-group">
+            <p class="input-label">Tanggal Tes</p>
+            <x-inputs.date inputName="tanggal" class="filter-field" value="{{ $selected['tanggal'] }}" placeholder="Semua" plugin="month" />
+          </div>
+          <div class="input-group">
+            <p class="input-label">Ruangan</p>
+            <x-inputs.dropdown.select name="ruangan" placeholder="Semua" class="ruangan-dropdown filter-field" :selected="$selected['ruangan'] ? ['text' => $selected['ruangan']->kode . ' (' . $selected['ruangan']->kapasitas . ')', 'value' => $selected['ruangan']->id] : null">
+              @foreach ($ruanganOptions as $ruangan)
+                <x-inputs.dropdown.option :value="$ruangan->id" class="{{ $selected['ruangan'] && $selected['ruangan']->id == $ruangan->id ? 'selected' : '' }}">{{ $ruangan->kode . ' (' . $ruangan->kapasitas . ')' }}</x-inputs.dropdown.option>
+              @endforeach
+            </x-inputs.dropdown.select>
+          </div>
+          <div class="input-group">
+            <p class="input-label">Status</p>
+            <x-inputs.dropdown.select name="status" placeholder="Semua" class="status-dropdown filter-field" :selected="$selected['status'] ? ['text' => $selected['status']['text'], 'value' => $selected['status']['value']] : null">
+              @foreach ($statusOptions as $status)
+                <x-inputs.dropdown.option value="{{ $status['value'] }}" class="{{ $selected['status'] && $selected['status']['value'] == $status['value'] ? 'selected' : '' }}">{{ $status['text'] }}</x-inputs.dropdown.option>
+              @endforeach
+            </x-inputs.dropdown.select>
+          </div>
+          <div class="input-group">
+            <p class="input-label">Sort By</p>
+            <x-inputs.dropdown.select name="order" placeholder="None" class="sort-dropdown filter-field" :selected="$selected['order'] ? ['text' => $selected['order']['text'], 'value' => $selected['order']['value']] : null">
+              @foreach ($sortbyOptions as $sortby)
+                <x-inputs.dropdown.option value="{{ $sortby['value'] }}" class="{{ $selected['order'] && $selected['order']['value'] == $sortby['value'] ? 'selected' : '' }}">{{ $sortby['text'] }}</x-inputs.dropdown.option>
+              @endforeach
+            </x-inputs.dropdown.select>
+          </div>
+          @if (auth()->user()->current_role_id == 4)
+            <div class="input-group xl:col-span-2">
+              <p class="input-label">Pengawas</p>
+              <x-inputs.dropdown.select name="pengawas" placeholder="Semua" class="pengawas-dropdown filter-field" :selected="$selected['pengawas'] ? ['text' => $selected['pengawas']->nama . ' (' . $selected['pengawas']->nik . ' )', 'value' => $selected['pengawas']->id] : null">
+                @foreach ($pengawasOptions as $pengawas)
+                  <x-inputs.dropdown.option :value="$pengawas->id" class="{{ $selected['pengawas'] && $selected['pengawas']->id == $pengawas->id ? 'selected' : '' }}">{{ "$pengawas->nama ($pengawas->nik)" }}</x-inputs.dropdown.option>
+                @endforeach
+              </x-inputs.dropdown.select>
             </div>
-            <button type="button" class="open-filter-mobile shadow-sm bg-white px-4 py-2 rounded-sm-md font-medium transition text-xs sm:hidden">Filter<i class="fa-solid fa-chevron-right text-xs ml-1"></i></button>
-            
-            <div class="filter-container fixed inset-0 bg-white flex flex-col px-4 pt-4 pb-28 overflow-y-scroll z-[100] -translate-x-full transition-all sm:static sm:translate-x-0 sm:overflow-hidden sm:py-0 sm:z-0 sm:max-h-0">
-                <div class="flex flex-row justify-between items-center text-xl font-semibold text-gray-700 mb-8 sm:hidden">
-                    <p>Filter Kelas</p>
-                    <button type="button" class="close-filter rounded-full bg-white size-9 transition hover:bg-gray-200"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-                <div class="grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:gap-x-4 lg:grid-cols-3 xl:grid-cols-4">
-                    <div class="input-group">
-                        <p class="text-gray-600 font-medium mb-1">Program Kelas</p>
-                        <x-inputs.dropdown.select name="program" placeholder="Semua" class="program-dropdown filter-field" :selected="($selected['program']) ? ['text' => $selected['program']->nama . ' (' . $selected['program']->kode . ')', 'value' => $selected['program']->id] : null">
-                            @foreach ($programOptions as $program)
-                                <x-inputs.dropdown.option :value="$program->id" class="{{ ($selected['program'] && $selected['program']->id == $program->id) ? 'selected' : '' }}">{{ "$program->nama ($program->kode)" }}</x-inputs.dropdown.option>
-                            @endforeach
-                        </x-inputs.dropdown.select>
-                    </div>
-                    <div class="input-group">
-                        <p class="text-gray-600 font-medium mb-1">Tipe Kelas</p>
-                        <x-inputs.dropdown.select name="tipe" placeholder="Semua" class="tipe-dropdown filter-field" :selected="($selected['tipe']) ? ['text' => $selected['tipe']->nama . ' (' . $selected['tipe']->kode . ')', 'value' => $selected['tipe']->id] : null">
-                            @foreach ($tipeOptions as $tipe)
-                                <x-inputs.dropdown.option :value="$tipe->id" class="{{ ($selected['tipe'] && $selected['tipe']->id == $tipe->id) ? 'selected' : '' }}">{{ "$tipe->nama ($tipe->kode)" }}</x-inputs.dropdown.option>
-                            @endforeach
-                        </x-inputs.dropdown.select>
-                    </div>
-                    <div class="input-group">
-                        <p class="text-gray-600 font-medium mb-1">Nomor Kelas</p>
-                        <input type="number" name="nomor" value="{{ $selected['nomor'] }}" class="input-style input-number filter-field" placeholder="Semua">
-                    </div>
-                    <div class="input-group">
-                        <p class="text-gray-600 font-medium mb-1">Level Kelas</p>
-                        <x-inputs.dropdown.select name="level" placeholder="Semua" class="level-dropdown filter-field" :selected="($selected['level']) ? ['text' => $selected['level']->nama . ' (' . $selected['level']->kode . ')', 'value' => $selected['level']->id] : null">
-                            @foreach ($levelOptions as $level)
-                                <x-inputs.dropdown.option :value="$level->id" class="{{ ($selected['level'] && $selected['level']->id == $level->id) ? 'selected' : '' }}">{{ "$level->nama ($level->kode)" }}</x-inputs.dropdown.option>
-                            @endforeach
-                        </x-inputs.dropdown.select>
-                    </div>
-                    <div class="input-group">
-                        <p class="text-gray-600 font-medium mb-1">Banyak Pertemuan</p>
-                        <input type="number" name="banyak-pertemuan" value="{{ $selected['banyak-pertemuan'] }}" class="input-style input-number filter-field" placeholder="Semua">
-                    </div>
-                    <div class="input-group">
-                        <p class="text-gray-600 font-medium mb-1">Tanggal Mulai</p>
-                        <x-inputs.date inputName="tanggal-mulai" class="filter-field" value="{{ $selected['tanggal-mulai'] }}" placeholder="Semua" plugin="month"/>
-                    </div>
-                    <div class="input-group">
-                        <p class="text-gray-600 font-medium mb-1">Ruangan</p>
-                        <x-inputs.dropdown.select name="ruangan" placeholder="Semua" class="ruangan-dropdown filter-field" :selected="($selected['ruangan']) ? ['text' => $selected['ruangan']->kode, 'value' => $selected['ruangan']->id] : null">
-                            @foreach ($ruanganOptions as $ruangan)
-                                <x-inputs.dropdown.option :value="$ruangan->id" class="{{ ($selected['ruangan'] && $selected['ruangan']->id == $ruangan->id) ? 'selected' : '' }}">{{ $ruangan->kode }}</x-inputs.dropdown.option>
-                            @endforeach
-                        </x-inputs.dropdown.select>
-                    </div>
-                    <div class="input-group">
-                        <p class="text-gray-600 font-medium mb-1">Status</p>
-                        <x-inputs.dropdown.select name="status" placeholder="Semua" class="status-dropdown filter-field" :selected="($selected['status']) ? ['text' => $selected['status']['text'], 'value' => $selected['status']['value']] : null">
-                            @foreach ($statusOptions as $status)
-                                <x-inputs.dropdown.option value="{{ $status['value'] }}" class="{{ ($selected['status'] && $selected['status']['value'] == $status['value']) ? 'selected' : '' }}">{{ $status['text'] }}</x-inputs.dropdown.option>
-                            @endforeach
-                        </x-inputs.dropdown.select>
-                    </div>
-                    <div class="input-group @if (auth()->user()->current_role_id == 3) sm:col-span-2 lg:col-span-1 xl:col-span-2 @endif">
-                        <p class="text-gray-600 font-medium mb-1">Sort By</p>
-                        <x-inputs.dropdown.select name="order" placeholder="None" class="sort-dropdown filter-field" :selected="($selected['sortby']) ? ['text' => $selected['sortby']['text'], 'value' => $selected['sortby']['value']] : null">
-                            @foreach ($sortbyOptions as $sortby)
-                                <x-inputs.dropdown.option value="{{ $sortby['value'] }}" class="{{ ($selected['sortby'] && $selected['sortby']['value'] == $sortby['value']) ? 'selected' : '' }}">{{ $sortby['text'] }}</x-inputs.dropdown.option>
-                            @endforeach
-                        </x-inputs.dropdown.select>
-                    </div>
-                    @if (auth()->user()->current_role_id == 2)
-                        <div class="input-group">
-                            <p class="text-gray-600 font-medium mb-1">Pengajar</p>
-                            <x-inputs.dropdown.select name="pengajar" placeholder="Semua" class="pengajar-dropdown filter-field" :selected="($selected['pengajar']) ? ['text' => $selected['pengajar']->nama . ' (' . $selected['pengajar']->nik . ' )', 'value' => $selected['pengajar']->id] : null">
-                                @foreach ($pengajarOptions as $pengajar)
-                                    <x-inputs.dropdown.option :value="$pengajar->id" class="{{ ($selected['pengajar'] && $selected['pengajar']->id == $pengajar->id) ? 'selected' : '' }}">{{ "$pengajar->nama ($pengajar->nik)" }}</x-inputs.dropdown.option>
-                                @endforeach
-                            </x-inputs.dropdown.select>
-                        </div>
-                    @endif
-                    <hr class="sm:hidden">
-                    <div class="input-group sm:hidden">
-                        <p class="text-gray-600 font-medium mb-1">Kode Kelas</p>
-                        <input type="search" name="kode" value="{{ $selected['kode'] }}" placeholder="Cari kode kelas" class="input-style w-full">
-                    </div>
-                    <button type="submit" class="px-4 py-2 self-end border rounded-sm-md transition bg-upbg border-upbg text-white hover:bg-upbg-dark sm:row-start-6 sm:row-span-1 sm:col-start-2 sm:col-span-1 lg:row-start-4 lg:row-span-1 lg:col-start-3 lg:col-span-1 xl:row-start-3 xl:row-span-1 xl:col-start-4 xl:col-span-1"><i class="fa-solid fa-magnifying-glass mr-2"></i>Search</button>
-                    <button type="button" class="reset-filter self-end font-medium px-4 py-2 border rounded-sm-md border-red-600 text-red-600 bg-white transition hover:bg-red-600 hover:text-white sm:row-start-6 sm:row-span-1 sm:col-start-1 sm:col-span-1 lg:row-start-4 lg:row-span-1 lg:col-start-2 lg:col-span-1 xl:row-start-3 xl:row-span-1 xl:col-start-3 xl:col-span-1">Reset Filter</button>
-                </div>
-            </div>
-        </form>
-    </section> --}}
+          @endif
+          <hr class="sm:hidden">
+          <div class="input-group sm:hidden">
+            <p class="input-label">Kode Tes</p>
+            <input type="search" name="kode" value="{{ $selected['kode'] }}" placeholder="Cari kode tes" class="input-appearance input-outline w-full">
+          </div>
+          <button type="submit" class="btn btn-upbg-solid self-end text-sm sm:col-span-full sm:col-start-1 sm:row-span-1 sm:row-start-5 lg:col-span-1 lg:col-start-3 lg:row-span-1 lg:row-start-3 xl:col-span-1 xl:col-start-4 xl:row-span-1 xl:row-start-3"><i class="fa-solid fa-magnifying-glass mr-2"></i>Search</button>
+          <button type="button" class="reset-filter btn btn-red-outline self-end text-sm sm:col-span-1 sm:col-start-2 sm:row-span-1 sm:row-start-4 lg:col-span-1 lg:col-start-2 lg:row-span-1 lg:row-start-3 xl:col-span-1 xl:col-start-3 xl:row-span-1 xl:row-start-3">Reset Filter</button>
+        </div>
+      </div>
+    </form>
+  </section>
 
   <section id="daftar-tes" class="flex flex-col lg:divide-y">
     <div class="hidden bg-white p-4 lg:grid lg:grid-cols-3 lg:gap-x-4">
-      <p class="col-span-1 font-semibold tracking-wide text-gray-600">Kode Kelas</p>
+      <p class="col-span-1 font-semibold tracking-wide text-gray-600">Kode Tes</p>
       <p class="col-span-1 font-semibold tracking-wide text-gray-600">Jadwal</p>
       <p class="col-span-1 font-semibold tracking-wide text-gray-600">Ruangan</p>
     </div>
@@ -122,18 +102,18 @@
               <p><i class="fa-regular fa-clock mr-2"></i>{{ $tes->waktu_mulai->isoFormat('HH:mm') }} - {{ $tes->waktu_selesai->isoFormat('HH:mm') }}</p>
             </div>
           </div>
-          <div class="flex flex-col justify-center lg:col-span-1">
-            <p class="text-gray-700"><i class="fa-regular fa-building mr-2"></i>{{ $tes->ruangan->kode }}</p>
+          <div class="flex flex-col justify-center gap-1 lg:col-span-1">
+            @foreach ($tes->ruangan as $ruangan)
+              <p class="text-gray-700"><i class="fa-regular fa-building mr-2"></i>{{ $ruangan->kode }}</p>
+            @endforeach
           </div>
         </div>
       @endforeach
     </div>
   </section>
-
-  <section>
-    {{-- {{ $kelasList->onEachSide(2)->links() }} --}}
-  </section>
+  {{ $tesList->onEachSide(2)->links() }}
 
   @pushOnce('script')
+    <script src="{{ asset('js/views/tes/daftar-tes.js') }}"></script>
   @endPushOnce
 </x-layouts.user-layout>

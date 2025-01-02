@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\KelasController;
 use App\Http\Controllers\LevelKelasController;
 use App\Http\Controllers\PertemuanKelasController;
@@ -11,6 +12,7 @@ use App\Http\Controllers\RuanganController;
 use App\Http\Controllers\TesController;
 use App\Http\Controllers\TipeKelasController;
 use App\Http\Controllers\UserController;
+use App\Http\Middleware\AjaxSessionHandler;
 use App\Http\Middleware\Authenticated;
 use App\Http\Middleware\Guest;
 use App\Models\ProgramKelas;
@@ -43,9 +45,10 @@ Route::get('/', function () {
 Route::middleware(Guest::class)->group(function(){
     Route::get('/login', [AuthController::class, 'loginPage'])->name('auth.loginPage');
     Route::post('/login', [AuthController::class, 'handleLoginRequest'])->name('auth.handleLoginRequest');
+    Route::get('/jadwal', [JadwalController::class, 'index'])->name('jadwal.index');
 });
 
-Route::middleware(Authenticated::class)->group(function(){
+Route::middleware([AjaxSessionHandler::class, Authenticated::class])->group(function(){
     Route::patch('/switch-role', [AuthController::class, 'switchRole'])->name('auth.switchRole');
     Route::post('/logout', [AuthController::class, 'handleLogoutRequest'])->name('auth.handleLogoutRequest');
 
@@ -83,7 +86,12 @@ Route::middleware(Authenticated::class)->group(function(){
     Route::get('/tes/{slug}/edit', [TesController::class, 'edit'])->name('tes.edit');
     Route::put('/tes/{slug}', [TesController::class, 'update'])->name('tes.update');
     Route::delete('/tes/{slug}', [TesController::class, 'destroy'])->name('tes.destroy');
-    Route::get('/tes/{slug}/kelola-peserta', [TesController::class, 'kelolaPeserta'])->name('tes.kelolaPeserta');
+    Route::get('/tes/{slug}/daftar-peserta', [TesController::class, 'daftarPeserta'])->name('tes.daftarPeserta');
+    Route::get('/tes/{slug}/daftar-peserta/tambah', [TesController::class, 'tambahPeserta'])->name('tes.tambahPeserta');
+    Route::patch('/tes/{slug}/daftar-peserta/update-ruangan', [TesController::class, 'updateRuangan'])->name('tes.updateRuangan');
+
+    Route::patch('/tes/{slug}/presensi/{pesertaId}', [TesController::class, 'updatePresensi'])->name('tes.updatePresensi');
+    Route::delete('/tes/{slug}/presensi-delete', [TesController::class, 'destroyPresensi'])->name('tes.destroyPresensi');
 
     Route::get('/user', [UserController::class, 'index'])->name('user.index');
     Route::get('/user/create', [UserController::class, 'create'])->name('user.create');

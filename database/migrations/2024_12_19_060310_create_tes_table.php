@@ -13,7 +13,6 @@ return new class extends Migration
             $table->string('kode');
             $table->string('slug');
             $table->foreignId('tipe_id')->constrained('tipe_tes')->cascadeOnDelete();
-            $table->foreignId('ruangan_id')->constrained('ruangan')->cascadeOnDelete();
             $table->string('nomor');
             $table->date('tanggal');
             $table->time('waktu_mulai');

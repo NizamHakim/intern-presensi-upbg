@@ -126,7 +126,7 @@
       <section id="notice-presensi" class="mt-6 flex flex-col items-center gap-4 bg-white p-6 shadow-sm">
         @if (now()->isBefore($pertemuan->waktu_selesai))
           <p class="text-center text-gray-600">Mulai pertemuan untuk membuat daftar kehadiran</p>
-          <button @if (now()->isBefore($pertemuan->waktuMulai)) disabled @endif type="button" class="mulai-pertemuan button-style button-upbg-solid disabled:opacity-70 disabled:hover:bg-upbg">Mulai Pertemuan</button>
+          <button @if (now()->isBefore($pertemuan->waktuMulai)) disabled @endif type="button" class="mulai-pertemuan btn btn-upbg-solid disabled:opacity-70 disabled:hover:bg-upbg">Mulai Pertemuan</button>
           @if (now()->isBefore($pertemuan->waktuMulai))
             <p class="countdown-label text-center text-gray-600">Pertemuan dapat dimulai dalam,<br><span data-waktu-mulai="{{ $pertemuan->waktu_mulai }}" class="countdown font-semibold text-upbg">0d 0h 0m 0s</span></p>
           @endif

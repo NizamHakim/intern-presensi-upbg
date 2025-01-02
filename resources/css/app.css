@@ -142,7 +142,7 @@
     }
 
     .toast{
-      @apply fixed transition transform border-l-4 translate-y-2 duration-300 opacity-0 flex-row gap-4 items-center p-4 rounded-md bg-white shadow-lg z-10 after:absolute after:h-1 after:bottom-0 after:left-0 left-4 right-4 bottom-10 sm:left-auto sm:max-w-md;
+      @apply fixed transition transform border-l-4 translate-y-2 duration-300 opacity-0 flex-row gap-4 items-center p-4 rounded-md bg-white shadow-lg z-10 after:absolute after:h-1 after:bottom-0 after:left-0 left-4 right-4 bottom-10 sm:left-auto sm:min-w-96 sm:max-w-md;
     }
 
     .toast.toast-success{

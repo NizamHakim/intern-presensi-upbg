@@ -26,7 +26,7 @@ class KelasController extends Controller
         $programOptions = ProgramKelas::aktif()->get();
         $tipeOptions = TipeKelas::aktif()->get();
         $levelOptions = LevelKelas::aktif()->get();
-        $ruanganOptions = Ruangan::all();
+        $ruanganOptions = Ruangan::aktif()->get();
         $pengajarOptions = User::pengajar()->get();
 
         // query in Kelas.php model
