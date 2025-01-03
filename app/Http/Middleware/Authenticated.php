@@ -9,16 +9,18 @@ use Symfony\Component\HttpFoundation\Response;
 
 class Authenticated
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
     public function handle(Request $request, Closure $next): Response
     {
         if (!Auth::check()) {
-            return redirect()->route('auth.loginPage');
+          if ($request->ajax()) {
+            return response([
+              'error' => 'Sesi telah berakhir, silahkan login kembali',
+              'redirect' => route('auth.loginPage')
+            ], 419);
+          }
+          return redirect()->route('auth.loginPage');
         }
+
         return $next($request);
     }
 }

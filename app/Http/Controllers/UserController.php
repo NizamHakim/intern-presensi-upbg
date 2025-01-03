@@ -169,9 +169,23 @@ class UserController extends Controller
         if ($validator->fails()) {
             return response($validator->errors(), 422);
         }
+        
+        if(Auth::user()->current_role_id == 1){
+          $user->roles()->sync($request['role']);
+        }else if(Auth::user()->current_role_id == 2){
+          in_array(2, $request['role']) ? $user->roles()->syncWithoutDetaching(2) : $user->roles()->detach(2);
+          in_array(3, $request['role']) ? $user->roles()->syncWithoutDetaching(3) : $user->roles()->detach(3);
+        }else if(Auth::user()->current_role_id == 4){
+          in_array(4, $request['role']) ? $user->roles()->syncWithoutDetaching(4) : $user->roles()->detach(4);
+          in_array(5, $request['role']) ? $user->roles()->syncWithoutDetaching(5) : $user->roles()->detach(5);
+        }else if(Auth::user()->current_role_id == 6){
+          in_array(6, $request['role']) ? $user->roles()->syncWithoutDetaching(6) : $user->roles()->detach(6);
+        }
 
-        $user->roles()->sync($request['role']);
-
+        if(!$user->roles->contains($user->current_role_id)){
+          $user->update(['current_role_id' => null]);
+        }
+        
         return response([
           'message' => 'Role user ' . $user->nama . ' berhasil diupdate',
           'roles' => $user->roles->pluck('id'),

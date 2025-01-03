@@ -152,6 +152,10 @@
     .toast.toast-error{
       @apply after:bg-red-600 border-red-600;
     }
+
+    .empty-query{
+      @apply text-gray-400 text-center font-medium;
+    }
 }
 
 @tailwind utilities;

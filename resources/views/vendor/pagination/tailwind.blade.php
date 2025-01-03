@@ -1,3 +1,4 @@
+<p class="pt-4 text-center text-sm text-gray-600 sm:text-left">Menampilkan <span class="font-semibold">{{ $paginator->count() }}</span> dari <span class="font-semibold">{{ $paginator->total() }}</span> hasil pencarian</p>
 @if ($paginator->hasPages())
   <nav role="navigation" aria-label="{{ __('Pagination Navigation') }}" class="mt-6 flex items-center justify-between">
     <div class="flex flex-1 items-center justify-center gap-2">

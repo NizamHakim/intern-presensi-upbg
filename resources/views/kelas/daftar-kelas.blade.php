@@ -112,33 +112,39 @@
       <p class="col-span-1 font-semibold xl:col-span-2">Progress</p>
     </div>
     <div class="kelas-container flex flex-col gap-3 lg:gap-0 lg:divide-y">
-      @foreach ($kelasList as $kelas)
+      @if ($kelasList->isEmpty())
         <div class="kelas-item grid grid-cols-1 gap-y-3 rounded-sm-md bg-white p-4 shadow-sm lg:grid-cols-6 lg:gap-x-4 lg:gap-y-0 lg:rounded-none lg:shadow-none xl:grid-cols-7">
-          <div class="flex flex-row items-center lg:col-span-2">
-            <a href="{{ route('kelas.detail', ['slug' => $kelas->slug]) }}" class="truncate font-semibold text-upbg underline decoration-transparent transition hover:decoration-upbg">{{ $kelas->kode }}</a>
-          </div>
-          <div class="flex flex-col justify-center lg:col-span-2">
-            <div class="flex flex-col gap-2 text-gray-700">
-              @foreach ($kelas->jadwal as $jadwal)
-                <p><i class="fa-solid fa-calendar-days mr-2"></i><span class="mr-2">{{ $jadwal->namaHari }}</span><i class="fa-regular fa-clock mr-2"></i><span>{{ $jadwal->waktu_mulai->format('H:i') }} - {{ $jadwal->waktu_selesai->format('H:i') }}</span></p>
-              @endforeach
-            </div>
-          </div>
-          <div class="flex flex-col justify-center lg:col-span-1">
-            <p class="text-gray-700"><i class="fa-regular fa-building mr-2"></i>{{ $kelas->ruangan->kode }}</p>
-          </div>
-          <div class="flex flex-col items-end justify-center gap-1 lg:col-span-1 xl:col-span-2">
-            <span class="font-medium text-gray-700">{{ $kelas->progress . '/' . $kelas->banyak_pertemuan }} Pertemuan</span>
-            <div class="h-1.5 w-full rounded border bg-slate-200 shadow-inner">
-              @php
-                $progress = ($kelas->progress / $kelas->banyak_pertemuan) * 100;
-                $bgcolor = $progress == 100 ? 'bg-green-600' : 'bg-upbg';
-              @endphp
-              <div style="width: {{ $progress }}%" class="{{ $bgcolor }} h-full rounded-full"></div>
-            </div>
-          </div>
+          <p class="empty-query col-span-full">Tidak ada data yang cocok</p>
         </div>
-      @endforeach
+      @else
+        @foreach ($kelasList as $kelas)
+          <div class="kelas-item grid grid-cols-1 gap-y-3 rounded-sm-md bg-white p-4 shadow-sm lg:grid-cols-6 lg:gap-x-4 lg:gap-y-0 lg:rounded-none lg:shadow-none xl:grid-cols-7">
+            <div class="flex flex-row items-center lg:col-span-2">
+              <a href="{{ route('kelas.detail', ['slug' => $kelas->slug]) }}" class="truncate font-semibold text-upbg underline decoration-transparent transition hover:decoration-upbg">{{ $kelas->kode }}</a>
+            </div>
+            <div class="flex flex-col justify-center lg:col-span-2">
+              <div class="flex flex-col gap-2 text-gray-700">
+                @foreach ($kelas->jadwal as $jadwal)
+                  <p><i class="fa-solid fa-calendar-days mr-2"></i><span class="mr-2">{{ $jadwal->namaHari }}</span><i class="fa-regular fa-clock mr-2"></i><span>{{ $jadwal->waktu_mulai->format('H:i') }} - {{ $jadwal->waktu_selesai->format('H:i') }}</span></p>
+                @endforeach
+              </div>
+            </div>
+            <div class="flex flex-col justify-center lg:col-span-1">
+              <p class="text-gray-700"><i class="fa-regular fa-building mr-2"></i>{{ $kelas->ruangan->kode }}</p>
+            </div>
+            <div class="flex flex-col items-end justify-center gap-1 lg:col-span-1 xl:col-span-2">
+              <span class="font-medium text-gray-700">{{ $kelas->progress . '/' . $kelas->banyak_pertemuan }} Pertemuan</span>
+              <div class="h-1.5 w-full rounded border bg-slate-200 shadow-inner">
+                @php
+                  $progress = ($kelas->progress / $kelas->banyak_pertemuan) * 100;
+                  $bgcolor = $progress == 100 ? 'bg-green-600' : 'bg-upbg';
+                @endphp
+                <div style="width: {{ $progress }}%" class="{{ $bgcolor }} h-full rounded-full"></div>
+              </div>
+            </div>
+          </div>
+        @endforeach
+      @endif
     </div>
   </section>
   {{ $kelasList->onEachSide(2)->links() }}

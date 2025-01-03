@@ -13,19 +13,7 @@ class Guest
     public function handle(Request $request, Closure $next): Response
     {
         if (Auth::check()) {
-            $role = Auth::user()->current_role_id;
-            
-            if(!$role){
-                $role = Auth::user()->roles->first();
-                User::findOrFail(Auth::id())->update(['current_role_id' => $role->id]);
-            }
-
-            switch ($role) {
-                case 2:
-                    return redirect()->route('kelas.index');
-                case 3:
-                    return redirect()->route('kelas.index');
-            }
+            return redirect()->route('home');
         }
         return $next($request);
     }

@@ -65,6 +65,10 @@ async function handleError(response, container){
                 inputGroup.appendChild(error);
             }
         }
+    }else if(response.status === 419){
+      const error = await response.json();
+      saveToast('error', error.error);
+      window.location.replace(error.redirect);
     }else{
         const error = await response.json();
         createToast('error', (error) ? error.error : 'Terjadi kesalahan');

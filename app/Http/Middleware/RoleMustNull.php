@@ -7,15 +7,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class AjaxSessionHandler
+class RoleMustNull
 {
     public function handle(Request $request, Closure $next): Response
     {
-      if ($request->ajax() && Auth::guest()) {
-        return response([
-          'message' => 'Session Expired',
-        ], 401);
-      }
-      return $next($request);
+        if (Auth::user()->current_role_id !== null) {
+            return redirect()->route('home');
+        }
+        return $next($request);
     }
 }

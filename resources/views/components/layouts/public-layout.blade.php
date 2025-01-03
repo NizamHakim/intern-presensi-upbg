@@ -13,6 +13,7 @@
       {{ $slot }}
     </div>
   </main>
+  <x-layouts.script />
   @stack('script')
 </body>
 

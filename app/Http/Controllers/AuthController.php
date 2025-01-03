@@ -15,30 +15,38 @@ class AuthController extends Controller
 
     public function handleLoginRequest(Request $request)
     {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ], [
-            'email.required' => 'Email tidak boleh kosong',
-            'email.email' => 'Email tidak valid',
-            'password.required' => 'Password tidak boleh kosong',
-        ]);
+      $credentials = $request->validate([
+          'email' => 'required|email',
+          'password' => 'required',
+      ], [
+          'email.required' => 'Email tidak boleh kosong',
+          'email.email' => 'Email tidak valid',
+          'password.required' => 'Password tidak boleh kosong',
+      ]);
 
-        if(Auth::attempt($credentials)){
-            $request->session()->regenerate();
-            return redirect()->intended(route('home'));
-        }
+      if(Auth::attempt($credentials)){
+        $request->session()->regenerate();
+        return redirect()->intended(route('home'));
+      }
 
-        return back()->withErrors([
-            'email' => 'Email atau password salah',
-        ])->onlyInput('email');
+      return back()->withErrors([
+          'email' => 'Email atau password salah',
+      ])->onlyInput('email');
+    }
+
+    public function loginRoles()
+    {
+      return view('login-roles');
     }
 
     public function switchRole(Request $request)
     {
-        User::findOrFail(Auth::id())->update(['current_role_id' => $request['role-id']]);
-
-        return redirect()->route('home');
+        $user = User::findOrFail(Auth::id());
+        if(!$user->roles->contains($request['role-id'])){
+            return redirect()->back();
+        }
+        $user->update(['current_role_id' => $request['role-id']]);
+        return redirect()->back();
     }
 
     public function handleLogoutRequest()
