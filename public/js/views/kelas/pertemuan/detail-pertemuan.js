@@ -323,9 +323,13 @@ if(daftarPresensi) {
       const deletePresensiModal = document.getElementById('delete-presensi-modal');
       const modalForm = deletePresensiModal.querySelector('form');
 
+      const presensiId = presensiItem.dataset.presensiId;
       const nama = presensiItem.querySelector('.nama-peserta').textContent;
       const nik = presensiItem.querySelector('.nik-peserta').textContent;
+
+      const hiddenId = modalForm.querySelector('[name="presensi-id"]');
       const namaNikPeserta = deletePresensiModal.querySelector('.nama-nik-peserta');
+      hiddenId.value = presensiId;
       namaNikPeserta.textContent = `${nama} - ${nik}`;
 
       openModal(deletePresensiModal, removeEventListener);
@@ -334,9 +338,11 @@ if(daftarPresensi) {
           e.preventDefault();
           const route = modalForm.action;
           const submitButton = e.submitter;
+          const formData = new FormData(modalForm);
+          const data = Object.fromEntries(formData.entries());
 
           playFetchingAnimation(submitButton, 'red', 'Deleting...');
-          const response = await fetchRequest(route, 'DELETE')
+          const response = await fetchRequest(route, 'DELETE', data);
           stopFetchingAnimation(submitButton);
 
           if(response.ok){

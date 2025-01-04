@@ -16,6 +16,7 @@ use App\Http\Middleware\AjaxSessionHandler;
 use App\Http\Middleware\Authenticated;
 use App\Http\Middleware\Guest;
 use App\Http\Middleware\RoleMustNull;
+use App\Http\Middleware\VerifyOwnership;
 use App\Http\Middleware\VerifyRole;
 use App\Models\ProgramKelas;
 use Illuminate\Container\Attributes\Log;
@@ -53,54 +54,50 @@ Route::middleware(Guest::class)->group(function(){
 });
 
 Route::middleware(Authenticated::class)->group(function(){
-    Route::get('/login/roles', [AuthController::class, 'loginRoles'])->name('auth.loginRoles')->middleware(RoleMustNull::class);
+    Route::get('/login/roles', [AuthController::class, 'loginRoles'])->middleware(RoleMustNull::class)->name('auth.loginRoles');
     Route::patch('/switch-role', [AuthController::class, 'switchRole'])->name('auth.switchRole');
     Route::post('/logout', [AuthController::class, 'handleLogoutRequest'])->name('auth.handleLogoutRequest');
 
-    Route::middleware(VerifyRole::class.':1,2,3')->group(function(){
-      Route::get('/kelas', [KelasController::class, 'index'])->name('kelas.index');
-      Route::get('/kelas/create', [KelasController::class, 'create'])->name('kelas.create');
-      Route::get('/kelas/{slug}', [KelasController::class, 'detail'])->name('kelas.detail');
-      Route::post('/kelas', [KelasController::class, 'store'])->name('kelas.store');
-      Route::get('/kelas/{slug}/edit', [KelasController::class, 'edit'])->name('kelas.edit');
-      Route::put('/kelas/{slug}', [KelasController::class, 'update'])->name('kelas.update');
-      Route::delete('/kelas/{slug}', [KelasController::class, 'destroy'])->name('kelas.destroy');
-      Route::get('/kelas/{slug}/daftar-peserta', [KelasController::class, 'daftarPeserta'])->name('kelas.daftarPeserta');
-      Route::get('/kelas/{slug}/daftar-peserta/tambah', [KelasController::class, 'tambahPeserta'])->name('kelas.tambahPeserta');
-      Route::post('/kelas/{slug}/daftar-peserta/tambah', [KelasController::class, 'storePeserta'])->name('kelas.storePeserta');
-      Route::patch('/kelas/{slug}/daftar-peserta/update', [KelasController::class, 'updatePeserta'])->name('kelas.updatePeserta');
-      Route::delete('/kelas/{slug}/delete-peserta', [KelasController::class, 'destroyPeserta'])->name('kelas.destroyPeserta');
-  
-      Route::get('/kelas/{slug}/pertemuan/{id}', [PertemuanKelasController::class, 'detail'])->name('kelas.pertemuan.detail');
-      Route::get('/kelas/{slug}/pertemuan/{id}/edit', [PertemuanKelasController::class, 'edit'])->name('kelas.pertemuan.edit');
-      Route::post('/kelas/{slug}/pertemuan', [PertemuanKelasController::class, 'store'])->name('kelas.pertemuan.store');
-      Route::delete('/kelas/{slug}/pertemuan{id}', [PertemuanKelasController::class, 'destroy'])->name('kelas.pertemuan.destroy');
-      Route::put('/kelas/{slug}/pertemuan/{id}/update-detail', [PertemuanKelasController::class, 'updateDetail'])->name('kelas.pertemuan.updateDetail');
-      Route::patch('/kelas/{slug}/pertemuan/{id}/update-topik-catatan', [PertemuanKelasController::class, 'updateTopikCatatan'])->name('kelas.pertemuan.updateTopikCatatan');
-      Route::patch('/kelas/{slug}/pertemuan/{id}/reschedule', [PertemuanKelasController::class, 'reschedule'])->name('kelas.pertemuan.reschedule');
-      Route::patch('/kelas/{slug}/pertemuan/{id}/mulai-pertemuan', [PertemuanKelasController::class, 'mulaiPertemuan'])->name('kelas.pertemuan.mulaiPertemuan');
-      
-      Route::post('/kelas/{slug}/pertemuan/{id}', [PresensiPertemuanKelasController::class, 'store'])->name('presensi.store');
-      Route::delete('/kelas/{slug}/pertemuan/{id}/presensi/destroy', [PresensiPertemuanKelasController::class, 'destroy'])->name('presensi.destroy');
-      Route::patch('/kelas/{slug}/pertemuan/{id}/presensi/{presensiId}', [PresensiPertemuanKelasController::class, 'updatePresensi'])->name('presensi.updatePresensi');
-      Route::put('/kelas/{slug}/pertemuan/{id}/presensi-all', [PresensiPertemuanKelasController::class, 'updatePresensiAll'])->name('presensi.updatePresensiAll');
-    });
+    Route::get('/kelas', [KelasController::class, 'index'])->middleware(VerifyRole::class.':1,2,3')->name('kelas.index');
+    Route::get('/kelas/create', [KelasController::class, 'create'])->middleware(VerifyRole::class.':1,2')->name('kelas.create');
+    Route::get('/kelas/{slug}', [KelasController::class, 'detail'])->middleware(VerifyRole::class.':1,2,3', VerifyOwnership::class.':pengajaran')->name('kelas.detail');
+    Route::post('/kelas', [KelasController::class, 'store'])->middleware(VerifyRole::class.':1,2')->name('kelas.store');
+    Route::get('/kelas/{slug}/edit', [KelasController::class, 'edit'])->middleware(VerifyRole::class.':1,2')->name('kelas.edit');
+    Route::put('/kelas/{slug}', [KelasController::class, 'update'])->middleware(VerifyRole::class.':1,2')->name('kelas.update');
+    Route::delete('/kelas/{slug}', [KelasController::class, 'destroy'])->middleware(VerifyRole::class.':1,2')->name('kelas.destroy');
+    Route::get('/kelas/{slug}/daftar-peserta', [KelasController::class, 'daftarPeserta'])->middleware(VerifyRole::class.':1,2,3', VerifyOwnership::class.':pengajaran')->name('kelas.daftarPeserta');
+    Route::get('/kelas/{slug}/daftar-peserta/tambah', [KelasController::class, 'tambahPeserta'])->middleware(VerifyRole::class.':1,2')->name('kelas.tambahPeserta');
+    Route::post('/kelas/{slug}/daftar-peserta/tambah', [KelasController::class, 'storePeserta'])->middleware(VerifyRole::class.':1,2')->name('kelas.storePeserta');
+    Route::patch('/kelas/{slug}/daftar-peserta/update', [KelasController::class, 'updatePeserta'])->middleware(VerifyRole::class.':1,2')->name('kelas.updatePeserta');
+    Route::delete('/kelas/{slug}/delete-peserta', [KelasController::class, 'destroyPeserta'])->middleware(VerifyRole::class.':1,2')->name('kelas.destroyPeserta');
 
-    Route::middleware(VerifyRole::class.':1,4,5')->group(function(){
-      Route::get('/tes', [TesController::class, 'index'])->name('tes.index');
-      Route::get('/tes/create', [TesController::class, 'create'])->name('tes.create');
-      Route::post('/tes', [TesController::class, 'store'])->name('tes.store');
-      Route::get('/tes/{slug}', [TesController::class, 'detail'])->name('tes.detail');
-      Route::get('/tes/{slug}/edit', [TesController::class, 'edit'])->name('tes.edit');
-      Route::put('/tes/{slug}', [TesController::class, 'update'])->name('tes.update');
-      Route::delete('/tes/{slug}', [TesController::class, 'destroy'])->name('tes.destroy');
-      Route::get('/tes/{slug}/daftar-peserta', [TesController::class, 'daftarPeserta'])->name('tes.daftarPeserta');
-      Route::get('/tes/{slug}/daftar-peserta/tambah', [TesController::class, 'tambahPeserta'])->name('tes.tambahPeserta');
-      Route::patch('/tes/{slug}/daftar-peserta/update-ruangan', [TesController::class, 'updateRuangan'])->name('tes.updateRuangan');
-  
-      Route::patch('/tes/{slug}/presensi/{pesertaId}', [TesController::class, 'updatePresensi'])->name('tes.updatePresensi');
-      Route::delete('/tes/{slug}/presensi-delete', [TesController::class, 'destroyPresensi'])->name('tes.destroyPresensi');
-    });
+    Route::get('/kelas/{slug}/pertemuan/{id}', [PertemuanKelasController::class, 'detail'])->middleware(VerifyRole::class.':1,2,3', VerifyOwnership::class.':pengajaran')->name('kelas.pertemuan.detail');
+    Route::get('/kelas/{slug}/pertemuan/{id}/edit', [PertemuanKelasController::class, 'edit'])->middleware(VerifyRole::class.':1,2')->name('kelas.pertemuan.edit');
+    Route::post('/kelas/{slug}/pertemuan', [PertemuanKelasController::class, 'store'])->middleware(VerifyRole::class.':1,2,3', VerifyOwnership::class.':pengajaran')->name('kelas.pertemuan.store');
+    Route::delete('/kelas/{slug}/pertemuan{id}', [PertemuanKelasController::class, 'destroy'])->middleware(VerifyRole::class.':1,2,3', VerifyOwnership::class.':pengajaran')->name('kelas.pertemuan.destroy');
+    Route::put('/kelas/{slug}/pertemuan/{id}/update-detail', [PertemuanKelasController::class, 'updateDetail'])->middleware(VerifyRole::class.':1,2')->name('kelas.pertemuan.updateDetail');
+    Route::patch('/kelas/{slug}/pertemuan/{id}/update-topik-catatan', [PertemuanKelasController::class, 'updateTopikCatatan'])->middleware(VerifyRole::class.':1,2,3', VerifyOwnership::class.':pengajaran')->name('kelas.pertemuan.updateTopikCatatan');
+    Route::patch('/kelas/{slug}/pertemuan/{id}/reschedule', [PertemuanKelasController::class, 'reschedule'])->middleware(VerifyRole::class.':1,3', VerifyOwnership::class.':pengajaran')->name('kelas.pertemuan.reschedule');
+    Route::patch('/kelas/{slug}/pertemuan/{id}/mulai-pertemuan', [PertemuanKelasController::class, 'mulaiPertemuan'])->middleware(VerifyRole::class.':1,3', VerifyOwnership::class.':pengajaran')->name('kelas.pertemuan.mulaiPertemuan');
+    
+    Route::post('/kelas/{slug}/pertemuan/{id}', [PresensiPertemuanKelasController::class, 'store'])->middleware(VerifyRole::class.':1,2,3', VerifyOwnership::class.':pengajaran')->name('presensi.store');
+    Route::delete('/kelas/{slug}/pertemuan/{id}/presensi/destroy', [PresensiPertemuanKelasController::class, 'destroy'])->middleware(VerifyRole::class.':1,2,3', VerifyOwnership::class.':pengajaran')->name('presensi.destroy');
+    Route::patch('/kelas/{slug}/pertemuan/{id}/presensi/{presensiId}', [PresensiPertemuanKelasController::class, 'updatePresensi'])->middleware(VerifyRole::class.':1,2,3', VerifyOwnership::class.':pengajaran')->name('presensi.updatePresensi');
+    Route::put('/kelas/{slug}/pertemuan/{id}/presensi-all', [PresensiPertemuanKelasController::class, 'updatePresensiAll'])->middleware(VerifyRole::class.':1,2,3', VerifyOwnership::class.':pengajaran')->name('presensi.updatePresensiAll');
+
+    Route::get('/tes', [TesController::class, 'index'])->middleware(VerifyRole::class.':1,4,5')->name('tes.index');
+    Route::get('/tes/create', [TesController::class, 'create'])->middleware(VerifyRole::class.':1,4')->name('tes.create');
+    Route::post('/tes', [TesController::class, 'store'])->middleware(VerifyRole::class.':1,4')->name('tes.store');
+    Route::get('/tes/{slug}', [TesController::class, 'detail'])->middleware(VerifyRole::class.':1,4,5')->name('tes.detail');
+    Route::get('/tes/{slug}/edit', [TesController::class, 'edit'])->middleware(VerifyRole::class.':1,4')->name('tes.edit');
+    Route::put('/tes/{slug}', [TesController::class, 'update'])->middleware(VerifyRole::class.':1,4')->name('tes.update');
+    Route::delete('/tes/{slug}', [TesController::class, 'destroy'])->middleware(VerifyRole::class.':1,4')->name('tes.destroy');
+    Route::get('/tes/{slug}/daftar-peserta', [TesController::class, 'daftarPeserta'])->middleware(VerifyRole::class.':1,4,5')->name('tes.daftarPeserta');
+    Route::get('/tes/{slug}/daftar-peserta/tambah', [TesController::class, 'tambahPeserta'])->middleware(VerifyRole::class.':1,4')->name('tes.tambahPeserta');
+    Route::patch('/tes/{slug}/daftar-peserta/update-ruangan', [TesController::class, 'updateRuangan'])->middleware(VerifyRole::class.':1,4')->name('tes.updateRuangan');
+
+    Route::patch('/tes/{slug}/presensi/{pesertaId}', [TesController::class, 'updatePresensi'])->middleware(VerifyRole::class.':1,4,5')->name('tes.updatePresensi');
+    Route::delete('/tes/{slug}/presensi-delete', [TesController::class, 'destroyPresensi'])->middleware(VerifyRole::class.':1,4')->name('tes.destroyPresensi');
 
     Route::middleware(VerifyRole::class.':1,2,4')->group(function(){
       Route::get('/user', [UserController::class, 'index'])->name('user.index');

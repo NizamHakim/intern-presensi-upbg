@@ -27,6 +27,18 @@
         </div>
       </div>
     @endif
+    <template id="template-pengajar">
+      <div class="pengajar-item grid grid-flow-col grid-cols-1">
+        <div class="input-group">
+          <x-inputs.dropdown.select name="pengajar" placeholder="Pilih pengajar" class="pengajar-dropdown">
+            @foreach ($pengajarOptions as $option)
+              <x-inputs.dropdown.option :value="$option->id">{{ "$option->nama ($option->nik)" }}</x-inputs.dropdown.option>
+            @endforeach
+          </x-inputs.dropdown.select>
+        </div>
+        <button type="button" class="delete-pengajar btn-rounded btn-white ml-2 text-red-600"><i class="fa-regular fa-trash-can"></i></button>
+      </div>
+    </template>
   </div>
   <div class="mt-1 flex w-full flex-row items-center justify-center gap-4">
     <button type="button" class="tambah-pengajar btn-rounded btn-white hover:bg-gray-200"><i class="fa-solid fa-plus text-lg"></i></button>

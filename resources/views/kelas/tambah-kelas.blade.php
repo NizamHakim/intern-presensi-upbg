@@ -32,7 +32,7 @@
 
     <hr class="my-5">
 
-    <x-ui.file-peserta />
+    <x-kelas.file-peserta />
 
     <hr class="my-5">
 

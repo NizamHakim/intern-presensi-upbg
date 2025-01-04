@@ -40,33 +40,14 @@ class PertemuanKelasController extends Controller
         ]);
     }
 
-    public function edit($slug, $id)
-    {
-        $kelas = Kelas::where('slug', $slug)->firstOrFail();
-        $pertemuan = $kelas->pertemuan()->findOrFail($id);
-
-        $pengajarOptions = $kelas->pengajar()->get();
-        $ruanganOptions = Ruangan::all();
-
-        $breadcrumbs = [
-            'Kelas' => route('kelas.index'),
-            "$kelas->kode" => route('kelas.detail', $kelas->slug),
-            "Pertemuan - $pertemuan->pertemuan_ke" => route('kelas.pertemuan.detail', [$kelas->slug, $pertemuan->id]),
-            'Edit' => null,
-        ];
-
-        return view('kelas.pertemuan.edit-pertemuan', [
-            'kelas' => $kelas,
-            'pertemuan' => $pertemuan,
-            'breadcrumbs' => $breadcrumbs,
-            'pengajarOptions' => $pengajarOptions,
-            'ruanganOptions' => $ruanganOptions,
-        ]);
-    }
-
     public function store($slug, Request $request)
     {
-        $kelas = Kelas::where('slug', $slug)->firstOrFail();
+        $kelas = Kelas::where('slug', $slug)->first();
+        if(!$kelas){
+          return response([
+              'error' => 'Kelas tidak ditemukan, silahkan refresh dan coba lagi'
+          ], 404);
+        }
 
         $validator = Validator::make($request->all(), [
             'tanggal' => 'required|date',
@@ -104,10 +85,42 @@ class PertemuanKelasController extends Controller
         ], 200);
     }
 
-    public function updateDetail($slug, $id, Request $request)
+    public function edit($slug, $id)
     {
         $kelas = Kelas::where('slug', $slug)->firstOrFail();
         $pertemuan = $kelas->pertemuan()->findOrFail($id);
+
+        $ruanganOptions = Ruangan::all();
+
+        $breadcrumbs = [
+            'Kelas' => route('kelas.index'),
+            "$kelas->kode" => route('kelas.detail', $kelas->slug),
+            "Pertemuan - $pertemuan->pertemuan_ke" => route('kelas.pertemuan.detail', [$kelas->slug, $pertemuan->id]),
+            'Edit' => null,
+        ];
+
+        return view('kelas.pertemuan.edit-pertemuan', [
+            'kelas' => $kelas,
+            'pertemuan' => $pertemuan,
+            'breadcrumbs' => $breadcrumbs,
+            'ruanganOptions' => $ruanganOptions,
+        ]);
+    }
+
+    public function updateDetail($slug, $id, Request $request)
+    {
+        $kelas = Kelas::where('slug', $slug)->first();
+        if(!$kelas){
+          return response([
+              'error' => 'Kelas tidak ditemukan, silahkan refresh dan coba lagi'
+          ], 404);
+        }
+        $pertemuan = $kelas->pertemuan()->find($id);
+        if(!$pertemuan){
+          return response([
+              'error' => 'Pertemuan tidak ditemukan, silahkan refresh dan coba lagi'
+          ], 404);
+        }
 
         $validator = Validator::make($request->all(), [
             'terlaksana' => 'required|boolean',
@@ -137,7 +150,7 @@ class PertemuanKelasController extends Controller
         if($request['terlaksana'] == 1 && $pertemuan->presensi->isEmpty()){
             $this->generatePresensi($kelas, $pertemuan);
         }else if($request['terlaksana'] == 0){
-            $this->deletePresensi($pertemuan);
+            $pertemuan->presensi()->delete();
         }
 
         $pertemuan->update([
@@ -159,6 +172,19 @@ class PertemuanKelasController extends Controller
 
     public function updateTopikCatatan($slug, $id, Request $request)
     {
+        $kelas = Kelas::where('slug', $slug)->first();
+        if(!$kelas){
+          return response([
+              'error' => 'Kelas tidak ditemukan, silahkan refresh dan coba lagi'
+          ], 404);
+        }
+        $pertemuan = $kelas->pertemuan()->find($id);
+        if(!$pertemuan){
+          return response([
+              'error' => 'Pertemuan tidak ditemukan, silahkan refresh dan coba lagi'
+          ], 404);
+        }
+
         $validator = Validator::make($request->all(), [
             'topik' => 'nullable|string',
             'catatan' => 'nullable|string',
@@ -170,9 +196,6 @@ class PertemuanKelasController extends Controller
         if ($validator->fails()) {
             return response($validator->errors(), 422);
         }
-
-        $kelas = Kelas::where('slug', $slug)->firstOrFail();
-        $pertemuan = $kelas->pertemuan()->findOrFail($id);
 
         $pertemuan->update([
             'topik' => $request['topik'],
@@ -188,8 +211,18 @@ class PertemuanKelasController extends Controller
 
     public function reschedule($slug, $id, Request $request)
     {
-        $kelas = Kelas::where('slug', $slug)->firstOrFail();
-        $pertemuan = $kelas->pertemuan()->findOrFail($id);
+        $kelas = Kelas::where('slug', $slug)->first();
+        if(!$kelas){
+          return response([
+              'error' => 'Kelas tidak ditemukan, silahkan refresh dan coba lagi'
+          ], 404);
+        }
+        $pertemuan = $kelas->pertemuan()->find($id);
+        if(!$pertemuan){
+          return response([
+              'error' => 'Pertemuan tidak ditemukan, silahkan refresh dan coba lagi'
+          ], 404);
+        }
 
         $validator = Validator::make($request->all(), [
             'tanggal' => 'required|date',
@@ -228,6 +261,19 @@ class PertemuanKelasController extends Controller
 
     public function mulaiPertemuan($slug, $id, Request $request)
     {
+        $kelas = Kelas::where('slug', $slug)->first();
+        if(!$kelas){
+          return response([
+              'error' => 'Kelas tidak ditemukan, silahkan refresh dan coba lagi'
+          ], 404);
+        }
+        $pertemuan = $kelas->pertemuan()->find($id);
+        if(!$pertemuan){
+          return response([
+              'error' => 'Pertemuan tidak ditemukan, silahkan refresh dan coba lagi'
+          ], 404);
+        }
+
         $validator = Validator::make($request->all(), [
             'pengajar-id' => 'required|exists:pengajar_kelas,user_id',
         ], [
@@ -238,9 +284,6 @@ class PertemuanKelasController extends Controller
         if ($validator->fails()) {
             return response($validator->errors(), 422);
         }
-
-        $kelas = Kelas::where('slug', $slug)->firstOrFail();
-        $pertemuan = $kelas->pertemuan()->findOrFail($id);
 
         $pertemuan->update([
             'terlaksana' => 1,
@@ -257,8 +300,18 @@ class PertemuanKelasController extends Controller
 
     public function destroy($slug, $id)
     {
-        $kelas = Kelas::where('slug', $slug)->firstOrFail();
-        $pertemuan = $kelas->pertemuan()->findOrFail($id);
+        $kelas = Kelas::where('slug', $slug)->first();
+        if(!$kelas){
+          return response([
+              'error' => 'Kelas tidak ditemukan, silahkan refresh dan coba lagi'
+          ], 404);
+        }
+        $pertemuan = $kelas->pertemuan()->find($id);
+        if(!$pertemuan){
+          return response([
+              'error' => 'Pertemuan tidak ditemukan, silahkan refresh dan coba lagi'
+          ], 404);
+        }
         
         $pertemuan->delete();
 
@@ -287,10 +340,5 @@ class PertemuanKelasController extends Controller
                 return ['peserta_id' => $peserta->id];
             })->toArray()
         );
-    }
-
-    private function deletePresensi($pertemuan)
-    {
-        $pertemuan->presensi()->delete();
     }
 }

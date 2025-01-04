@@ -49,47 +49,25 @@ tambahJadwal.addEventListener('click', function(e){
 });
 
 function createNewJadwalItem(hari = '', waktuMulai = '', waktuSelesai = ''){
-    const jadwalItem = jadwalContainer.querySelector('.jadwal-item');
-    const jadwalItemClone = jadwalItem.cloneNode(true);
-
-    jadwalItemClone.classList.remove('md:mr-11');
-    addDeleteJadwalButton(jadwalItemClone);
-    clearErrors(jadwalItemClone);
-
-    const hariDropdown = jadwalItemClone.querySelector('.hari-dropdown');
+    const templateJadwal = document.getElementById('template-jadwal');
+    const jadwalItem = templateJadwal.content.cloneNode(true);
+    const hariDropdown = jadwalItem.querySelector('.hari-dropdown');
     changeDropdownValue(hariDropdown, hari);
     
-    const waktuMulaiInput = jadwalItemClone.querySelector('.waktu-mulai-fp');
+    const waktuMulaiInput = jadwalItem.querySelector('.waktu-mulai-fp');
     attachTimepicker(waktuMulaiInput);
     changeTimeValue(waktuMulaiInput, waktuMulai);
     
-    const waktuSelesaiInput = jadwalItemClone.querySelector('.waktu-selesai-fp');
+    const waktuSelesaiInput = jadwalItem.querySelector('.waktu-selesai-fp');
     attachTimepicker(waktuSelesaiInput);
     changeTimeValue(waktuSelesaiInput, waktuSelesai);
-    
+
     const hariArray = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-    jadwalItemClone.querySelector('.hari').textContent = (hari == '') ? 'Hari' : hariArray[hari];
-    jadwalItemClone.querySelector('.waktu-mulai').textContent = (waktuMulai == '') ? 'Mulai' : waktuMulai;
-    jadwalItemClone.querySelector('.waktu-selesai').textContent = (waktuSelesai == '') ? 'Selesai' : waktuSelesai;
+    jadwalItem.querySelector('.hari').textContent = (hari == '') ? 'Hari' : hariArray[hari];
+    jadwalItem.querySelector('.waktu-mulai').textContent = (waktuMulai == '') ? 'Mulai' : waktuMulai;
+    jadwalItem.querySelector('.waktu-selesai').textContent = (waktuSelesai == '') ? 'Selesai' : waktuSelesai;
 
-    jadwalContainer.appendChild(jadwalItemClone);
-}
-
-function addDeleteJadwalButton(jadwalItem){
-    const desktopView = jadwalItem.querySelector('.desktop-view');
-    const deleteButton = document.createElement('button');
-    deleteButton.setAttribute('type', 'button');
-    deleteButton.setAttribute('class', 'delete-jadwal btn-rounded btn-white ml-2 hidden text-red-600 md:flow-root');
-    deleteButton.innerHTML = '<i class="fa-regular fa-trash-can"></i>';
-    desktopView.appendChild(deleteButton);
-
-    const mobileView = jadwalItem.querySelector('.mobile-view');
-    const dialog = mobileView.querySelector('.dialog');
-    const deleteButtonMobile = document.createElement('button');
-    deleteButtonMobile.setAttribute('type', 'button');
-    deleteButtonMobile.setAttribute('class', 'delete-jadwal w-full px-2 py-1 text-left text-red-600');
-    deleteButtonMobile.textContent = 'Delete';
-    dialog.appendChild(deleteButtonMobile);
+    jadwalContainer.appendChild(jadwalItem);
 }
 
 function showAddJadwalModal(){

@@ -15,7 +15,7 @@
 
   <div class="flex flex-col bg-white p-6 shadow-sm">
     <form action="{{ route('kelas.storePeserta', ['slug' => $kelas->slug]) }}" class="tambah-peserta-form">
-      <x-ui.file-peserta :required="true" />
+      <x-kelas.file-peserta :required="true" />
 
       <hr class="my-5">
 

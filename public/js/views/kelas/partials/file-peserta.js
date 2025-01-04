@@ -108,39 +108,16 @@ function showAddPesertaModal(){
 }
 
 function appendPeserta(nik = '', nama = '', occupation = ''){
-    const pesertaItem = document.createElement('div');
-    pesertaItem.setAttribute('class', 'peserta-item flex min-w-0 items-center rounded-sm-md border py-2 shadow-sm md:border-none md:p-0 md:shadow-none');
-    pesertaItem.innerHTML = `
-      <div class="mobile-view ml-3 flex w-full min-w-0 items-center gap-2 md:hidden">
-        <div class="grid grid-cols-1 gap-y-1">
-          <p class="nama truncate font-semibold">${nama}</p>
-          <p class="nik truncate">${nik}</p>
-          <p class="occupation truncate">${occupation}</p>
-        </div>
-        <div class="relative ml-auto">
-          <button type="button" class="menu px-3"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-          <div class="dialog absolute right-1 top-full z-10 hidden min-w-24 divide-y rounded-sm-md border bg-white text-sm font-medium opacity-0 transition duration-75 shadow-md">
-            <button type="button" class="edit-peserta w-full px-2 py-1.5 text-left">Edit</button>
-            <button type="button" class="delete-peserta w-full px-2 py-1.5 text-left text-red-600">Delete</button>
-          </div>
-        </div>
-      </div>
-      <div class="desktop-view hidden w-full grid-cols-3 grid-flow-col gap-x-2 md:grid">
-        <div class="input-group">
-          <input type="text" name="nik-peserta" placeholder="NIK / NRP" class="input-appearance input-outline w-full" value="${nik}">
-        </div>
-        <div class="input-group">
-          <input type="text" name="nama-peserta" placeholder="Nama" class="input-appearance input-outline w-full" value="${nama}">
-        </div>
-        <div class="input-group">
-          <input type="text" name="occupation-peserta" placeholder="Departemen / Occupation" class="input-appearance input-outline w-full" value="${occupation}">
-        </div>
-        <button type="button" class="delete-peserta btn-rounded btn-white text-red-600"><i class="fa-regular fa-trash-can"></i></button>
-      </div>
-    `;
-
+    const templatePeserta = document.getElementById('template-peserta');
+    const pesertaItem = templatePeserta.content.cloneNode(true);
+    pesertaItem.querySelector('.nama').textContent = nama;
+    pesertaItem.querySelector('.nik').textContent = nik;
+    pesertaItem.querySelector('.occupation').textContent = occupation;
+    pesertaItem.querySelector('[name="nik-peserta"]').value = nik;
+    pesertaItem.querySelector('[name="nama-peserta"]').value = nama;
+    pesertaItem.querySelector('[name="occupation-peserta"]').value = occupation;
     pesertaContainer.appendChild(pesertaItem);
-    togglePesertaItemPlaceholder();
+    togglePesertaItemPlaceholder(); 
 }
 
 function showEditPesertaModal(pesertaItem){

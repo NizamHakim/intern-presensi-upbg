@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\AjaxSessionHandler;
 use App\Http\Middleware\Authenticated;
+use App\Http\Middleware\VerifyOwnership;
 use App\Http\Middleware\VerifyRole;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -18,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->priority([
           Authenticated::class,
           VerifyRole::class,
+          VerifyOwnership::class,
           VerifyCsrfToken::class,
         ]);
     })

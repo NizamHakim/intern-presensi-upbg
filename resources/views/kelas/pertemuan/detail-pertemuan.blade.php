@@ -52,7 +52,7 @@
     <div class="flex h-fit flex-col gap-2 md:flex-row">
       @if (auth()->user()->current_role_id == 2)
         <a href="{{ route('kelas.pertemuan.edit', ['slug' => $kelas->slug, 'id' => $pertemuan->id]) }}" class="edit-pertemuan btn btn-upbg-outline"><i class="fa-regular fa-pen-to-square mr-2"></i>Edit</a>
-      @elseif (auth()->user()->current_role_id == 3 && $pertemuan->presensi->isEmpty())
+      @elseif (auth()->user()->current_role_id == 3 && !$pertemuan->terlaksana)
         <button type="button" class="reschedule-pertemuan btn btn-upbg-outline"><i class="fa-regular fa-calendar-check mr-2"></i>Reschedule</button>
         <x-ui.modal id="reschedule-pertemuan-modal">
           <form action="{{ route('kelas.pertemuan.reschedule', ['slug' => $kelas->slug, 'id' => $pertemuan->id]) }}" class="flex flex-col gap-5">
@@ -121,7 +121,7 @@
     <button class="edit-topik-catatan btn btn-upbg-outline"><i class="fa-regular fa-pen-to-square mr-2"></i>Edit</button>
   </section>
 
-  @if ($pertemuan->presensi->isEmpty())
+  @if (!$pertemuan->terlaksana)
     @if (auth()->user()->current_role_id == 3)
       <section id="notice-presensi" class="mt-6 flex flex-col items-center gap-4 bg-white p-6 shadow-sm">
         @if (now()->isBefore($pertemuan->waktu_selesai))
@@ -161,13 +161,7 @@
       <div class="flex flex-col gap-6 bg-white p-6 md:flex-row md:justify-between">
         <div class="flex flex-col items-center gap-2 md:items-start">
           <p class="text-lg text-gray-700 md:text-2xl">Kehadiran Peserta</p>
-          <p class="hadir-count text-3xl font-semibold text-gray-700 md:text-4xl">
-            @if ($pertemuan->presensi->isEmpty())
-              0 / 0
-            @else
-              {{ $pertemuan->hadirCount }} / {{ $pertemuan->presensi->count() }}
-            @endif
-          </p>
+          <p class="hadir-count text-3xl font-semibold text-gray-700 md:text-4xl">{{ $pertemuan->hadirCount }} / {{ $pertemuan->presensi->count() }}</p>
         </div>
         <div class="flex flex-col justify-center gap-2">
           <button type="button" class="tambah-presensi btn btn-green-solid"><i class="fa-solid fa-plus mr-2"></i><span>Tambah Presensi</span></button>
@@ -191,7 +185,7 @@
                     <p class="input-label">Pilih peserta</p>
                     <x-inputs.dropdown.select name="peserta-id" placeholder="Pilih peserta" class="peserta-dropdown">
                       @foreach ($tambahPesertaOptions as $peserta)
-                        <x-inputs.dropdown.option :value="$peserta->id">{{ "$peserta->nama" }}</x-inputs.dropdown.option>
+                        <x-inputs.dropdown.option :value="$peserta->id">{{ $peserta->nama . ' (' . $peserta->nik . ')' }}</x-inputs.dropdown.option>
                       @endforeach
                     </x-inputs.dropdown.select>
                   </div>

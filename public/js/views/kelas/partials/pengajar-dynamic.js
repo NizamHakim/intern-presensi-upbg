@@ -11,20 +11,7 @@ pengajarContainer.addEventListener('click', function(e){
 
 const tambahPengajar = pengajarSection.querySelector('.tambah-pengajar');
 tambahPengajar.addEventListener('click', function(){
-    const pengajarItem = pengajarContainer.querySelector('.pengajar-item');
-    const pengajarItemClone = pengajarItem.cloneNode(true);
-    pengajarItemClone.classList.remove('mr-11');
-
-    const pengajarDropdown = pengajarItemClone.querySelector('.pengajar-dropdown');
-    changeDropdownValue(pengajarDropdown, '');
-    addDeletePengajarButton(pengajarItemClone);
-    pengajarContainer.appendChild(pengajarItemClone);
+    const templatePengajar = document.getElementById('template-pengajar');
+    const pengajarItem = templatePengajar.content.cloneNode(true);
+    pengajarContainer.appendChild(pengajarItem);
 });
-
-function addDeletePengajarButton(pengajarItem){
-    const deleteButton = document.createElement('button');
-    deleteButton.setAttribute('type', 'button');
-    deleteButton.setAttribute('class', 'delete-pengajar btn-rounded btn-white ml-2 text-red-600');
-    deleteButton.innerHTML = '<i class="fa-regular fa-trash-can"></i>';
-    pengajarItem.appendChild(deleteButton);
-}

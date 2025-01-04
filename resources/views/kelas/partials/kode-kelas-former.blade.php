@@ -45,7 +45,7 @@
 
   <div class="input-group kode-former col-span-full md:col-span-3 xl:col-span-2">
     <p class="input-label">Tanggal Mulai</p>
-    <x-inputs.date inputName="tanggal-mulai" value="{{ $kelas ? $kelas->tanggal_mulai : null }}" placeholder="Pilih tanggal mulai" />
+    <x-inputs.date inputName="tanggal-mulai" :value="$kelas ? $kelas->tanggal_mulai : null" placeholder="Pilih tanggal mulai" />
   </div>
 </section>
 

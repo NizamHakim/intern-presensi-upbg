@@ -56,6 +56,12 @@ async function handleError(response, container){
                 const inputGroup = inputs[arrKey[1]].closest('.input-group');
                 const error = createErrorText(errors[key][0]);
                 inputGroup.appendChild(error);
+
+                const doubleView = inputGroup.closest('.double-view');
+                if(doubleView){
+                    const error = createErrorText(errors[key][0]);
+                    doubleView.querySelector('.mobile-view').appendChild(error);
+                }
                 continue;
             }
             const inputs = container.querySelectorAll(`[name="${key}"]`);
@@ -63,6 +69,12 @@ async function handleError(response, container){
                 const inputGroup = input.closest('.input-group');
                 const error = createErrorText(errors[key][0]);
                 inputGroup.appendChild(error);
+
+                const doubleView = inputGroup.closest('.double-view');
+                if(doubleView){
+                    const error = createErrorText(errors[key][0]);
+                    doubleView.querySelector('.mobile-view').appendChild(error);
+                }
             }
         }
     }else if(response.status === 419){

@@ -28,7 +28,7 @@ class PertemuanKelasGenerator
                 'tanggal' => $tanggal,
                 'waktu_mulai' => $jadwal[$i % $mod]->waktu_mulai,
                 'waktu_selesai' => $jadwal[$i % $mod]->waktu_selesai,
-                'terlaksana' => ($tanggal->month == 12) ? true : false
+                'terlaksana' => false,
             ]);
             $tanggal->next($jadwal[$i % $mod]->hari);
         }

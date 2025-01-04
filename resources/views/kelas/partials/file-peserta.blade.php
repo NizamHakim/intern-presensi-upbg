@@ -1,8 +1,7 @@
 <section id="file-peserta-section" class="flex min-w-0 flex-col gap-2">
-  <h1 class="mb-2 font-medium text-gray-700">Peserta @if (!$required)
-      (opsional)
-    @endif
-  </h1>
+  @if (!$required)
+    <h1 class="mb-2 font-medium text-gray-700">Peserta (opsional)</h1>
+  @endif
   <div class="mb-2 flex flex-row items-center gap-6">
     <label id="excel-csv-label" for="excel-csv" class="btn btn-white cursor-pointer text-nowrap"><i class="fa-solid fa-file mr-2"></i>Pilih file</label>
     <input id="excel-csv" name="input-excel-csv" type="file" class="hidden" accept=".xlsx,.csv">
@@ -15,6 +14,38 @@
     <div class="peserta-item-placeholder flex h-14 flex-col items-center justify-center rounded-md border border-dashed border-gray-400 text-gray-400">
       Tambah peserta
     </div>
+    <template id="template-peserta">
+      <div class="peserta-item double-view flex min-w-0 items-center">
+        <div class="mobile-view w-full md:hidden">
+          <div class="flex w-full min-w-0 items-center gap-2 rounded-sm-md border py-2 pl-3 shadow-sm">
+            <div class="grid grid-cols-1 gap-y-1">
+              <p class="nama truncate font-semibold">Nama</p>
+              <p class="nik truncate">NIK</p>
+              <p class="occupation truncate">Occupation</p>
+            </div>
+            <div class="relative ml-auto">
+              <button type="button" class="menu px-3"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+              <div class="dialog absolute right-1 top-full z-10 hidden min-w-24 divide-y rounded-sm-md border bg-white text-sm font-medium opacity-0 shadow-md transition duration-75">
+                <button type="button" class="edit-peserta w-full px-2 py-1.5 text-left">Edit</button>
+                <button type="button" class="delete-peserta w-full px-2 py-1.5 text-left text-red-600">Delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="desktop-view hidden w-full grid-flow-col grid-cols-3 gap-x-2 md:grid">
+          <div class="input-group">
+            <input type="text" name="nik-peserta" placeholder="NIK / NRP" class="input-appearance input-outline w-full" value="">
+          </div>
+          <div class="input-group">
+            <input type="text" name="nama-peserta" placeholder="Nama" class="input-appearance input-outline w-full" value="">
+          </div>
+          <div class="input-group">
+            <input type="text" name="occupation-peserta" placeholder="Departemen / Occupation" class="input-appearance input-outline w-full" value="">
+          </div>
+          <button type="button" class="delete-peserta btn-rounded btn-white text-red-600"><i class="fa-regular fa-trash-can"></i></button>
+        </div>
+      </div>
+    </template>
   </div>
   <div class="mt-1 flex w-full flex-row items-center justify-center gap-4">
     <button type="button" class="tambah-peserta btn-rounded btn-white hover:bg-gray-200"><i class="fa-solid fa-plus text-lg"></i></button>
@@ -91,5 +122,5 @@
 
 @pushOnce('script')
   <script src="{{ asset('js/views/components/ui/dialog.js') }}"></script>
-  <script src="{{ asset('js/views/components/ui/file-peserta.js') }}"></script>
+  <script src="{{ asset('js/views/kelas/partials/file-peserta.js') }}"></script>
 @endPushOnce

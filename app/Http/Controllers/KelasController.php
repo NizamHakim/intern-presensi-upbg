@@ -245,7 +245,7 @@ class KelasController extends Controller
             'ruangan.exists' => 'Ruangan tidak valid',
             'group-link.url' => 'Link harus dalam format https',
             'hari.required' => 'Hari tidak boleh kosong',
-            'hari.jadwal_include_tanggal_mulai' => 'Jadwal harus mencakup hari tanggal mulai',
+            'hari.jadwal_include_tanggal_mulai' => 'Salah satu jadwal harus mencakup hari tanggal mulai',
             'hari.*.required' => 'Hari tidak boleh kosong',
             'hari.*.numeric' => 'Hari tidak valid',
             'waktu-mulai.required' => 'Waktu mulai tidak boleh kosong',
@@ -345,7 +345,12 @@ class KelasController extends Controller
 
     public function update($slug, Request $request)
     {
-        $kelas = Kelas::where('slug', $slug)->firstOrFail();
+        $kelas = Kelas::where('slug', $slug)->first();
+        if(!$kelas){
+            return response([
+                'error' => 'Kelas tidak ditemukan, silahkan refresh dan coba lagi'
+            ], 404);
+        }
 
         $validator = Validator::make($request->all(), [
             'kode-kelas' => 'required|unique:kelas,kode,' . $kelas->id,
@@ -432,7 +437,13 @@ class KelasController extends Controller
 
     public function destroy($slug)
     {
-        $kelas = Kelas::where('slug', $slug)->firstOrFail();
+        $kelas = Kelas::where('slug', $slug)->first();
+        if(!$kelas){
+          return response([
+              'error' => 'Kelas tidak ditemukan, silahkan refresh dan coba lagi'
+          ], 404);
+        }
+
         $kelas->delete();
 
         return response([
@@ -450,7 +461,7 @@ class KelasController extends Controller
             'Daftar Peserta' => null,
         ];
 
-        $pesertaList = $kelas->peserta()->orderBy('nama')->paginate(20);
+        $pesertaList = $kelas->peserta()->paginate(20);
         
         return view('kelas.detail-daftar-peserta', [
             'kelas' => $kelas,
@@ -477,7 +488,12 @@ class KelasController extends Controller
 
     public function storePeserta($slug, Request $request)
     {
-        $kelas = Kelas::where('slug', $slug)->firstOrFail();
+        $kelas = Kelas::where('slug', $slug)->first();
+        if(!$kelas){
+          return response([
+              'error' => 'Kelas tidak ditemukan, silahkan refresh dan coba lagi'
+          ], 404);
+        }
 
         Validator::extend('unique_peserta', function($attribute, $value, $parameters, $validator){
             $kelas = Kelas::where('slug', $parameters[0])->first();
@@ -522,8 +538,19 @@ class KelasController extends Controller
 
     public function updatePeserta($slug, Request $request)
     {
-        $kelas = Kelas::where('slug', $slug)->firstOrFail();
-        $peserta = Peserta::where('id', $request['peserta-id'])->firstOrFail();
+        $kelas = Kelas::where('slug', $slug)->first();
+        if(!$kelas){
+          return response([
+              'error' => 'Kelas tidak ditemukan, silahkan refresh dan coba lagi'
+          ], 404);
+        }
+
+        $peserta = Peserta::where('id', $request['peserta-id'])->first();
+        if(!$peserta){
+          return response([
+              'error' => 'Peserta tidak ditemukan, silahkan refresh dan coba lagi'
+          ], 404);
+        }
 
         if($request->has('status-peserta')){
             $kelas->peserta()->updateExistingPivot($peserta->id, ['aktif' => 1]);
@@ -539,8 +566,18 @@ class KelasController extends Controller
 
     public function destroyPeserta($slug, Request $request)
     {
-        $kelas = Kelas::where('slug', $slug)->firstOrFail();
-        $peserta = Peserta::where('id', $request['peserta-id'])->firstOrFail();
+        $kelas = Kelas::where('slug', $slug)->first();
+        if(!$kelas){
+          return response([
+              'error' => 'Kelas tidak ditemukan, silahkan refresh dan coba lagi'
+          ], 404);
+        }
+        $peserta = Peserta::where('id', $request['peserta-id'])->first();
+        if(!$peserta){
+          return response([
+              'error' => 'Peserta tidak ditemukan, silahkan refresh dan coba lagi'
+          ], 404);
+        }
 
         $kelas->pertemuan()->whereHas('presensi', function($query) use ($peserta){
             $query->where('peserta_id', $peserta->id);

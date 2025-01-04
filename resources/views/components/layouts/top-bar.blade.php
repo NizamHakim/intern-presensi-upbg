@@ -26,7 +26,13 @@
               <span><i class="fa-solid fa-repeat mr-2"></i>Role : {{ auth()->user()->currentRole->nama }}</span>
               <i class="fa-solid fa-chevron-down transform text-xs transition"></i>
             </button>
-            <x-layouts.partials.switch-role />
+            <form id="switch-role-dropdown" action="{{ route('auth.switchRole') }}" method="POST" class="switch-role-dropdown hidden max-h-0 flex-1 flex-col overflow-y-hidden text-sm font-medium text-gray-600 shadow-inner-2 transition-all">
+              @csrf
+              @method('PATCH')
+              @foreach (auth()->user()->roles as $role)
+                <button type="submit" class="px-4 py-3 text-left hover:bg-gray-100" name="role-id" value="{{ $role->id }}">{{ $role->nama }}</button>
+              @endforeach
+            </form>
             <form action="{{ route('auth.handleLogoutRequest') }}" method="POST" class="flex flex-1 flex-col">
               @csrf
               <button type="submit" class="flex items-center justify-between rounded-b-md bg-white px-4 py-3 text-sm font-medium text-red-600 hover:bg-gray-100">
