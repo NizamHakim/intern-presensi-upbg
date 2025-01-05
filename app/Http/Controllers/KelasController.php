@@ -207,7 +207,7 @@ class KelasController extends Controller
             'program' => 'required|exists:program_kelas,id',
             'tipe' => 'required|exists:tipe_kelas,id',
             'nomor-kelas' => 'required|numeric',
-            'level' => 'required|exists:level_kelas,id',
+            'level' => 'nullable|exists:level_kelas,id',
             'banyak-pertemuan' => 'required|numeric',
             'tanggal-mulai' => 'required|date',
             'ruangan' => 'required|exists:ruangan,id',
@@ -235,7 +235,6 @@ class KelasController extends Controller
             'tipe.exists' => 'Tipe tidak valid',
             'nomor-kelas.required' => 'Nomor kelas tidak boleh kosong',
             'nomor-kelas.numeric' => 'Nomor kelas harus berupa angka',
-            'level.required' => 'Level tidak boleh kosong',
             'level.exists' => 'Level tidak valid',
             'banyak-pertemuan.required' => 'Banyak pertemuan tidak boleh kosong',
             'banyak-pertemuan.numeric' => 'Banyak pertemuan harus berupa angka',
@@ -289,7 +288,7 @@ class KelasController extends Controller
 
         PertemuanKelasGenerator::generate($kelas);
 
-        $kelas->pengajar()->attach($request['pengajar']);
+        $kelas->pengajar()->sync($request['pengajar']);
 
         for($i = 0; $i < count($request['nik-peserta']); $i++){
             $peserta = Peserta::firstOrCreate(['nik' => $request['nik-peserta'][$i]], [
@@ -302,7 +301,7 @@ class KelasController extends Controller
 
         return response([
             'redirect' => route('kelas.index'),
-            'message' => 'Kelas berhasil ditambahkan'
+            'message' => "Kelas $kelas->kode berhasil ditambahkan"
         ], 200);
     }
 
@@ -357,7 +356,7 @@ class KelasController extends Controller
             'program' => 'required|exists:program_kelas,id',
             'tipe' => 'required|exists:tipe_kelas,id',
             'nomor-kelas' => 'required|numeric',
-            'level' => 'required|exists:level_kelas,id',
+            'level' => 'nullable|exists:level_kelas,id',
             'banyak-pertemuan' => 'required|numeric',
             'tanggal-mulai' => 'required|date',
             'ruangan' => 'required|exists:ruangan,id',
@@ -379,7 +378,6 @@ class KelasController extends Controller
             'tipe.exists' => 'Tipe tidak valid',
             'nomor-kelas.required' => 'Nomor kelas tidak boleh kosong',
             'nomor-kelas.numeric' => 'Nomor kelas harus berupa angka',
-            'level.required' => 'Level tidak boleh kosong',
             'level.exists' => 'Level tidak valid',
             'banyak-pertemuan.required' => 'Banyak pertemuan tidak boleh kosong',
             'banyak-pertemuan.numeric' => 'Banyak pertemuan harus berupa angka',
@@ -431,7 +429,7 @@ class KelasController extends Controller
 
         return response([
             'redirect' => route('kelas.detail', ['slug' => $kelas->slug]),
-            'message' => 'Detail kelas berhasil diubah'
+            'message' => "Detail kelas $kelas->kode berhasil diupdate"
         ], 200);
     }
 
@@ -448,7 +446,7 @@ class KelasController extends Controller
 
         return response([
             'redirect' => route('kelas.index'),
-            'message' => 'Kelas berhasil dihapus'
+            'message' => "Kelas $kelas->kode berhasil dihapus" 
         ], 200);
     }
 
@@ -532,7 +530,7 @@ class KelasController extends Controller
 
         return response([
             'redirect' => route('kelas.daftarPeserta', ['slug' => $kelas->slug]),
-            'message' => 'Berhasil menambahkan peserta'
+            'message' => "Berhasil menambahkan peserta ke kelas $kelas->kode"
         ], 200);
     }
 
@@ -560,7 +558,7 @@ class KelasController extends Controller
         
         return response([
             'aktif' => $request->has('status-peserta'),
-            'message' => 'Berhasil mengubah status peserta'
+            'message' => "Berhasil mengubah status $peserta->nama"
         ], 200);
     }
 
@@ -587,7 +585,7 @@ class KelasController extends Controller
 
         return response([
             'redirect' => route('kelas.daftarPeserta', ['slug' => $kelas->slug]),
-            'message' => 'Berhasil menghapus peserta dari kelas'
+            'message' => "Berhasil menghapus $peserta->nama dari kelas $kelas->kode"
         ], 200);
     }
 }

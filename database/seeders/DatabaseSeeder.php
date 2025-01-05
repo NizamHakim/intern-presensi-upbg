@@ -34,7 +34,7 @@ class DatabaseSeeder extends Seeder
         $nizam = User::where('nik', '5025211209')->first();
         $roles = Role::all();
         $nizam->roles()->attach($roles);
-        $nizam->update(['current_role_id' => 2]);
+        $nizam->update(['current_role_id' => null]);
 
         $other = User::where('nik', '!=', '5025211209')->get();
         foreach($other as $user){

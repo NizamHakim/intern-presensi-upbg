@@ -19,6 +19,6 @@ class PesertaTes extends Pivot
 
     public function ruanganTes()
     {
-        return $this->belongsTo(Ruangan::class, 'ruangan_id');
+        return $this->belongsTo(Ruangan::class, 'ruangan_id')->withTrashed();
     }
 }

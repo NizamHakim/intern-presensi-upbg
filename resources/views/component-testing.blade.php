@@ -1,4 +1,4 @@
-<x-layouts.user-layout>
+{{-- <x-layouts.user-layout>
     <x-slot:title>Testing</x-slot>
     <div id="container" class="flex w-full flex-row flex-wrap gap-2">
         <div class="flex-1 truncate">
@@ -67,4 +67,77 @@
             window.history.pushState({}, '', '/component-testing?name=Nizam+Hakim');
         });
     </script>
-</x-layouts.user-layout>
+</x-layouts.user-layout> --}}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Table with Spanning Header and Axis Headers</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 80%;
+      margin: 20px auto;
+    }
+
+    th,
+    td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #f4f4f4;
+    }
+
+    th[rowspan] {
+      vertical-align: middle;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <table style="width:100%">
+    <tr>
+      <th></th>
+      <th></th>
+      <th>101</th>
+      <th>102</th>
+      <th>103</th>
+      <th>104</th>
+      <th>105</th>
+    </tr>
+    <tr>
+      <th rowspan="5">Senin</th>
+      <th>07:30 - 09:00</th>
+      <td>Lorem.</td>
+      <td>Lorem.</td>
+      <td>Lorem.</td>
+      <td>Lorem.</td>
+      <td>Lorem.</td>
+    </tr>
+    <tr>
+      <th>09:00 - 10:30</th>
+      <td>Lorem.</td>
+      <td>Lorem.</td>
+      <td>Lorem.</td>
+      <td>Lorem.</td>
+      <td>Lorem.</td>
+    </tr>
+    <tr>
+      <th>10:30 - 12:00</th>
+      <td>Lorem.</td>
+      <td>Lorem.</td>
+      <td>Lorem.</td>
+      <td>Lorem.</td>
+      <td>Lorem.</td>
+    </tr>
+  </table>
+</body>
+
+</html>

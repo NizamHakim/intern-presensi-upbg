@@ -31,9 +31,9 @@
 
   <div class="input-group kode-former col-span-full md:col-span-3 xl:col-span-2">
     <p class="input-label">Level Kelas</p>
-    <x-inputs.dropdown.select name="level" placeholder="Pilih level" :selected="$kelas ? ['text' => $kelas->level->nama . ' (' . $kelas->level->kode . ')', 'value' => $kelas->level->id] : null" class="level-dropdown">
+    <x-inputs.dropdown.select name="level" placeholder="Pilih level" :selected="$kelas && $kelas->level ? ['text' => $kelas->level->nama . ' (' . $kelas->level->kode . ')', 'value' => $kelas->level->id] : null" class="level-dropdown">
       @foreach ($levelOptions as $level)
-        <x-inputs.dropdown.option :value="$level->id" class="{{ $kelas && $level->id == $kelas->level->id ? 'selected' : '' }}">{{ "$level->nama ($level->kode)" }}</x-inputs.dropdown.option>
+        <x-inputs.dropdown.option :value="$level->id" class="{{ $kelas && $kelas->level && $level->id == $kelas->level->id ? 'selected' : '' }}">{{ "$level->nama ($level->kode)" }}</x-inputs.dropdown.option>
       @endforeach
     </x-inputs.dropdown.select>
   </div>

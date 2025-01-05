@@ -35,7 +35,7 @@
       <div class="flex flex-col">
         <h3 class="mb-1 font-semibold text-gray-700">Pengajar:</h3>
         @if ($pertemuan->pengajar_id)
-          <a href="{{ route('user.detail', ['id' => $pertemuan->pengajar->id]) }}" class="w-fit text-gray-700 underline decoration-transparent transition hover:text-upbg-light hover:decoration-upbg-light">{{ $pertemuan->pengajar->nama }}</a>
+          <p>{{ $pertemuan->pengajar->nama }}</p>
         @else
           <span class="font-semibold text-gray-700">-</span>
         @endif
@@ -218,30 +218,36 @@
           <p class="col-span-5 font-semibold sm:col-span-6">Peserta</p>
           <p class="col-span-3 font-semibold sm:col-span-4">Status Kehadiran</p>
         </div>
-        @foreach ($pertemuan->presensi as $presensi)
-          <div class="presensi-item grid grid-cols-12 items-center gap-x-3 py-5" data-presensi-id="{{ $presensi->id }}">
-            <p class="col-span-2 pl-2 text-center font-medium sm:col-span-1">{{ $loop->iteration }}.</p>
-            <div class="col-span-5 sm:col-span-6">
-              <p class="nama-peserta w-fit font-medium text-gray-700">{{ $presensi->peserta->nama }}</p>
-              <p class="nik-peserta w-fit text-gray-600">{{ $presensi->peserta->nik }}</p>
-            </div>
-            <form action="{{ route('presensi.updatePresensi', ['slug' => $kelas->slug, 'id' => $pertemuan->id, 'presensiId' => $presensi->id]) }}" class="form-toggle-kehadiran col-span-3 sm:col-span-4">
-              @if ($presensi->hadir)
-                <button type="submit" name="hadir" value="1" class="btn-hadir btn-rounded btn-white active">H</button>
-                <button type="submit" name="hadir" value="0" class="btn-alfa btn-rounded btn-white">A</button>
-              @else
-                <button type="submit" name="hadir" value="1" class="btn-hadir btn-rounded btn-white">H</button>
-                <button type="submit" name="hadir" value="0" class="btn-alfa btn-rounded btn-white active">A</button>
-              @endif
-            </form>
-            <div class="relative col-span-2 text-center sm:col-span-1">
-              <button type="button" class="menu btn-rounded btn-white border-none shadow-none"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-              <x-ui.dialog class="right-1/2 top-full mt-1 translate-x-4">
-                <button type="button" class="delete-presensi w-full px-2 py-1.5 text-left text-red-600 hover:bg-gray-100">Delete</button>
-              </x-ui.dialog>
-            </div>
+        @if ($pertemuan->presensi->isEmpty())
+          <div class="rounded-sm-md bg-white p-4 shadow-sm lg:rounded-none lg:shadow-none">
+            <p class="empty-query">Tidak ada data yang cocok</p>
           </div>
-        @endforeach
+        @else
+          @foreach ($pertemuan->presensi as $presensi)
+            <div class="presensi-item grid grid-cols-12 items-center gap-x-3 py-5" data-presensi-id="{{ $presensi->id }}">
+              <p class="col-span-2 pl-2 text-center font-medium sm:col-span-1">{{ $loop->iteration }}.</p>
+              <div class="col-span-5 sm:col-span-6">
+                <p class="nama-peserta w-fit font-medium text-gray-700">{{ $presensi->peserta->nama }}</p>
+                <p class="nik-peserta w-fit text-gray-600">{{ $presensi->peserta->nik }}</p>
+              </div>
+              <form action="{{ route('presensi.updatePresensi', ['slug' => $kelas->slug, 'id' => $pertemuan->id, 'presensiId' => $presensi->id]) }}" class="form-toggle-kehadiran col-span-3 sm:col-span-4">
+                @if ($presensi->hadir)
+                  <button type="submit" name="hadir" value="1" class="btn-hadir btn-rounded btn-white active">H</button>
+                  <button type="submit" name="hadir" value="0" class="btn-alfa btn-rounded btn-white">A</button>
+                @else
+                  <button type="submit" name="hadir" value="1" class="btn-hadir btn-rounded btn-white">H</button>
+                  <button type="submit" name="hadir" value="0" class="btn-alfa btn-rounded btn-white active">A</button>
+                @endif
+              </form>
+              <div class="relative col-span-2 text-center sm:col-span-1">
+                <button type="button" class="menu btn-rounded btn-white border-none shadow-none"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                <x-ui.dialog class="right-1/2 top-full mt-1 translate-x-4">
+                  <button type="button" class="delete-presensi w-full px-2 py-1.5 text-left text-red-600 hover:bg-gray-100">Delete</button>
+                </x-ui.dialog>
+              </div>
+            </div>
+          @endforeach
+        @endif
       </div>
       <x-ui.modal id="delete-presensi-modal">
         <form action="{{ route('presensi.destroy', ['slug' => $kelas->slug, 'id' => $pertemuan->id]) }}" class="flex flex-col gap-5">

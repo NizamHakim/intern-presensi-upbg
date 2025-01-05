@@ -12,27 +12,33 @@
       <p class="col-span-3 font-semibold sm:col-span-2">Kapasitas</p>
       <p class="hidden text-center font-semibold sm:col-span-3 sm:block">Status</p>
     </div>
-    @foreach ($ruanganList as $ruangan)
-      <div class="ruangan-item grid grid-cols-12 items-center gap-x-4 py-5" data-ruangan-id="{{ $ruangan->id }}">
-        <div class="col-span-2 pl-2 text-center font-medium sm:col-span-1">{{ $loop->iteration + ($ruanganList->currentPage() - 1) * $ruanganList->perPage() }}</div>
-        <div class="kode-ruangan col-span-5">{{ $ruangan->kode }}</div>
-        <div class="kapasitas-ruangan col-span-3 sm:col-span-2">{{ $ruangan->kapasitas }}</div>
-        <div class="hidden sm:col-span-3 sm:flex sm:justify-center">
-          @if ($ruangan->status)
-            <p class="status-ruangan w-fit rounded-full bg-green-300 px-2 text-sm font-semibold text-green-800">Aktif</p>
-          @else
-            <p class="status-ruangan w-fit rounded-full bg-red-300 px-2 text-sm font-semibold text-red-800">Tidak Aktif</p>
-          @endif
-        </div>
-        <div class="relative col-span-2 text-center sm:col-span-1">
-          <button type="button" class="btn-rounded btn-white menu border-none shadow-none"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-          <x-ui.dialog class="right-1/2 top-full mt-1 translate-x-4">
-            <button type="button" class="edit-ruangan w-full px-2 py-1.5 text-left hover:bg-gray-100">Edit</button>
-            <button type="button" class="delete-ruangan w-full px-2 py-1.5 text-left text-red-600 hover:bg-gray-100">Delete</button>
-          </x-ui.dialog>
-        </div>
+    @if ($ruanganList->isEmpty())
+      <div class="rounded-sm-md bg-white p-4 shadow-sm lg:rounded-none lg:shadow-none">
+        <p class="empty-query">Tidak ada data yang cocok</p>
       </div>
-    @endforeach
+    @else
+      @foreach ($ruanganList as $ruangan)
+        <div class="ruangan-item grid grid-cols-12 items-center gap-x-4 py-5" data-ruangan-id="{{ $ruangan->id }}">
+          <div class="col-span-2 pl-2 text-center font-medium sm:col-span-1">{{ $loop->iteration + ($ruanganList->currentPage() - 1) * $ruanganList->perPage() }}</div>
+          <div class="kode-ruangan col-span-5">{{ $ruangan->kode }}</div>
+          <div class="kapasitas-ruangan col-span-3 sm:col-span-2">{{ $ruangan->kapasitas }}</div>
+          <div class="hidden sm:col-span-3 sm:flex sm:justify-center">
+            @if ($ruangan->status)
+              <p class="status-ruangan w-fit rounded-full bg-green-300 px-2 text-sm font-semibold text-green-800">Aktif</p>
+            @else
+              <p class="status-ruangan w-fit rounded-full bg-red-300 px-2 text-sm font-semibold text-red-800">Tidak Aktif</p>
+            @endif
+          </div>
+          <div class="relative col-span-2 text-center sm:col-span-1">
+            <button type="button" class="btn-rounded btn-white menu border-none shadow-none"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+            <x-ui.dialog class="right-1/2 top-full mt-1 translate-x-4">
+              <button type="button" class="edit-ruangan w-full px-2 py-1.5 text-left hover:bg-gray-100">Edit</button>
+              <button type="button" class="delete-ruangan w-full px-2 py-1.5 text-left text-red-600 hover:bg-gray-100">Delete</button>
+            </x-ui.dialog>
+          </div>
+        </div>
+      @endforeach
+    @endif
   </section>
   {{ $ruanganList->onEachSide(2)->links() }}
 

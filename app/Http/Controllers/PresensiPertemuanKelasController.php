@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Kelas;
 use App\Models\PertemuanKelas;
+use App\Models\Peserta;
 use Illuminate\Http\Request;
 use App\Models\PresensiPertemuanKelas;
 use Illuminate\Support\Facades\Validator;
+
+use function Illuminate\Log\log;
 
 class PresensiPertemuanKelasController extends Controller
 {
@@ -43,9 +46,11 @@ class PresensiPertemuanKelasController extends Controller
             'hadir' => $request['hadir'],
         ]);
 
+        $peserta = Peserta::find($request['peserta-id']);
+
         return response([
             'redirect' => route('kelas.pertemuan.detail', ['slug' => $slug, 'id' => $id]),
-            'message' => 'Presensi berhasil ditambahkan'
+            'message' => "$peserta->nama berhasil ditambahkan"
         ]);
     }
 
@@ -135,7 +140,7 @@ class PresensiPertemuanKelasController extends Controller
 
       return response([
           'redirect' => route('kelas.pertemuan.detail', ['slug' => $slug, 'id' => $id]),
-          'message' => 'Presensi berhasil dihapus'
+          'message' => "{$presensi->peserta->nama} berhasil dihapus"
       ], 200);
     }
 }

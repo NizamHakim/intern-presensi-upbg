@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\KodeTesGenerator;
 use App\Models\PesertaTes;
 use App\Models\Tes;
 use App\Models\User;
@@ -11,6 +12,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+
+use function Illuminate\Log\log;
 
 class TesController extends Controller
 {
@@ -22,12 +25,13 @@ class TesController extends Controller
 
         $statusOptions = collect([
           ['text' => 'Completed', 'value' => 'completed'],
+          ['text' => 'In Progress', 'value' => 'in-progress'],
           ['text' => 'Upcoming', 'value' => 'upcoming'],
         ]);
 
         $sortbyOptions = collect([
-          ['text' => 'Tanggal Tes (Terbaru)', 'value' => 'tanggal-desc'],
-          ['text' => 'Tanggal Tes (Terlama)', 'value' => 'tanggal-asc'],
+          ['text' => 'Tanggal Tes (Terjauh)', 'value' => 'tanggal-desc'],
+          ['text' => 'Tanggal Tes (Terdekat)', 'value' => 'tanggal-asc'],
           ['text' => 'Kode Tes (A-Z)', 'value' => 'kode-asc'],
           ['text' => 'Kode Tes (Z-A)', 'value' => 'kode-desc'],
         ]);
@@ -61,7 +65,7 @@ class TesController extends Controller
         $tesList->when($request->query('order'), function($query) use ($request){
           return $query->sort($request->query('order'));
         }, function($query){
-            return $query->latest();
+            return $query->sort('tanggal-asc');
         });
 
         $tesList->when($request->query('kode'), function($query) use ($request){
@@ -80,6 +84,7 @@ class TesController extends Controller
             });
         }
 
+        $tesList->with('ruangan');
         $tesList = $tesList->paginate(10)->appends($request->all());
 
         $selected = [
@@ -109,15 +114,6 @@ class TesController extends Controller
         $tipeOptions = TipeTes::all();
         $pengawasOptions = User::pengawas()->get();
         $ruanganOptions = Ruangan::all();
-        $hariOptions = collect([
-            ['text' => 'Minggu', 'value' => 0],
-            ['text' => 'Senin', 'value' => 1],
-            ['text' => 'Selasa', 'value' => 2],
-            ['text' => 'Rabu', 'value' => 3],
-            ['text' => 'Kamis', 'value' => 4],
-            ['text' => 'Jumat', 'value' => 5],
-            ['text' => 'Sabtu', 'value' => 6],
-        ]);
 
         $breadcrumbs = [
             'Tes' => route('tes.index'),
@@ -128,9 +124,65 @@ class TesController extends Controller
             'tipeOptions' => $tipeOptions,
             'pengawasOptions' => $pengawasOptions,
             'ruanganOptions' => $ruanganOptions,
-            'hariOptions' => $hariOptions,
             'breadcrumbs' => $breadcrumbs
         ]);
+    }
+
+    public function store(Request $request)
+    {
+      $validator = Validator::make($request->all(), [
+        'kode-tes' => 'required|unique:tes,kode',
+        'tipe' => 'required|exists:tipe_tes,id',
+        'nomor-tes' => 'required|numeric',
+        'tanggal' => 'required|date',
+        'waktu-mulai' => 'required|date_format:H:i',
+        'waktu-selesai' => 'required|date_format:H:i',
+        'ruangan' => 'required|array',
+        'ruangan.*' => 'required|exists:ruangan,id',
+        'pengawas' => 'required|array',
+        'pengawas.*' => 'required|exists:users,id',
+      ], [
+        'kode-tes.required' => 'Kode tes tidak boleh kosong',
+        'kode-tes.unique' => 'Kode tes sudah digunakan',
+        'tipe.required' => 'Tipe tes tidak boleh kosong',
+        'tipe.exists' => 'Tipe tes tidak valid',
+        'nomor-tes.required' => 'Nomor tes tidak boleh kosong',
+        'nomor-tes.numeric' => 'Nomor tes harus berupa angka',
+        'tanggal.required' => 'Tanggal tes tidak boleh kosong',
+        'tanggal.date' => 'Tanggal tes tidak valid',
+        'waktu-mulai.required' => 'Waktu mulai tes tidak boleh kosong',
+        'waktu-mulai.date_format' => 'Waktu mulai tes tidak valid',
+        'waktu-selesai.required' => 'Waktu selesai tes tidak boleh kosong',
+        'waktu-selesai.date_format' => 'Waktu selesai tes tidak valid',
+        'ruangan.required' => 'Ruangan tidak boleh kosong',
+        'ruangan.*.required' => 'Ruangan tidak boleh kosong',
+        'ruangan.*.exists' => 'Ruangan tidak valid',
+        'pengawas.required' => 'Pengawas tidak boleh kosong',
+        'pengawas.*.required' => 'Pengawas tidak boleh kosong',
+        'pengawas.*.exists' => 'Pengawas tidak valid',
+      ]);
+
+      if ($validator->fails()) {
+        return response($validator->errors(), 422);
+      }
+
+      $tes = Tes::create([
+        'kode' => $request['kode-tes'],
+        'slug' => KodeTesGenerator::slug($request['kode-tes']),
+        'tipe_id' => $request['tipe'],
+        'nomor' => $request['nomor-tes'],
+        'tanggal' => $request['tanggal'],
+        'waktu_mulai' => $request['waktu-mulai'],
+        'waktu_selesai' => $request['waktu-selesai'],
+      ]);
+
+      $tes->ruangan()->attach($request['ruangan']);
+      $tes->pengawas()->attach($request['pengawas']);
+
+      return response([
+        'message' => "Tes $tes->kode berhasil ditambahkan",
+        'redirect' => route('tes.index'),
+      ], 200);
     }
 
     public function detail($slug, Request $request)
@@ -160,10 +212,125 @@ class TesController extends Controller
       ]);
     }
 
+    public function edit($slug)
+    {
+      $tes = Tes::with('ruangan', 'pengawas')->where('slug', $slug)->firstOrFail();
+      $tipeOptions = TipeTes::all();
+      $pengawasOptions = User::pengawas()->get();
+      $ruanganOptions = Ruangan::aktif()->get();
+
+      $breadcrumbs = [
+          'Tes' => route('tes.index'),
+          $tes->kode => route('tes.detail', $tes->slug),
+          'Edit' => route('tes.edit', $tes->slug)
+      ];
+
+      return view('tes.edit-detail', [
+          'tes' => $tes,
+          'tipeOptions' => $tipeOptions,
+          'pengawasOptions' => $pengawasOptions,
+          'ruanganOptions' => $ruanganOptions,
+          'breadcrumbs' => $breadcrumbs
+      ]);
+    }
+
+    public function update($slug, Request $request)
+    {
+       $tes = Tes::where('slug', $slug)->first();
+       if(!$tes){
+           return response([
+               'message' => 'Tes tidak ditemukan, silahkan refresh dan coba lagi',
+           ], 404);
+       }
+
+       $validator = Validator::make($request->all(), [
+        'kode-tes' => 'required|unique:tes,kode,' . $tes->id,
+        'tipe' => 'required|exists:tipe_tes,id',
+        'nomor-tes' => 'required|numeric',
+        'tanggal' => 'required|date',
+        'waktu-mulai' => 'required|date_format:H:i',
+        'waktu-selesai' => 'required|date_format:H:i',
+        'ruangan' => 'required|array',
+        'ruangan.*' => 'required|exists:ruangan,id',
+        'pengawas' => 'required|array',
+        'pengawas.*' => 'required|exists:users,id',
+      ], [
+        'kode-tes.required' => 'Kode tes tidak boleh kosong',
+        'kode-tes.unique' => 'Kode tes sudah digunakan',
+        'tipe.required' => 'Tipe tes tidak boleh kosong',
+        'tipe.exists' => 'Tipe tes tidak valid',
+        'nomor-tes.required' => 'Nomor tes tidak boleh kosong',
+        'nomor-tes.numeric' => 'Nomor tes harus berupa angka',
+        'tanggal.required' => 'Tanggal tes tidak boleh kosong',
+        'tanggal.date' => 'Tanggal tes tidak valid',
+        'waktu-mulai.required' => 'Waktu mulai tes tidak boleh kosong',
+        'waktu-mulai.date_format' => 'Waktu mulai tes tidak valid',
+        'waktu-selesai.required' => 'Waktu selesai tes tidak boleh kosong',
+        'waktu-selesai.date_format' => 'Waktu selesai tes tidak valid',
+        'ruangan.required' => 'Ruangan tidak boleh kosong',
+        'ruangan.*.required' => 'Ruangan tidak boleh kosong',
+        'ruangan.*.exists' => 'Ruangan tidak valid',
+        'pengawas.required' => 'Pengawas tidak boleh kosong',
+        'pengawas.*.required' => 'Pengawas tidak boleh kosong',
+        'pengawas.*.exists' => 'Pengawas tidak valid',
+      ]);
+
+      if ($validator->fails()) {
+        return response($validator->errors(), 422);
+      }
+
+      // $tes->update([
+      //   'kode' => $request['kode-tes'],
+      //   'slug' => KodeTesGenerator::slug($request['kode-tes']),
+      //   'tipe_id' => $request['tipe'],
+      //   'nomor' => $request['nomor-tes'],
+      //   'tanggal' => $request['tanggal'],
+      //   'waktu_mulai' => $request['waktu-mulai'],
+      //   'waktu_selesai' => $request['waktu-selesai'],
+      // ]);
+
+      $tes->ruangan()->sync($request['ruangan']);
+      $pesertaStray = $tes->peserta()->whereNotIn('ruangan_id', $request['ruangan'])->get();
+      // return response($pesertaStray, 200);
+
+      foreach($tes->ruangan as $ruangan){
+        $kapasitas = $ruangan->kapasitas;
+        $pesertaCount = $tes->peserta()->wherePivot('ruangan_id', $ruangan->id)->count();
+        $sisa = $kapasitas - $pesertaCount;
+        log($kapasitas);
+        log($pesertaCount);
+        log($sisa);
+
+        if ($sisa > 0) {
+          $toAssign = $pesertaStray->take($sisa)->pluck('id')->toArray();
+          log($toAssign);
+          $tes->peserta()->syncWithoutDetaching(array_fill_keys($toAssign, ['ruangan_id' => $ruangan->id]));
+          log(array_fill_keys($toAssign, ['ruangan_id' => $ruangan->id]));
+          $pesertaStray = $pesertaStray->slice($sisa);
+          log($pesertaStray);
+        }
+      }
+      // return response([
+      //   'message' => "Tes $tes->kode berhasil diupdate",
+      //   'redirect' => route('tes.detail', $tes->slug),
+      //   'stray' => $pesertaStray,
+      // ], 200);
+
+      $tes->pengawas()->sync($request['pengawas']);
+
+      return response([
+        'message' => "Tes $tes->kode berhasil diupdate",
+        'redirect' => route('tes.detail', $tes->slug),
+      ], 200);
+    }
+
     public function daftarPeserta($slug)
     {
-      $tes = Tes::where('slug', $slug)->firstOrFail();
+      // $tes = Tes::where('slug', $slug)->firstOrFail();
+      $tes = Tes::with(['peserta'])->where('slug', $slug)->firstOrFail();
       $pesertaList = $tes->peserta()->paginate(10);
+      dump($tes->peserta[0]->pivot->ruanganTes);
+      dd($pesertaList);
 
       $breadcrumbs = [
           'Tes' => route('tes.index'),

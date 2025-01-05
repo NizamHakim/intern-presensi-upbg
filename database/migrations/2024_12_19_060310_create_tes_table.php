@@ -10,14 +10,14 @@ return new class extends Migration
     {
         Schema::create('tes', function (Blueprint $table) {
             $table->id();
-            $table->string('kode');
-            $table->string('slug');
+            $table->string('kode')->unique();
+            $table->string('slug')->unique();
             $table->foreignId('tipe_id')->constrained('tipe_tes')->cascadeOnDelete();
             $table->string('nomor');
             $table->date('tanggal');
             $table->time('waktu_mulai');
             $table->time('waktu_selesai');
-            $table->boolean('terlaksana');
+            $table->boolean('terlaksana')->default(false);
             $table->timestamps();
         });
     }

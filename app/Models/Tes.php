@@ -27,10 +27,15 @@ class Tes extends Model
     {
         switch($status){
             case 'completed':
-                $query->where('terlaksana', true);
+                $query->where('tanggal', '<=', Carbon::today())->where('waktu_selesai', '<=', Carbon::now());
+                break;
+            case 'in-progress':
+                $query->where('tanggal', '=', Carbon::today())->where('waktu_mulai', '<=', Carbon::now())->where('waktu_selesai', '>=', Carbon::now());
                 break;
             case 'upcoming':
-                $query->where('tanggal', '>=', Carbon::today())->where('terlaksana', false);
+                $query->where('tanggal', '>', Carbon::today())->orWhere(function($query){
+                    $query->where('tanggal', '=', Carbon::today())->where('waktu_mulai', '>', Carbon::now());
+                });
                 break;
         }
     }
@@ -39,10 +44,10 @@ class Tes extends Model
     {
         switch($sort){
             case 'tanggal-desc':
-                $query->orderBy('tanggal', 'desc');
+                $query->orderBy('tanggal', 'desc')->orderBy('waktu_mulai', 'asc');
                 break;
             case 'tanggal-asc':
-                $query->orderBy('tanggal', 'asc');
+                $query->orderBy('tanggal', 'asc')->orderBy('waktu_mulai', 'asc');
                 break;
             case 'kode-asc':
                 $query->orderBy('kode', 'asc');
@@ -83,21 +88,21 @@ class Tes extends Model
 
     public function tipe()
     {
-        return $this->belongsTo(TipeTes::class, 'tipe_id');
+        return $this->belongsTo(TipeTes::class, 'tipe_id')->withTrashed();
     }
 
     public function ruangan()
     {
-        return $this->belongsToMany(Ruangan::class, 'ruangan_tes')->withTimestamps();
+        return $this->belongsToMany(Ruangan::class, 'ruangan_tes')->withTimestamps()->withTrashed();
+    }
+
+    public function pengawas()
+    {
+        return $this->belongsToMany(User::class, 'pengawas_tes')->withTimestamps()->withTrashed();
     }
 
     public function peserta()
     {
         return $this->belongsToMany(Peserta::class, 'peserta_tes')->using(PesertaTes::class)->withPivot('ruangan_id', 'hadir')->withTimestamps();
-    }
-
-    public function pengawas()
-    {
-        return $this->belongsToMany(User::class, 'pengawas_tes')->withTimestamps();
     }
 }

@@ -32,7 +32,7 @@
         <h3 class="mb-1 font-semibold text-gray-700">Pengawas:</h3>
         <ul class="list-none">
           @foreach ($tes->pengawas as $pengawas)
-            <li><a href="{{ route('user.detail', ['id' => $pengawas->id]) }}" class="underline decoration-transparent transition hover:text-upbg-light hover:decoration-upbg-light">{{ $pengawas->nama }}</a></li>
+            <li>{{ $pengawas->nama }}</li>
           @endforeach
         </ul>
       </div>
@@ -45,9 +45,12 @@
       </div>
       <div class="flex flex-col">
         <h3 class="mb-1 font-semibold text-gray-700">Ruangan:</h3>
-        @foreach ($tes->ruangan as $ruangan)
-          <span class="text-gray-700"><i class="fa-regular fa-building mr-2"></i>{{ $ruangan->kode }}</span>
-        @endforeach
+        <div class="flex flex-wrap">
+          @foreach ($tes->ruangan as $ruangan)
+            {{-- blade-formatter-disable-next-line --}}
+            <p class="text-gray-700"><i class="fa-regular fa-building mr-2 @if(!$loop->first) before:hidden @endif"></i>{{ $ruangan->kode }}@if(!$loop->last),@endif</p>
+          @endforeach
+        </div>
       </div>
     </div>
     @if (auth()->user()->current_role_id == 4)
@@ -75,51 +78,69 @@
     </x-ui.modal>
   </section>
 
-  <section id="daftar-peserta" class="mt-6 flex flex-col shadow-sm">
-    <div class="flex flex-col gap-6 bg-white p-6 md:flex-row md:justify-between">
-      <div class="flex flex-col items-center gap-2 md:items-start">
-        <p class="text-lg text-gray-700 md:text-2xl">Kehadiran Peserta</p>
-        <p class="hadir-count text-3xl font-semibold text-gray-700 md:text-4xl">
-          @if ($tes->peserta->isEmpty())
-            0 / 0
-          @else
-            {{ $tes->hadirCount }} / {{ $tes->peserta->count() }}
+  @if (!$tes->terlaksana)
+    @if (auth()->user()->current_role_id == 5)
+      <section id="notice-presensi" class="mt-6 flex flex-col items-center gap-4 bg-white p-6 shadow-sm">
+        @if (now()->isBefore($tes->waktu_selesai))
+          <p class="text-center text-gray-600">Mulai tes untuk membuat daftar kehadiran</p>
+          <button @if (now()->isBefore($tes->waktu_mulai)) disabled @endif type="button" class="mulai-tes btn btn-upbg-solid px-8 disabled:opacity-70 disabled:hover:bg-upbg">Mulai Tes</button>
+          @if (now()->isBefore($tes->waktu_mulai))
+            <p class="countdown-label text-center text-gray-600">Tes dapat dimulai dalam,<br><span data-waktu-mulai="{{ $tes->waktu_mulai }}" class="countdown font-semibold text-upbg">0d 0h 0m 0s</span></p>
           @endif
-        </p>
-      </div>
-      <div class="flex min-w-60 flex-col justify-center gap-2">
-        <p class="font-semibold text-gray-600 md:text-right">Ruangan</p>
-        <x-inputs.dropdown.select name="ruangan" placeholder="Semua" class="filter-ruangan" data-tes-route="{{ route('tes.detail', ['slug' => $tes->slug]) }}">
-          @foreach ($tes->ruangan as $ruangan)
-            <x-inputs.dropdown.option :value="$ruangan->id">{{ "$ruangan->kode" }}</x-inputs.dropdown.option>
-          @endforeach
-        </x-inputs.dropdown.select>
-      </div>
-    </div>
-
-    <div class="peserta-container flex flex-col divide-y border-t bg-white">
-      <x-tes.presensi-peserta :tes="$tes" :pesertaList="$pesertaList" />
-    </div>
-
-    <x-ui.modal id="delete-peserta-modal">
-      <form action="{{ route('tes.destroyPresensi', ['slug' => $tes->slug]) }}" class="flex flex-col gap-5">
-        <h1 class="modal-title">Hapus Peserta</h1>
-        <input type="hidden" name="peserta-id">
-        <p>Apakah anda yakin ingin menghapus <span class="nama-nik-peserta font-bold">Peserta</span> dari tes ini?</p>
-        <div class="danger-container flex flex-col gap-2">
-          <p class="font-semibold"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Peringatan</p>
-          <p>Data kehadiran peserta pada tes ini akan dihapus permanen</p>
+        @else
+          <p class="text-base font-semibold text-red-600">Tes telah selesai</p>
+          <p class="text-center text-gray-600">Tes tidak dimulai sampai melebihi batas waktu selesai sehingga ditandai sebagai <span class="font-medium text-red-600">Tidak Terlaksana</span></p>
+        @endif
+      </section>
+    @endif
+  @else
+    <section id="daftar-peserta" class="mt-6 flex flex-col shadow-sm">
+      <div class="flex flex-col gap-6 bg-white p-6 md:flex-row md:justify-between">
+        <div class="flex flex-col items-center gap-2 md:items-start">
+          <p class="text-lg text-gray-700 md:text-2xl">Kehadiran Peserta</p>
+          <p class="hadir-count text-3xl font-semibold text-gray-700 md:text-4xl">
+            @if ($tes->peserta->isEmpty())
+              0 / 0
+            @else
+              {{ $tes->hadirCount }} / {{ $tes->peserta->count() }}
+            @endif
+          </p>
         </div>
-        <hr class="w-full">
-        <div class="flex flex-row items-center justify-end gap-4">
-          <button type="button" class="cancel-button btn btn-white border-none shadow-none">Cancel</button>
-          <button type="submit" class="submit-button btn btn-red-solid">Delete</button>
+        <div class="flex min-w-60 flex-col justify-center gap-2">
+          <p class="font-semibold text-gray-600 md:text-right">Ruangan</p>
+          <x-inputs.dropdown.select name="ruangan" placeholder="Semua" class="filter-ruangan" data-tes-route="{{ route('tes.detail', ['slug' => $tes->slug]) }}">
+            @foreach ($tes->ruangan as $ruangan)
+              <x-inputs.dropdown.option :value="$ruangan->id">{{ "$ruangan->kode" }}</x-inputs.dropdown.option>
+            @endforeach
+          </x-inputs.dropdown.select>
         </div>
-      </form>
-    </x-ui.modal>
-  </section>
+      </div>
+
+      <div class="peserta-container flex flex-col divide-y border-t bg-white">
+        <x-tes.presensi-peserta :tes="$tes" :pesertaList="$pesertaList" />
+      </div>
+
+      <x-ui.modal id="delete-peserta-modal">
+        <form action="{{ route('tes.destroyPresensi', ['slug' => $tes->slug]) }}" class="flex flex-col gap-5">
+          <h1 class="modal-title">Hapus Peserta</h1>
+          <input type="hidden" name="peserta-id">
+          <p>Apakah anda yakin ingin menghapus <span class="nama-nik-peserta font-bold">Peserta</span> dari tes ini?</p>
+          <div class="danger-container flex flex-col gap-2">
+            <p class="font-semibold"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Peringatan</p>
+            <p>Data kehadiran peserta pada tes ini akan dihapus permanen</p>
+          </div>
+          <hr class="w-full">
+          <div class="flex flex-row items-center justify-end gap-4">
+            <button type="button" class="cancel-button btn btn-white border-none shadow-none">Cancel</button>
+            <button type="submit" class="submit-button btn btn-red-solid">Delete</button>
+          </div>
+        </form>
+      </x-ui.modal>
+    </section>
+  @endif
 
   @pushOnce('script')
+    <script src="{{ asset('js/utils/countdown.js') }}"></script>
     <script src="{{ asset('js/views/tes/detail-tes.js') }}"></script>
   @endPushOnce
 </x-layouts.user-layout>

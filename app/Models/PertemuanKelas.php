@@ -70,12 +70,12 @@ class PertemuanKelas extends Model
 
     public function ruangan()
     {
-        return $this->belongsTo(Ruangan::class);
+        return $this->belongsTo(Ruangan::class)->withTrashed();
     }
 
     public function pengajar()
     {
-        return $this->belongsTo(User::class, 'pengajar_id');
+        return $this->belongsTo(User::class, 'pengajar_id')->withTrashed();
     }
 
     public function presensi()

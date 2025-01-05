@@ -2,11 +2,11 @@ const kodeTesSection = document.getElementById('kode-tes-section');
 
 const kodeFormers = kodeTesSection.querySelectorAll('.kode-former');
 kodeFormers.forEach(former => {
-    if(former.querySelector('.input-number')){
-        former.addEventListener('input', updateKodeTes);
-    }else{
-        former.addEventListener('change', updateKodeTes);
-    }
+  if(former.querySelector('input[type="number"]')){
+      former.addEventListener('input', updateKodeTes);
+  }else{
+      former.addEventListener('change', updateKodeTes);
+  }
 });
 
 function updateKodeTes(){

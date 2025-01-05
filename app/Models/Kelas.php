@@ -70,22 +70,22 @@ class Kelas extends Model
 
     public function program()
     {
-        return $this->belongsTo(ProgramKelas::class);
+        return $this->belongsTo(ProgramKelas::class)->withTrashed();
     }
 
     public function tipe()
     {
-        return $this->belongsTo(TipeKelas::class);
+        return $this->belongsTo(TipeKelas::class)->withTrashed();
     }
 
     public function level()
     {
-        return $this->belongsTo(LevelKelas::class);
+        return $this->belongsTo(LevelKelas::class)->withTrashed();
     }
 
     public function ruangan()
     {
-        return $this->belongsTo(Ruangan::class);
+        return $this->belongsTo(Ruangan::class)->withTrashed();
     }
 
     public function jadwal()
@@ -95,7 +95,7 @@ class Kelas extends Model
 
     public function pengajar()
     {
-        return $this->belongsToMany(User::class, 'pengajar_kelas')->withTimestamps();
+        return $this->belongsToMany(User::class, 'pengajar_kelas')->withTimestamps()->withTrashed();
     }
 
     public function peserta()

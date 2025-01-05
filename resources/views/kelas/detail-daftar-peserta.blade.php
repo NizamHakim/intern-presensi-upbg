@@ -26,34 +26,40 @@
         <p class="hidden font-semibold lg:col-span-4 lg:block">Tanggal Bergabung</p>
         <p class="hidden text-center font-semibold md:col-span-4 md:block lg:col-span-3">Status</p>
       </div>
-      @foreach ($pesertaList as $peserta)
-        <div class="peserta-item grid grid-cols-16 items-center gap-x-4 py-4" data-peserta-id="{{ $peserta->id }}">
-          <p class="col-span-2 pl-2 text-center font-medium lg:col-span-1">{{ $loop->iteration + ($pesertaList->currentPage() - 1) * $pesertaList->perPage() }}.</p>
-          <div class="col-span-11 md:col-span-7 lg:col-span-6">
-            <p class="nama-peserta w-fit font-medium text-gray-700">{{ $peserta->nama }}</p>
-            <p class="nik-peserta w-fit text-gray-600">{{ $peserta->nik }}</p>
-          </div>
-          <div class="hidden lg:col-span-4 lg:block">
-            <p class="tanggal-bergabung-peserta text-gray-600">{{ $peserta->created_at->format('d-m-Y') }}</p>
-          </div>
-          <div class="hidden md:col-span-4 md:flex md:justify-center lg:col-span-3">
-            @if ($peserta->pivot->aktif)
-              <p class="status-peserta w-fit rounded-full bg-green-300 px-2 text-sm font-semibold text-green-800">Aktif</p>
-            @else
-              <p class="status-peserta w-fit rounded-full bg-red-300 px-2 text-sm font-semibold text-red-800">Tidak Aktif</p>
+      @if ($pesertaList->isEmpty())
+        <div class="rounded-sm-md bg-white p-4 shadow-sm lg:rounded-none lg:shadow-none">
+          <p class="empty-query">Tidak ada data yang cocok</p>
+        </div>
+      @else
+        @foreach ($pesertaList as $peserta)
+          <div class="peserta-item grid grid-cols-16 items-center gap-x-4 py-4" data-peserta-id="{{ $peserta->id }}">
+            <p class="col-span-2 pl-2 text-center font-medium lg:col-span-1">{{ $loop->iteration + ($pesertaList->currentPage() - 1) * $pesertaList->perPage() }}.</p>
+            <div class="col-span-11 md:col-span-7 lg:col-span-6">
+              <p class="nama-peserta w-fit font-medium text-gray-700">{{ $peserta->nama }}</p>
+              <p class="nik-peserta w-fit text-gray-600">{{ $peserta->nik }}</p>
+            </div>
+            <div class="hidden lg:col-span-4 lg:block">
+              <p class="tanggal-bergabung-peserta text-gray-600">{{ $peserta->created_at->format('d-m-Y') }}</p>
+            </div>
+            <div class="hidden md:col-span-4 md:flex md:justify-center lg:col-span-3">
+              @if ($peserta->pivot->aktif)
+                <p class="status-peserta w-fit rounded-full bg-green-300 px-2 text-sm font-semibold text-green-800">Aktif</p>
+              @else
+                <p class="status-peserta w-fit rounded-full bg-red-300 px-2 text-sm font-semibold text-red-800">Tidak Aktif</p>
+              @endif
+            </div>
+            @if (auth()->user()->current_role_id == 2)
+              <div class="relative col-span-3 text-center lg:col-span-2">
+                <button type="button" class="btn-rounded btn-white menu border-none shadow-none"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                <x-ui.dialog class="right-1/2 top-full mt-1 translate-x-4">
+                  <button type="button" class="edit-peserta w-full px-2 py-1.5 text-left hover:bg-gray-100">Edit</button>
+                  <button type="button" class="delete-peserta w-full px-2 py-1.5 text-left text-red-600 hover:bg-gray-100">Remove</button>
+                </x-ui.dialog>
+              </div>
             @endif
           </div>
-          @if (auth()->user()->current_role_id == 2)
-            <div class="relative col-span-3 text-center lg:col-span-2">
-              <button type="button" class="btn-rounded btn-white menu border-none shadow-none"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-              <x-ui.dialog class="right-1/2 top-full mt-1 translate-x-4">
-                <button type="button" class="edit-peserta w-full px-2 py-1.5 text-left hover:bg-gray-100">Edit</button>
-                <button type="button" class="delete-peserta w-full px-2 py-1.5 text-left text-red-600 hover:bg-gray-100">Remove</button>
-              </x-ui.dialog>
-            </div>
-          @endif
-        </div>
-      @endforeach
+        @endforeach
+      @endif
     </div>
     {{ $pesertaList->onEachSide(2)->links() }}
 

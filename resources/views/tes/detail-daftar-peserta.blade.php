@@ -20,9 +20,9 @@
   @endif
 
   <section id="counter-kapasitas-ruangan" class="mb-4 bg-white p-6 shadow-sm">
-    <div class="grid grid-cols-3 gap-x-4 divide-x divide-gray-200">
+    <div class="flex flex-wrap divide-x divide-gray-200">
       @foreach ($tes->ruangan as $ruangan)
-        <div class="flex flex-col items-center gap-1 p-4 text-base">
+        <div class="flex flex-1 flex-col items-center gap-1 p-4 text-base">
           <p class="font-semibold text-upbg">{{ $ruangan->kode }}</p>
           @php
             $kapasitas = $ruangan->kapasitas;
@@ -56,7 +56,7 @@
           <div class="hidden md:col-span-4 md:flex md:justify-center lg:col-span-3">
             <x-inputs.dropdown.select name="ruangan" class="dropdown-ruangan" :selected="['text' => $peserta->pivot->ruanganTes->kode, 'value' => $peserta->pivot->ruangan_id]">
               @foreach ($tes->ruangan as $ruangan)
-                <x-inputs.dropdown.option :value="$ruangan->id">{{ "$ruangan->kode" }}</x-inputs.dropdown.option>
+                <x-inputs.dropdown.option :value="$ruangan->id" class="{{ $ruangan->id == $peserta->pivot->ruangan_id ? 'selected' : '' }}">{{ "$ruangan->kode" }}</x-inputs.dropdown.option>
               @endforeach
             </x-inputs.dropdown.select>
           </div>
@@ -73,7 +73,6 @@
       @endforeach
     </div>
     {{ $pesertaList->onEachSide(2)->links() }}
-
     {{-- <x-ui.modal id="detail-peserta-modal">
       <form action="{{ route('kelas.updatePeserta', ['slug' => $kelas->slug]) }}" class="flex flex-col gap-5">
         <h1 class="modal-title">Detail Peserta</h1>
