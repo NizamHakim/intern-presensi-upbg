@@ -18,9 +18,8 @@ editForm.addEventListener('submit', async function(e){
   
     if(response.ok){
       const json = await response.json();
-      console.log(json);
-      // saveToast('success', json.message);
-      // window.location.replace(json.redirect);
+      saveToast('success', json.message);
+      window.location.replace(json.redirect);
     }else{
       handleError(response, editForm);
     }

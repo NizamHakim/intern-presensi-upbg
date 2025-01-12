@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('peserta_id')->constrained('peserta')->cascadeOnDelete();
             $table->foreignId('tes_id')->constrained('tes')->cascadeOnDelete();
-            $table->foreignId('ruangan_id')->constrained('ruangan')->cascadeOnDelete();
+            $table->foreignId('ruangan_id')->nullable()->constrained('ruangan')->nullOnDelete();
             $table->boolean('hadir')->default(false);
             $table->timestamps();
         });

@@ -76,7 +76,13 @@ class DatabaseSeeder extends Seeder
             $m = rand(1, 3);
             $tes->pengawas()->attach($stafPengawas->random($m));
             for($i = 0; $i < $n; $i++){
-              $tes->peserta()->attach($peserta->random(10), ['ruangan_id' => $tes->ruangan->random()->id]);
+              $toAssign = $peserta->random(20)->map(function($peserta) use ($ruangan, $tes){
+                return [
+                  'peserta_id' => $peserta->id,
+                  'ruangan_id' => $tes->ruangan->random()->id,
+                ];
+              });
+              $tes->pivotPeserta()->upsert($toAssign->toArray(), ['peserta_id', 'tes_id'], ['ruangan_id']);
             }
         }
     }

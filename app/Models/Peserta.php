@@ -27,8 +27,8 @@ class Peserta extends Model
         return $this->hasMany(PresensiPertemuanKelas::class, 'peserta_id');
     }
 
-    public function tes()
+    public function pivotTes()
     {
-        return $this->belongsToMany(Tes::class, 'peserta_tes')->using(PesertaTes::class)->withPivot('ruangan_id', 'hadir')->withTimestamps();
+        return $this->hasMany(PesertaTes::class, 'peserta_id');
     }
 }

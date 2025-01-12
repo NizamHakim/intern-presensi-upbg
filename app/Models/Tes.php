@@ -101,8 +101,8 @@ class Tes extends Model
         return $this->belongsToMany(User::class, 'pengawas_tes')->withTimestamps()->withTrashed();
     }
 
-    public function peserta()
+    public function pivotPeserta()
     {
-        return $this->belongsToMany(Peserta::class, 'peserta_tes')->using(PesertaTes::class)->withPivot('ruangan_id', 'hadir')->withTimestamps();
+        return $this->hasMany(PesertaTes::class, 'tes_id')->orderBy('id', 'desc');
     }
 }

@@ -181,7 +181,7 @@ class TesController extends Controller
 
       return response([
         'message' => "Tes $tes->kode berhasil ditambahkan",
-        'redirect' => route('tes.index'),
+        'redirect' => route('tes.detail', $tes->slug),
       ], 200);
     }
 
@@ -279,42 +279,40 @@ class TesController extends Controller
         return response($validator->errors(), 422);
       }
 
-      // $tes->update([
-      //   'kode' => $request['kode-tes'],
-      //   'slug' => KodeTesGenerator::slug($request['kode-tes']),
-      //   'tipe_id' => $request['tipe'],
-      //   'nomor' => $request['nomor-tes'],
-      //   'tanggal' => $request['tanggal'],
-      //   'waktu_mulai' => $request['waktu-mulai'],
-      //   'waktu_selesai' => $request['waktu-selesai'],
-      // ]);
+      $tes->update([
+        'kode' => $request['kode-tes'],
+        'slug' => KodeTesGenerator::slug($request['kode-tes']),
+        'tipe_id' => $request['tipe'],
+        'nomor' => $request['nomor-tes'],
+        'tanggal' => $request['tanggal'],
+        'waktu_mulai' => $request['waktu-mulai'],
+        'waktu_selesai' => $request['waktu-selesai'],
+      ]);
 
       $tes->ruangan()->sync($request['ruangan']);
-      $pesertaStray = $tes->peserta()->whereNotIn('ruangan_id', $request['ruangan'])->get();
-      // return response($pesertaStray, 200);
 
       foreach($tes->ruangan as $ruangan){
         $kapasitas = $ruangan->kapasitas;
-        $pesertaCount = $tes->peserta()->wherePivot('ruangan_id', $ruangan->id)->count();
+        $pesertaCount = $tes->pivotPeserta()->where('ruangan_id', $ruangan->id)->count();
         $sisa = $kapasitas - $pesertaCount;
-        log($kapasitas);
-        log($pesertaCount);
-        log($sisa);
-
-        if ($sisa > 0) {
-          $toAssign = $pesertaStray->take($sisa)->pluck('id')->toArray();
-          log($toAssign);
-          $tes->peserta()->syncWithoutDetaching(array_fill_keys($toAssign, ['ruangan_id' => $ruangan->id]));
-          log(array_fill_keys($toAssign, ['ruangan_id' => $ruangan->id]));
-          $pesertaStray = $pesertaStray->slice($sisa);
-          log($pesertaStray);
+        
+        if($sisa < 0){
+          $tes->pivotPeserta()->where('ruangan_id', $ruangan->id)->orderBy('id')->take($sisa * -1)->update(['ruangan_id' => null]);
         }
       }
-      // return response([
-      //   'message' => "Tes $tes->kode berhasil diupdate",
-      //   'redirect' => route('tes.detail', $tes->slug),
-      //   'stray' => $pesertaStray,
-      // ], 200);
+
+      foreach($tes->ruangan as $ruangan){
+        if($ruangan == $tes->ruangan->last()){
+          $tes->pivotPeserta()->whereNotIn('ruangan_id', $request['ruangan'])->orWhereNull('ruangan_id')->update(['ruangan_id' => $ruangan->id]);
+          break;
+        }
+        $kapasitas = $ruangan->kapasitas;
+        $pesertaCount = $tes->pivotPeserta()->where('ruangan_id', $ruangan->id)->count();
+        $sisa = $kapasitas - $pesertaCount;
+        if($sisa > 0){
+          $tes->pivotPeserta()->whereNotIn('ruangan_id', $request['ruangan'])->orWhereNull('ruangan_id')->take($sisa)->update(['ruangan_id' => $ruangan->id]);
+        }
+      }
 
       $tes->pengawas()->sync($request['pengawas']);
 
@@ -326,11 +324,8 @@ class TesController extends Controller
 
     public function daftarPeserta($slug)
     {
-      // $tes = Tes::where('slug', $slug)->firstOrFail();
-      $tes = Tes::with(['peserta'])->where('slug', $slug)->firstOrFail();
-      $pesertaList = $tes->peserta()->paginate(10);
-      dump($tes->peserta[0]->pivot->ruanganTes);
-      dd($pesertaList);
+      $tes = Tes::with(['pivotPeserta'])->where('slug', $slug)->firstOrFail();
+      $pesertaList = $tes->pivotPeserta()->with(['ruanganTes', 'peserta'])->paginate(10);
 
       $breadcrumbs = [
           'Tes' => route('tes.index'),

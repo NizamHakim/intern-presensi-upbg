@@ -43,20 +43,20 @@
         <p class="hidden font-semibold lg:col-span-4 lg:block">Tanggal Bergabung</p>
         <p class="hidden font-semibold md:col-span-4 md:block lg:col-span-3">Ruangan</p>
       </div>
-      @foreach ($pesertaList as $peserta)
-        <div class="peserta-item grid grid-cols-16 items-center gap-x-4 py-4" data-peserta-id="{{ $peserta->id }}" data-route="{{ route('tes.updateRuangan', ['slug' => $tes->slug]) }}">
+      @foreach ($pesertaList as $pesertaTes)
+        <div class="peserta-item grid grid-cols-16 items-center gap-x-4 py-4" data-peserta-id="{{ $pesertaTes->peserta->id }}" data-route="{{ route('tes.updateRuangan', ['slug' => $tes->slug]) }}">
           <p class="col-span-2 pl-2 text-center font-medium lg:col-span-1">{{ $loop->iteration + ($pesertaList->currentPage() - 1) * $pesertaList->perPage() }}.</p>
           <div class="col-span-11 md:col-span-7 lg:col-span-6">
-            <p class="nama-peserta w-fit font-medium text-gray-700">{{ $peserta->nama }}</p>
-            <p class="nik-peserta w-fit text-gray-600">{{ $peserta->nik }}</p>
+            <p class="nama-peserta w-fit font-medium text-gray-700">{{ $pesertaTes->peserta->nama }}</p>
+            <p class="nik-peserta w-fit text-gray-600">{{ $pesertaTes->peserta->nik }}</p>
           </div>
           <div class="hidden lg:col-span-4 lg:block">
-            <p class="tanggal-bergabung-peserta text-gray-600">{{ $peserta->created_at->format('d-m-Y') }}</p>
+            <p class="tanggal-bergabung-peserta text-gray-600">{{ $pesertaTes->created_at->format('d-m-Y') }}</p>
           </div>
           <div class="hidden md:col-span-4 md:flex md:justify-center lg:col-span-3">
-            <x-inputs.dropdown.select name="ruangan" class="dropdown-ruangan" :selected="['text' => $peserta->pivot->ruanganTes->kode, 'value' => $peserta->pivot->ruangan_id]">
+            <x-inputs.dropdown.select name="ruangan" class="dropdown-ruangan" :selected="['text' => $pesertaTes->ruanganTes->kode, 'value' => $pesertaTes->ruanganTes->id]">
               @foreach ($tes->ruangan as $ruangan)
-                <x-inputs.dropdown.option :value="$ruangan->id" class="{{ $ruangan->id == $peserta->pivot->ruangan_id ? 'selected' : '' }}">{{ "$ruangan->kode" }}</x-inputs.dropdown.option>
+                <x-inputs.dropdown.option :value="$ruangan->id" class="{{ $ruangan->id == $pesertaTes->ruanganTes->id ? 'selected' : '' }}">{{ "$ruangan->kode" }}</x-inputs.dropdown.option>
               @endforeach
             </x-inputs.dropdown.select>
           </div>
